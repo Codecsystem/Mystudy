@@ -49,8 +49,12 @@ class BIT{
         }
         void init(vector<int> a)//初始化
         {
-            for(int i=0;i<n;i++)
-                update(i+1,a[i]);
+            vector<int> presum(a.size()+1,0);
+            for(int i=1;i<=a.size();i++)
+            {
+                presum[i]=presum[i-1]+a[i-1];
+                tree[i]=presum[i]-presum[i-lowbit(i)];//按定义
+            } 
         }
 };
 int main()
