@@ -73,3 +73,11 @@ int main()
     //test end
     return 0;
 }
+//进阶用法1.维护差分数组
+//进阶用法2.把数组离散化后按照值域建树状数组，可以用来求逆序对(第K大)
+//e.g.val[1,16,9,10,3]->dis[1,5,3,4,2]->bit[1,1,1,1,1]
+//    BIT bit(5);
+//    //bit.update(1,1);bit.update(2,1);bit.update(3,1);bit.update(4,1);bit.update(5,1);
+//    val_i[1,3]即更新为[1,0,1,0,1] 9即为第2大 即bit.query(1,3)=2
+//求逆序对，how to do? 即[1,r]中比a[r]大的数的个数
+
