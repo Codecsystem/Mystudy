@@ -38,7 +38,7 @@ class Heap{//小根堆
             }
         }
         void pop(){
-            heap[1].val=heap[size--].val;//将最后一个元素放到第一个位置
+            heap[1]=heap[size--];//将最后一个元素放到第一个位置
             int i=1;
             while(i*2<=size){
                 int j=i*2;
