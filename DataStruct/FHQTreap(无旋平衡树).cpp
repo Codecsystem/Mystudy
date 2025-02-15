@@ -88,8 +88,11 @@ class FHQTreap{
             Node *a,*b,*c;
             split(root,a,b,val);//将root按照val分割为a,b两部分
             split(a,a,c,val-1);//将a按照val-1分割为a,c两部分
-            merge(a,a,c->right);//将c的右子树合并到a中(删除一个节点)
-            merge(a,a,c->left);//将c的右子树合并到a中(删除一个节点)
+            if(c)
+            {
+                merge(a,a,c->right);//将c的右子树合并到a中(删除一个节点)
+                merge(a,a,c->left);//将c的左子树合并到a中(删除一个节点)
+            }
             merge(root,a,b);//将a,b合并为root
         }
         void print(Node *root){
@@ -139,33 +142,13 @@ class FHQTreap{
             else if(k==leftsize+1) return root->val;
             else return KthQuery(root->right,k-leftsize-1);
         }
-        void init(vector<int> &nums){//按笛卡尔树初始化
-            stack<Node*> s;
-            for(int i=0;i<nums.size();i++){
-                Node* node=new Node(nums[i],i);
-                Node* last=nullptr;
-                while(!s.empty()&&s.top()->val>node->val){
-                    last=s.top();
-                    s.pop();
-                }
-                if(!s.empty()){
-                    s.top()->right=node;
-                }
-                if(last) node->left=last;
-                s.push(node);
-            }
-            while(!s.empty()){
-                root=s.top();
-                s.pop();
-            }
-        }
+        
 };
 int main()
 {
     int T_start=clock();
     FHQTreap treap;
     vector<int> test={1,2,3,4,5,6,7,8,9,10};
-    treap.init(test);
     /*for(int i=0;i<test.size();i++){
         treap.insert(test[i]);
     }
