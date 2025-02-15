@@ -125,7 +125,7 @@ class FHQTreap{
         int rank(int val){
             Node *a,*b;
             split(root,a,b,val-1);//将root按照val-1分割为a,b两部分
-            int res=a->size+1;
+            int res=(a?a->size:0)+1;
             merge(root,a,b);
             return res;
         }
