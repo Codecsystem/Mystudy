@@ -12,3 +12,4 @@ dp
 平衡树（AVL,RB,Treap,Slapy）
 非删莫队
 重构之前的代码，用class封装
+写出O(n)的FHQTreap初始化方法
