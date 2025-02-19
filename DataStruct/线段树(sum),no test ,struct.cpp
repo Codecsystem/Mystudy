@@ -18,7 +18,7 @@ struct SegTreeNode{
     int start;
     int end;//[start,end]
     int sum;
-    int lazy;
+    int lazy=0;
     SegTreeNode *left;
     SegTreeNode *right;
 
