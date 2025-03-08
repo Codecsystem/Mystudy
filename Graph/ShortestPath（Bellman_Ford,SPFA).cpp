@@ -81,7 +81,7 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
     vector<int> vis(n+1,0);
     vector<int> cnt(n+1,0);
     dis[s]=0;queue<int> q;
-    q.push(s);vis[s]=1;
+    q.push(s);vis[s]=1;cnt[s]=0;
     while(!q.empty())
     {
         int u=q.front();
@@ -91,6 +91,13 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
             if(dis[v]>dis[u]+w)//松弛
             {
                 dis[v]=dis[u]+w;
+                cnt[v]=cnt[u]+1;
+                if(cnt[v]>n-1)//存在负权环
+                {
+                    //1-n的节点，最短路最多经过n-1条边，如果经过n条边，说明存在负权环
+                    cout<<"negative cycle!"<<endl;
+                    return dis;
+                }
                 if(!vis[v])
                 {
                     q.push(v);
