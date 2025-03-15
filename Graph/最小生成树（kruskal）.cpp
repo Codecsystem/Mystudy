@@ -81,6 +81,7 @@ int kruskal(vector<array<int,3>> &edge,int m,int n)
     }
     return cnt==n-1?ans:-1;
 }
+//时间复杂度O(mlogm)，证明同prim
 int main()
 {
     int T_start=clock();
