@@ -53,7 +53,7 @@ vector<int> dijkstra(int n,vector<vector<pair<int,int>>>mp,int s)
         int u=pq.top().second;//取出当前距离最小的点
         int d=pq.top().first;//取出当前距离最小的点的距离
         pq.pop();
-        if(d>dis[u]) continue;
+        if(d>dis[u]) continue;//u已经被更新过
         if(mp[u].empty()) continue;
         for(auto it:mp[u])
         {
