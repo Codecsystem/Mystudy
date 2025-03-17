@@ -20,6 +20,7 @@ class BSU{
         int n;vector<int> fa;
         BSU(int n):n(n)
         {
+            srand(time(NULL));
             fa.resize(n+1);
             for(int i=1;i<=n;i++)
             {
