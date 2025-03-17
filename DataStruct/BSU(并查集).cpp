@@ -29,7 +29,7 @@ class BSU{
         int find(int u){
             return fa[u]==u?u:fa[u]=find(fa[u]);
         }
-        int merge(int a,int b)
+        void merge(int a,int b)
         {
             int op=rand()%2;
             if(op==0) fa[find(a)]=find(b);
