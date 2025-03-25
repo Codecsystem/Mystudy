@@ -35,7 +35,7 @@ vector<vector<int>> tarjan(vector<vector<int>> &mp,int n)
 				ch++;
 				dfs(dfs,v,u);
 				low[u]=min(low[u],low[v]);//更新low[u]
-				if((fa==-1&&ch>1)||(fa!=-1&&low[v]>=dfn[u]))//是割点
+				if((fa==-1&&ch>1)||(fa!=-1&&low[v]>=dfn[u]))//是割点,v以及他的被处理过的子树是一个bcc
 				{
 					vector<int> bcc;
 					while(1)
