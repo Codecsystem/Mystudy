@@ -15,10 +15,10 @@
 #include <array>
 #include <unordered_map>
 using namespace std;
-class BSU{
+class DSU{
     public:
         int n;vector<int> fa;
-        BSU(int n):n(n)
+        DSU(int n):n(n)
         {
             srand(time(NULL));
             fa.resize(n+1);
