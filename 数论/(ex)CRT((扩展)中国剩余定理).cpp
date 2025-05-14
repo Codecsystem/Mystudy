@@ -83,16 +83,6 @@ class exCRT{
             x=y;y=t-a/b*y;
             return d;
         }
-        int Qpow(int a,int b,int m)//快速幂
-        {
-            int ans=1;
-            while(b)
-            {
-                if(b&1) ans=ans*a%m;
-                a=a*a%m;b>>=1;
-            }
-            return ans;
-        }
         int CRT()
         {
             int mul=accumulate(m.begin(),m.end(),1LL,
