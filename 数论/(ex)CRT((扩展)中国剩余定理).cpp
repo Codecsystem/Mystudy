@@ -65,12 +65,12 @@ std::ostream& operator<<(std::ostream& out, __int128 value) {
 class exCRT{
     
     public:
-        exCRT(vector<int> nums,vector<int> m){
-            this->nums=nums;
+        exCRT(vector<int> r,vector<int> m){
+            this->r=r;
             this->m=m;
-            n=nums.size();
+            n=r.size();
         }
-        vector<int> nums,m;
+        vector<int> r,m;
         int x,n;
         int exgcd(int a,int b,int &x,int &y)//扩展欧几里得
         {
@@ -91,17 +91,17 @@ class exCRT{
             {
                 int M=mul/m[i],b,y;
                 exgcd(M,m[i],b,y);
-                ans=(ans+nums[i]*M%mul*b%mul+mul)%mul;
+                ans=(ans+r[i]*M%mul*b%mul+mul)%mul;
             }
             return (ans%mul+mul)%mul;
         }
         int _exCRT()
         {
-            int M=m[0],ans=nums[0];
+            int M=m[0],ans=r[0];
             for(int i=1;i<n;i++)
             {
                 int a=M,b=m[i];
-                int c=((nums[i]-ans)%b+b)%b;
+                int c=((r[i]-ans)%b+b)%b;
                 int x,y;
                 int gcd=exgcd(a,b,x,y);
                 int bg=b/gcd;
@@ -120,9 +120,9 @@ signed main()
 {
     int T_start=clock();
     int n;cin>>n;
-    vector<int> nums(n),m(n);
-    for(int i=0;i<n;i++) cin>>m[i]>>nums[i];
-    exCRT ex(nums,m);
+    vector<int> r(n),m(n);
+    for(int i=0;i<n;i++) cin>>m[i]>>r[i];
+    exCRT ex(r,m);
     cout<<ex.CRT()<<endl;
     return 0;
 }
