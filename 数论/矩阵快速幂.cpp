@@ -37,7 +37,7 @@ class MaTQpow{
 				{
 					for(int k=0;k<other.mat.size();k++)
 					{
-						res[i][j]=(res[i][j]+mat[i][k]*other.mat[k][j]&_mod)%_mod;
+						res[i][j]=(res[i][j]+mat[i][k]*other.mat[k][j])%_mod;
 					}
 				}
 			}
