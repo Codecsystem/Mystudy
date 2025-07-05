@@ -134,6 +134,7 @@ Info operator + (Info a, Info b) {
     else c.minid=b.minid;
     return c;
 }
+//tip:[l,r)区间->传入[l,r]改为[l,r+1)
 int main()
 {
     int T_start=clock();
