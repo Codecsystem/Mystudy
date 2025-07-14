@@ -115,16 +115,20 @@ struct LazySegmentTree {
     }
 };
 struct Tag {
+    //tag清空态
     void apply(Tag t) {
+        //tag t下发对tag的影响
     }
 };
 struct Info {
+    //维护啥信息
     void apply(Tag t) {
+        //tag t下发对info的影响
     }
 };
 Info operator + (Info a, Info b) {
     Info c;
-    
+    //info a和info b合并
     return c;
 }
 //tip:[l,r)区间->传入[l,r]改为[l,r+1)
