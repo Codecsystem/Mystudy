@@ -14,33 +14,6 @@
 #include <vector>
 #define int long long 
 using namespace std;
-int read()
-{
-	int s=0,f=1;
-	char ch=getchar();
-	while(ch<'0'||ch>'9')
-	{
-		if(ch=='-') f=-1;
-		ch=getchar();
-	}
-	while(ch>='0'&&ch<='9')
-	{
-		s=(s<<3)+(s<<1)+ch-'0';
-		ch=getchar();
-	}
-	return s*f;
-}
-inline void write(int x) 
-{
-	static int sta[35]; 
-	int top=0;
-	if(x<0&&x!=-2147483648) {putchar('-');x=-x;}
-	if(x==-2147483648) {printf("-2147483648");return;}
-	do{
-	  sta[top++]=x%10, x/=10;
-	  }while(x);
-	while(top) putchar(sta[--top]+48);
-}
 struct blocknode{
 	int l;
 	int r;
@@ -52,7 +25,7 @@ struct blocknode{
 signed main()
 {
 	int T_start=clock();
-	int n=read(),k=read();
+	int n,k;cin>>n>>k;
 	vector<blocknode>a;
 	for(int l=1,r;l<=n;l=r+1)
 	{

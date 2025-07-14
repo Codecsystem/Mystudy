@@ -14,9 +14,9 @@
 #include <vector>
 #include <array>
 using namespace std;
-long long ModQpow(long long a,long long b,long long m)//快速幂
+int ModQpow(int a,int b,int m)//快速幂
 {
-    long long ans=1;
+    int ans=1;
     while(b)
     {
         if(b&1) ans=ans*a%m;
@@ -24,24 +24,24 @@ long long ModQpow(long long a,long long b,long long m)//快速幂
     }
     return ans;
 }
-long long invMod1(int a,int m)//a在模m意义下的逆元（费马小定理，m为质数），即a^(m-2)
+int invMod1(int a,int m)//a在模m意义下的逆元（费马小定理，m为质数），即a^(m-2)
 {
     return ModQpow(a,m-2,m);
 }
-long long exgcd(long long a,long long b,long long &x,long long &y)//扩展欧几里得
+int exgcd(int a,int b,int &x,int &y)//扩展欧几里得
 {
     if(b==0)
     {
         x=1;y=0;
         return a;
     }
-    long long d=exgcd(b,a%b,x,y),t=x;
+    int d=exgcd(b,a%b,x,y),t=x;
     x=y;y=t-a/b*y;
     return d;
 }
-long long invMod2(int a,int m)//a在模m意义下的逆元（扩展欧几里得）
+int invMod2(int a,int m)//a在模m意义下的逆元（扩展欧几里得）
 {
-    long long x,y;
+    int x,y;
     exgcd(a,m,x,y);
     return (x%m+m)%m;
 }

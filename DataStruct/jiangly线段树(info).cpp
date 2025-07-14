@@ -115,23 +115,16 @@ struct LazySegmentTree {
     }
 };
 struct Tag {
-    int flag=0;
     void apply(Tag t) {
-        flag+=t.flag;
     }
 };
 struct Info {
-    int maxx=0,minid=1e9;
     void apply(Tag t) {
-        maxx+=t.flag;
     }
 };
 Info operator + (Info a, Info b) {
     Info c;
-    c.maxx=max(a.maxx,b.maxx);
-    if(a.maxx==b.maxx) c.minid=min(a.minid,b.minid);
-    else if(a.maxx>b.maxx) c.minid=a.minid;
-    else c.minid=b.minid;
+    
     return c;
 }
 //tip:[l,r)区间->传入[l,r]改为[l,r+1)
