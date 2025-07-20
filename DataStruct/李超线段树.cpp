@@ -22,12 +22,12 @@
 using namespace std;
 class LCSegTree{
 public:
-    const int L=1,R=39989;
+    const int L=1,R=1e9;
     const double eps=1e-9;
     struct Line{
         long double a,b;
         int id;
-        Line(long double a=0,long double b=-1e9,int id=0):a(a),b(b),id(id){}
+        Line(long double a=0,long double b=/*-1e18*/1e18,int id=0):a(a),b(b),id(id){}
         long double val(int x)const{return (long double)1.0*a*x+b;}
     };
     struct Node{
@@ -40,7 +40,8 @@ public:
         rt=nullptr;
     }
     bool cmp(long double a,long double b){
-		return a-b>eps;//max
+		// return a-b>eps;//max
+		return b-a>eps;//min
     }
     bool cmp1(Line a,Line b,int x){
 		long double va=a.val(x),vb=b.val(x);
@@ -54,7 +55,7 @@ public:
 		if(!o)o=new Node();
 		if(ql<=l&&r<=qr){
 			int mid=(l+r)>>1;
-			bool LB=cmp1(v,o->l,l),MB=cmp1(v,o->l,mid);
+			bool LB=cmp1(v,o->l,l),MB=cmp1(v,o->l,mid),RB=cmp1(v,o->l,r);
 			if(MB)swap(o->l,v);
 			if(l==r)return;
 			if(LB!=MB)ins(o->lc,l,mid,ql,qr,v);
@@ -66,7 +67,7 @@ public:
 		ins(o->rc,mid+1,r,ql,qr,v);
 	}
 	pair<long double,int> qry(Node*o,int l,int r,int x){
-		if(!o)return {-1e18,0};
+		if(!o)return {/*-1e18*/1e18,0};
 		long double cur=o->l.val(x);
 		int cid=o->l.id;
 		int mid=(l+r)>>1;
@@ -89,6 +90,9 @@ public:
 			ins(rt,L,R,x1,x2,Line(a,b,id));
 		}
 	}
+    void add(Line v){
+        ins(rt,L,R,L,R,v);
+    }
 	pair<long double,int> ask(int x){return qry(rt,L,R,x);}
 };
 signed main()
