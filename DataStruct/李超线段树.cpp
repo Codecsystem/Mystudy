@@ -66,7 +66,7 @@ public:
 		ins(o->rc,mid+1,r,ql,qr,v);
 	}
 	pair<long double,int> qry(Node*o,int l,int r,int x){
-		if(!o)return {-(1LL<<60),0};
+		if(!o)return {-1e18,0};
 		long double cur=o->l.val(x);
 		int cid=o->l.id;
 		int mid=(l+r)>>1;
