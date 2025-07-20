@@ -40,7 +40,7 @@ public:
         rt=nullptr;
     }
     bool cmp(long double a,long double b){
-		return a-b>eps;
+		return a-b>eps;//max
     }
     bool cmp1(Line a,Line b,int x){
 		long double va=a.val(x),vb=b.val(x);
