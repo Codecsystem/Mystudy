@@ -21,13 +21,14 @@
 #define int long long //赫赫 要不要龙龙呢
 using namespace std;
 const int mod=998244353;
+using Z=SMC<mod>;
 template <int MOD>
 struct SMC {
-    long long val;
-    constexpr SMC(long long v=0){
+    int64_t val;
+    constexpr SMC(int64_t v=0){
         val=(v%MOD+MOD)%MOD;
     }
-    SMC& operator=(long long v){
+    SMC& operator=(int64_t v){
         val=(v%MOD+MOD)%MOD;
         return *this;
     }
@@ -54,7 +55,7 @@ struct SMC {
         }
         return res;
     }
-    SMC pow(long long k) const{
+    SMC pow(int64_t k) const{
         return SMC(qpow(val,k));
     }
     SMC inv() const{
@@ -67,6 +68,10 @@ struct SMC {
     friend SMC operator-(SMC a,const SMC &b){ return a-=b;}
     friend SMC operator*(SMC a,const SMC &b){ return a*=b;}
     friend SMC operator/(SMC a,const SMC &b){ return a/=b;}
+    SMC& operator++() { return *this += 1; }
+	SMC& operator--() { return *this -= 1; }
+	SMC operator++(int32_t dummy) { SMC t=*this; ++*this; return t; }
+	SMC operator--(int32_t dummy) { SMC t=*this; --*this; return t; }
     friend bool operator==(const SMC &a,const SMC &b){ return a.val==b.val;}
 	friend bool operator<(const SMC &a,const SMC &b){ return a.val<b.val;}
     friend bool operator>(const SMC &a,const SMC &b){ return a.val>b.val;}
@@ -75,7 +80,7 @@ struct SMC {
     friend bool operator!=(const SMC &a,const SMC &b){ return a.val!=b.val;}
 
     friend std::istream& operator>>(std::istream &in,SMC &a){
-        long long v;
+        int64_t v;
         in>>v,a=SMC(v);
         return in;
     }
@@ -90,22 +95,21 @@ struct SMC {
     SMC operator-() const{
         return SMC(-val);
     }
-	SMC& operator+=(long long x) { return *this+=SMC(x); }
-	SMC& operator-=(long long x) { return *this-=SMC(x); }
-	SMC& operator*=(long long x) { return *this*=SMC(x); }
-	SMC& operator/=(long long x) { return *this/=SMC(x); }
+	SMC& operator+=(int64_t x) { return *this+=SMC(x); }
+	SMC& operator-=(int64_t x) { return *this-=SMC(x); }
+	SMC& operator*=(int64_t x) { return *this*=SMC(x); }
+	SMC& operator/=(int64_t x) { return *this/=SMC(x); }
 
-	friend SMC operator+(SMC a, long long b) { return a+=b; }
-	friend SMC operator-(SMC a, long long b) { return a-=b; }
-	friend SMC operator*(SMC a, long long b) { return a*=b; }
-	friend SMC operator/(SMC a, long long b) { return a/=b; }
+	friend SMC operator+(SMC a, int64_t b) { return a+=b; }
+	friend SMC operator-(SMC a, int64_t b) { return a-=b; }
+	friend SMC operator*(SMC a, int64_t b) { return a*=b; }
+	friend SMC operator/(SMC a, int64_t b) { return a/=b; }
 
-	friend SMC operator+(long long a, SMC b) { return b+a; }
-	friend SMC operator-(long long a, SMC b) { return SMC(a)-b; }
-	friend SMC operator*(long long a, SMC b) { return b*a; }
-	friend SMC operator/(long long a, SMC b) { return SMC(a)/b; }
+	friend SMC operator+(int64_t a, SMC b) { return b+a; }
+	friend SMC operator-(int64_t a, SMC b) { return SMC(a)-b; }
+	friend SMC operator*(int64_t a, SMC b) { return b*a; }
+	friend SMC operator/(int64_t a, SMC b) { return SMC(a)/b; }
 };
-using Z=SMC<mod>;
 signed main()
 {
     int T_start=clock();
