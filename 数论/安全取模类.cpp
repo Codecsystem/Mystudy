@@ -21,7 +21,6 @@
 #define int long long //赫赫 要不要龙龙呢
 using namespace std;
 const int mod=998244353;
-using Z=SMC<mod>;
 template <int MOD>
 struct SMC {
     int64_t val;
@@ -110,6 +109,7 @@ struct SMC {
 	friend SMC operator*(int64_t a, SMC b) { return b*a; }
 	friend SMC operator/(int64_t a, SMC b) { return SMC(a)/b; }
 };
+using Z=SMC<mod>;
 signed main()
 {
     int T_start=clock();
