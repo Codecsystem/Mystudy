@@ -22,6 +22,31 @@ struct blocknode{
 //对[l,r]的i,floor(n/i)相等
 //n%i=n-i*floor(n/i)
 //首项n-l*val 公差-val 项数r-l+1
+class divb{
+public:
+    struct node{
+        int l,r;
+        int val1,val2;
+    };
+    int s,e;
+    vector<node> a;
+    divb(int s,int e):s(s),e(e){}
+    void b1(int n,int m){
+        for(int l=s,r;l<=e;l=r+1)
+        {
+            r=min(n/(n/l),m/(m/l));
+            a.push_back({l,r,n/l,m/l});
+        }
+    }
+    void b2(int n)
+    {
+        for(int l=s,r;l<=e;l=r+1)
+        {
+            r=n/(n/l);
+            a.push_back({l,r,n/l,0});
+        }
+    }
+};
 signed main()
 {
 	int T_start=clock();
