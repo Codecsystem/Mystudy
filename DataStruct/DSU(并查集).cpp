@@ -46,6 +46,15 @@ class DSU{
         int size(int u){
             return sz[find(u)];
         }
+        vector<vector<int>> get(){
+            vector<vector<int>> ans(n+1);
+            for(int i=1;i<=n;i++)
+            {
+                ans[find(i)].push_back(i);
+            }
+            ans.erase(remove(ans.begin(),ans.end(),vector<int>()),ans.end());
+            return ans;
+        }
 };
 int main()
 {

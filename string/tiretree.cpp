@@ -12,52 +12,58 @@
 #include <set>
 #include <stack>
 #include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
 using namespace std;
-struct TiretreeNode{
-	vector<TiretreeNode*> child;
-	bool isEnd;
-
-	TiretreeNode(): child(26,nullptr),isEnd(false) {}
+class Trie{
+public:
+    struct node
+    {
+        vector<node*> ch;
+        int cnt;
+        bool isend;
+        node():ch(26,nullptr),cnt(0),isend(false) {}
+    };
+    node* root;
+    Trie():root(new node()) {}
+    void ins(string s)
+    {
+        node* p=root;
+        for(auto i:s)
+        {
+            int idx=i-'a';
+            if(p->ch[idx]==nullptr)
+            {
+                p->ch[idx]=new node();
+            }
+            p=p->ch[idx];
+        }
+        p->isend=true;
+    }
+    bool con(string s){
+        node* p=root;
+        for(auto i:s)
+        {
+            int idx=i-'a';
+            if(p->ch[idx]==nullptr)
+            {
+                return false;
+            }
+            p=p->ch[idx];
+        }
+        return p!=nullptr&&p->isend;
+    }
 };
-void insert(string s,TiretreeNode* root)
+signed main()
 {
-	for(auto ch:s)
-	{
-		int idx=ch-'a';
-		if(root->child[idx]==nullptr)
-		{
-			root->child[idx]=new TiretreeNode;
-		}
-		root=root->child[idx];
-	}
-	root->isEnd=true;
-}
-bool iscontain(string s,TiretreeNode* root)
-{
-	for(auto ch:s)
-	{
-		int idx=ch-'a';
-		if(root->child[idx]==nullptr)
-		{
-			return false;
-		}
-		root=root->child[idx];
-	}
-	return root!=nullptr&&root->isEnd==true;
-}
-int main()
-{
-	int T_start=clock();
-	vector<string> allsub={"hello","world","ld"};
-	TiretreeNode* root=new TiretreeNode();
-	for(auto i:allsub)
-	{
-		insert(i,root);
-	}
-	vector<string> test={"hll","l","d","po","world"};
-	for(auto i:test)
-	{
-		cout<<i<<' '<<(iscontain(i,root)?"is in the tree":"is not in the tree")<<endl;
-	}
-	return 0;
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out2.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    return 0;
 }
