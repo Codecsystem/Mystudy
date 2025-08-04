@@ -27,8 +27,8 @@ class FHQTreap{
             Node(int val):val(val),priority(rand()),left(NULL),right(NULL),size(1){}
             Node(int val,int priority):val(val),priority(priority),left(NULL),right(NULL),size(1){}
         };
-        bool cmp(Node a,Node b){
-            return a.val<b.val;
+        bool cmp(int a,int b){
+            return a<=b;
         }
         Node *root;
         FHQTreap():root(NULL){}
@@ -61,7 +61,7 @@ class FHQTreap{
                 a=b=NULL;
                 return;
             }
-            if(root->val<=val){
+            if(cmp(root->val,val)){
                 a=root;
                 split(root->right,a->right,b,val);
             }
