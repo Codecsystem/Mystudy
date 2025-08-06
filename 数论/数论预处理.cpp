@@ -86,7 +86,7 @@ public:
             invfac[i]=invfac[i-1]*inv[i]%mod;
         }
     }
-    //组合数C(n,m) n在上m在下
+    //组合数C(n,m) n个数中选m个
     int C(int n,int m)
     {
         if(n<0||m<0||n<m)return 0;
