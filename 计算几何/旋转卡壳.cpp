@@ -119,13 +119,27 @@ bool isConvex(vector<pit> p,pit a)
     if(idx==-1||idx>=n-1) return false;
     return isCon(p[0],p[idx],p[idx+1],a);
 }
+int rot(vector<pit> p)
+{
+    int res=0;
+    for(int i=0,j=1;i<p.size();i++)
+    {
+        while(cross(p[i],p[(i+1)%p.size()],p[j])<cross(p[i],p[(i+1)%p.size()],p[(j+1)%p.size()])) j=(j+1)%p.size();
+        res=max(res,(int)((p[i].x-p[j].x)*(p[i].x-p[j].x)+(p[i].y-p[j].y)*(p[i].y-p[j].y)));
+    }
+    return res;
+}
 signed main()
 {
     int T_start=clock();
     //freopen("in.txt","r",stdin);
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
-    
+    int n;cin>>n;
+    vector<pit> p(n);
+    for(int i=0;i<n;i++)cin>>p[i].x>>p[i].y;
+    auto [ans,st]=Andrew(p);
+    cout<<rot(st)<<endl;
     return 0;
 }
 //凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法

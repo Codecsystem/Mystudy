@@ -28,15 +28,6 @@ const double eps=1e-8;
 const double pi=acos(-1);
 double R;
 pit CO;//圆心 
-struct pit
-{
-    double x,y;
-    pit(double x=0,double y=0):x(x),y(y){}
-    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
-    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
-    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
-    pit operator/(const double& o)const{return pit(x/o,y/o);}
-};
 struct vec{
     double x,y;
     vec(double x=0,double y=0):x(x),y(y){}
@@ -47,6 +38,15 @@ struct vec{
     vec operator*(const double& o)const{return vec(x*o,y*o);} //数乘
     double operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
     double operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit
+{
+    double x,y;
+    pit(double x=0,double y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+    pit operator/(const double& o)const{return pit(x/o,y/o);}
 };
 double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
 double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
