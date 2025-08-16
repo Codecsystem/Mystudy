@@ -27,6 +27,7 @@ struct pit;struct vec;
 const double eps=1e-8;
 const double pi=acos(-1);
 double R;
+struct pit;
 pit CO;//圆心 
 struct vec{
     double x,y;

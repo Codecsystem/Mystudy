@@ -19,10 +19,11 @@
 #include <ranges>
 #include <iomanip>
 //#define int long long //赫赫 要不要龙龙呢
-//#define double long double
-//const double eps=1e-12;
+#define double long double
+const double eps=1e-12;
 using namespace std;
-const double eps=1e-8;
+//const double eps=1e-8;
+const double PI=acos(-1);
 struct vec{
     double x,y;
     vec(double x=0,double y=0):x(x),y(y){}
@@ -47,9 +48,20 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 bool cmp(const pit& a,const pit& b){
     return fabs(a.x-b.x)>=eps?a.x<b.x:a.y<b.y;
 }
+//向量逆时针旋转theta弧度
+vec rotate(const vec& o,double theta){
+    return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
+} 
 //ab x ac
 double cross(pit a,pit b,pit c){
     return (b-a)*(c-a);
+}
+//ab·ac
+double dot(pit a,pit b,pit c){
+    return (b-a)&(c-a);
+}
+vec norm(vec a){
+    return a/len(a);
 }
 pair<double,vector<pit>> Andrew(vector<pit> p)
 {
@@ -119,15 +131,39 @@ bool isConvex(vector<pit> p,pit a)
     if(idx==-1||idx>=n-1) return false;
     return isCon(p[0],p[idx],p[idx+1],a);
 }
-int rot(vector<pit> p)
+//双指针/多指针在凸包上找最优->旋转卡壳 形如一个游标卡尺绕着凸包旋转
+//旋转卡壳,用叉积可以找离一条线垂直最高或最低，用点积可以找离一条线水平最左或最右的点（点积的几何意义是b在a的投影长度)
+pair<double,vector<pit>> rot(vector<pit> p)
 {
-    int res=0;
-    for(int i=0,j=1;i<p.size();i++)
+    double ans=1e14;vector<pit> fin(4);
+    int n=p.size(),a=1,b=1,c;
+    for(int i=0;i<n;i++)
     {
-        while(cross(p[i],p[(i+1)%p.size()],p[j])<cross(p[i],p[(i+1)%p.size()],p[(j+1)%p.size()])) j=(j+1)%p.size();
-        res=max(res,(int)((p[i].x-p[j].x)*(p[i].x-p[j].x)+(p[i].y-p[j].y)*(p[i].y-p[j].y)));
+        while(cross(p[i],p[(i+1)%n],p[a])-cross(p[i],p[(i+1)%n],p[(a+1)%n])<=-eps) a=(a+1)%n;
+        while(dot(p[i],p[(i+1)%n],p[b])-dot(p[i],p[(i+1)%n],p[(b+1)%n])<=-eps) b=(b+1)%n;
+        if(i==0) c=a;
+        while(dot(p[(i+1)%n],p[i],p[c])-dot(p[(i+1)%n],p[i],p[(c+1)%n])<=-eps) c=(c+1)%n;
+        double d=dis(p[i],p[(i+1)%n]);
+        double H=fabs(cross(p[a],p[i],p[(i+1)%n]))/d;
+        double R=dot(p[i],p[(i+1)%n],p[b])/d;
+        double L=dot(p[(i+1)%n],p[i],p[c])/d;
+        if(ans>(R+L-d)*H)
+        {
+            ans=(R+L-d)*H;
+            vec nor1=norm(p[(i+1)%n]-p[i]);//i->i+1
+            vec nor2=norm(p[i]-p[(i+1)%n]);//i+1->i
+            fin[0]=p[i]+nor1*R;
+            fin[1]=p[(i+1)%n]+nor2*L;
+            fin[2]=fin[1]+rotate(nor1,PI/2)*H;
+            fin[3]=fin[0]+rotate(nor1,PI/2)*H;
+        }
     }
-    return res;
+    return {ans,fin};
+}
+void zero(pit& a)
+{
+    if(fabs(a.x)<eps) a.x=0;
+    if(fabs(a.y)<eps) a.y=0;
 }
 signed main()
 {
@@ -138,8 +174,17 @@ signed main()
     int n;cin>>n;
     vector<pit> p(n);
     for(int i=0;i<n;i++)cin>>p[i].x>>p[i].y;
-    auto [ans,st]=Andrew(p);
-    cout<<rot(st)<<endl;
+    auto [_,st]=Andrew(p);
+    auto [ans,fin]=rot(st);
+    printf("%.5Lf\n",ans);
+    int k=0;
+    reverse(fin.begin(),fin.end());
+    for(int i=0;i<=3;i++) if(cmp(fin[i],fin[k])) k=i;
+    for(int i=k;i<=k+3;i++) 
+    {
+        zero(fin[i%4]);
+        printf("%.5Lf %.5Lf\n",fin[i%4].x,fin[i%4].y);
+    }
     return 0;
 }
 //凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法
