@@ -1,0 +1,3 @@
+Get-ChildItem E:\Data\Work\algorithm_study\Mystudy -Recurse -Force `
+| Where-Object { -not ($_.FullName -like "*\.git\*") } `
+| Out-File filelist.txt
