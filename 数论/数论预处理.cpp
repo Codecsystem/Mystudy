@@ -122,6 +122,7 @@ public:
         vector<int> a(n+1),d(n+1);
         vector<int> primes;
         vector<bool>v(n+1,0);
+        d[1]=1;
         for(int i=2;i<=n;i++)
         {
             if(!v[i])
