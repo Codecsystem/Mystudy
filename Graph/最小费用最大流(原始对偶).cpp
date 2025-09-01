@@ -34,6 +34,7 @@ public:
     Mcmf(int n,int s,int t,vector<array<int,4>>& eds):
     n(n),s(s),t(t),mp(n+1),dis(n+1),
     h(n+1,INF),prev(n+1),previd(n+1){
+        //only 1-based
         for(auto [u,v,cap,w]:eds){
             int uid=mp[u].size();
             int vid=mp[v].size();
