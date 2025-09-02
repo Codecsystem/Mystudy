@@ -18,52 +18,65 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
-//#define int long long //赫赫 要不要龙龙呢
+#include <cassert>
 using namespace std;
 class Trie{
 public:
-    struct node
-    {
-        vector<node*> ch;
-        int cnt;
-        bool isend;
-        node():ch(26,nullptr),cnt(0),isend(false) {}
+    struct Node{
+        int son[26],a1,a2;
+        Node(){
+            memset(son,0,sizeof(son));
+            a1=a2=0;
+        }
     };
-    node* root;
-    Trie():root(new node()) {}
-    void ins(string s)
+    vector<Node> trie;
+    int tot,root;
+    long long fin;
+    Trie(int len):trie(len+5),tot(0),root(0),fin(0){}
+    void ins(string s,int op)
     {
-        node* p=root;
-        for(auto i:s)
+        int p=root;
+        for(auto c:s)
         {
-            int idx=i-'a';
-            if(p->ch[idx]==nullptr)
-            {
-                p->ch[idx]=new node();
-            }
-            p=p->ch[idx];
+            int id=c-'a';
+            if(!trie[p].son[id]) trie[p].son[id]=++tot;
+            p=trie[p].son[id];
+            if(op==1) trie[p].a1++;
+            else trie[p].a2++;
         }
-        p->isend=true;
     }
-    bool con(string s){
-        node* p=root;
-        for(auto i:s)
+    void dfs(int p)
+    {
+        fin+=1ll*trie[p].a1*trie[p].a2;
+        for(int i=0;i<26;i++)
         {
-            int idx=i-'a';
-            if(p->ch[idx]==nullptr)
+            if(trie[p].son[i])
             {
-                return false;
+                dfs(trie[p].son[i]);
             }
-            p=p->ch[idx];
         }
-        return p!=nullptr&&p->isend;
     }
 };
 signed main()
 {
     int T_start=clock();
     //freopen("in.txt","r",stdin);
-    //freopen("out2.txt","w",stdout);
+    //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int n;cin>>n;
+    Trie trie(1e6+5);
+    long long fin=0;
+    for(int i=1;i<=n;i++)
+    {
+        string s;cin>>s;
+        fin+=s.size();
+        trie.ins(s,1);
+        reverse(s.begin(),s.end());
+        trie.ins(s,2);
+    }
+    fin=2ll*n*fin;
+    //cout<<fin<<endl;
+    trie.dfs(trie.root);
+    cout<<fin-2*trie.fin<<endl;
     return 0;
 }
