@@ -12,39 +12,86 @@
 #include <set>
 #include <stack>
 #include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <random>
+#define int long long //赫赫 要不要龙龙呢
+#define ull unsigned long long
 using namespace std;
-const int base1=27,base2=27;
-const int hash_mod1=100663319,hash_mod2=402653189;
-/*hash mod number 53 97 193 389 769 1543 3079 6151 12289 24593 49157 98317 196613 393241 786433 1572869 3145739 6291469 12582917 25165843 50331653 100663319 402653189 805306457 1610612741 (1e9+7,1e9+9)*/ 
-//char ss[10][10010];
-struct Data
-{
-    long long hash1;
-    long long hash2;
-}a[10005];
-long long make_string_hash1(char s[])
-{
-    register long long ans=0;
-    register int len=strlen(s);
-    for(register int i=0;i<len;i++)
-    {
-        ans=(ans*base1+(long long)(s[i]))%hash_mod1;
+class SHash{
+    public:
+    const int m1=1e9+7,m2=1e9+9;
+    int b1,b2;
+    SHash(){
+        mt19937_64 rand(time(0));
+        b1=rand()%(int)1e9+1e6,b2=rand()%(int)1e9+1e6;
     }
-    return ans;
-}
-long long make_string_hash2(char s[])
-{
-    register long long ans=0;
-    register int len=strlen(s);
-    for(register int i=0;i<len;i++)
-    {
-        ans=(ans*base2+(long long)(s[i]))%hash_mod2;
+    ull get(string s){
+        int h1=0,h2=0;
+        for(auto c:s){
+            h1=(h1*b1+c)%m1;
+            h2=(h2*b2+c)%m2;
+        }
+        return ((ull)h1)<<32|(ull)(h2);
     }
-    return ans;
-}//求子串哈希值hash=((hash[r]−hash[l−1]∗mod^(r−l+1))%mod+mod)%mod
-int main()
+};
+signed main()
 {
     int T_start=clock();
-    
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int t;cin>>t;
+    SHash hs;
+    while(t--)
+    {
+        int n;cin>>n;
+        vector<array<ull,2>> a(n+1);
+        for(int i=1;i<=n;i++)
+        {
+            string s1,s2;cin>>s1>>s2;
+            a[i]={hs.get(s1),hs.get(s2)};
+        }
+        vector<vector<int>> mp(n+1);
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(i==j) continue;
+                if(a[i][0]==a[j][0]||a[i][1]==a[j][1]) mp[i].push_back(j);
+            }
+        }
+        int st=(1<<n);
+        vector<vector<int>> dp(st,vector<int>(n+1,0));
+        for(int i=1;i<=n;i++) dp[1<<(i-1)][i]=1;
+        for(int i=0;i<st;i++)
+        {
+            for(int u=1;u<=n;u++)
+            {
+                if(!dp[i][u]) continue;
+                for(int v:mp[u])
+                {
+                    if((i|(1<<(v-1)))!=i) 
+                        dp[i|(1<<(v-1))][v]|=dp[i][u];
+                }
+            }
+        }
+        int ans=0;
+        for(int i=0;i<st;i++)
+        {
+            for(int j=1;j<=n;j++)
+            {
+                if(dp[i][j])
+                {
+                    ans=max(ans,(int)__builtin_popcountll(i));
+                }
+            }
+        }
+        cout<<n-ans<<endl;
+    }
     return 0;
 }
