@@ -29,14 +29,17 @@ class BIT{
                 i+=lowbit(i);//跳到后一个lowbit(x)的位置
             }
         }
-        int query(int l,int r)//区间查询 [l,r]的和
-        {
+        int pre(int x){
             int res=0;
-            while(r>=l){
-                res+=tree[r];
-                r-=lowbit(r);//跳到前一个lowbit(x)的位置
+            while(x>0){
+                res+=tree[x];
+                x-=lowbit(x);//跳到前一个lowbit(x)的位置
             }
             return res;
+        }
+        int query(int l,int r)//区间查询 [l,r]的和
+        {
+            return pre(r)-pre(l-1);
         }
         int query_diff(int i)//单点查询 a_diff[i] (维护差分数组)=sum[1,i]
         {
