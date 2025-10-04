@@ -20,10 +20,11 @@
 #include <iomanip>
 #include <cassert>
 //#define int long long //赫赫 要不要龙龙呢
-//#define double long double
-//const double eps=1e-12;
+#define double long double
+const double eps=1e-12;
+const double pi=acos(-1);
 using namespace std;
-const double eps=1e-8;
+//const double eps=1e-8;
 struct vec{
     double x,y;
     vec(double x=0,double y=0):x(x),y(y){}
@@ -53,13 +54,6 @@ vec rotate(const vec& o,double theta){
 vec norm(vec a){
     return a/len(a);
 }
-//用单位圆证明
-//向量夹角 dot(a,b)=len(a)*len(b)*cos(θ)
-double angle(vec a,vec b){
-    double val=(a&b)/len(a)/len(b);
-    val=max(-1.0,min(1.0,val));
-    return acos(val);
-} 
 //向量围成的平行四边形面积,b在a的逆时针方向为正，否则为负
 double area(vec a,vec b){return a*b;} 
 //点线关系(点c,直线ab)
@@ -106,9 +100,81 @@ pit getNode(pit a,vec u,pit c,vec v){
 signed main()
 {
     int T_start=clock();
-    //freopen("in.txt","r",stdin);
+    freopen("in.txt","r",stdin);
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
-    
+    int t;cin>>t;
+    while(t--){
+        int x1,y1,x2,y2;cin>>x1>>y1>>x2>>y2;
+        int x3,y3,x4,y4;cin>>x3>>y3>>x4>>y4;
+        pit s1(x1,y1),t1(x2,y2),s2(x3,y3),t2(x4,y4);
+        double T1=min(dis(s1,t1),dis(s2,t2));
+        vec v1=norm(t1-s1),v2=norm(t2-s2);
+        double l=0,r=T1;
+        while(r-l>eps){
+            double lmid=l+(r-l)/3,rmid=lmid+(r-l)/3;
+            double lans=dis(s1+v1*lmid,s2+v2*lmid);
+            double rans=dis(s1+v1*rmid,s2+v2*rmid);
+            if(rans-lans>eps) r=rmid;
+            else l=lmid;
+        }
+        //不过应该注意的是
+        double ans=dis(s1+v1*l,s2+v2*l);
+        if(dis(s1,t1)-dis(s2,t2)>eps) swap(s1,s2),swap(t1,t2),swap(v1,v2);
+        // now t1, s2->t2
+        s2=s2+v2*T1;
+        //cout<<s2.x<<' '<<s2.y<<endl;
+        vec v_rot=norm(rotate(v2,pi/2));
+        //cout<<v_rot.x<<' '<<v_rot.y<<endl;
+        //cout<<t1.x<<' '<<t1.y<<endl;
+        pit cropit=getNode(t1,v_rot,s2,v2);
+        //cout<<v2.x<<' '<<v2.y<<endl;
+        //cout<<cropit.x<<' '<<cropit.y<<endl;
+        if(onSeg(s2,t2,cropit)) 
+        {
+            //cout<<"Y"<<endl;
+            ans=min(ans,dis(t1,cropit));
+        }
+        ans=min(ans,dis(t1,s2)),ans=min(ans,dis(t1,t2));
+        cout<<fixed<<setprecision(12)<<ans<<endl;
+    }
     return 0;
 }
+//注意我们通常不用浮点数三分 而是固定次数 t=100
+/*
+int l = 1,r = 100;
+while(l < r) {
+    int lmid = l + (r - l) / 3;
+    int rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid - 1;
+    else l = lmid + 1;
+    // 求凸函数的极大值
+    if(lasn >= rans) l = lmid + 1;
+    else r = rmid - 1;
+}
+// 求凹函数的极小值
+cout << min(lans,rans) << endl;
+// 求凸函数的极大值
+cout << max(lans,rans) << endl;
+*/
+
+
+/*
+const double EPS = 1e-9;
+while(r - l > EPS) {
+    double lmid = l + (r - l) / 3;
+    double rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid;
+    else l = lmid;
+    // 求凸函数的极大值
+    if(lans >= rans) l = lmid;
+    else r = rmid;
+}
+// 输出 l 或 r 都可
+cout << l << endl;
+*/
+

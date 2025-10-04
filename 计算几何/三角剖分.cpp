@@ -89,14 +89,14 @@ pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 //求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 //计算线段ab与圆的交点和距离(此处的距离是有意义的距离 即线段离圆心的距离)
