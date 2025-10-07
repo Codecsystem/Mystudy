@@ -60,6 +60,7 @@ class SegTree{
         pushup(p);
     }
     void upd(int p,int l,int r,int x,int y,const Tag &v){
+        if(x>r||y<l||x>y) return;
         if(x<=l&&r<=y){
             apply(p,l,r,v);
             return;
@@ -82,6 +83,7 @@ class SegTree{
         pushup(p);
     }
     Info qry(int p,int l,int r,int x,int y){
+        if(x>r||y<l||x>y) return Info();
         if(x<=l&&r<=y) return info[p];
         pushdown(p,l,r);
         int m=(l+r)>>1;
