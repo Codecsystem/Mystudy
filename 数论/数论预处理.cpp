@@ -206,6 +206,33 @@ public:
         }
         return mu;
     }
+    //O(n*w(n)) 求1-n的不重质因子/质因数分解
+    vector<vector<int>> pri(int mulble){
+        vector<int> primes;
+        vector<bool>v(n+1,0);
+        vector<vector<int>> ans(n+1);
+        for(int i=2;i<=n;i++)
+        {
+            if(!v[i]) 
+            {
+                primes.push_back(i);
+                ans[i].push_back(i);
+            }
+            for(int j=0;j<primes.size()&&primes[j]*i<=n;j++)
+            {
+                int m=primes[j]*i;
+                v[m]=1;
+                if(i%primes[j]==0)
+                {
+                    ans[m]=ans[i];
+                    if(mulble==1) ans[m].push_back(primes[j]);
+                    break;
+                }
+                else ans[m]=ans[i],ans[m].push_back(primes[j]);
+            }
+        }
+        return ans;
+    }
 };
 signed main()
 {
