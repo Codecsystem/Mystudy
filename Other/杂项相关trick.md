@@ -15,3 +15,5 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&return
 
 xorhash
 通常存在于某些2/1性质 奇偶性质的题里面
+
+有些题有奇偶不变量/其他的不变量
