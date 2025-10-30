@@ -1,3 +1,4 @@
+# .git
 # DataStruct
 **01tire**
 ```cpp
@@ -87,7 +88,58 @@ int main()
 }
 ```
 
-**BIT(树状数组)**
+**BIT(树状数组,0base)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+class BIT{
+    public:
+    vector<int> tr;int n;
+    BIT(int n):n(n),tr(n+1,0){}
+    void add(int x,int v){
+        for(;x<=n;x|=x+1) tr[x]+=v;//tr[x]=max(tr[x],v);
+    }
+    int pre(int x){
+        int res=0;
+        for(;x>=0;x=(x&(x+1))-1) res+=tr[x];//res=max(res,tr[x]);
+        return res;
+    }
+    int query(int l,int r){
+        return pre(r)-(l?pre(l-1):0);
+    }
+};
+signed main()
+{
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
+    return 0;
+}
+```
+
+**BIT(树状数组,1base)**
 ```cpp
 #include <algorithm>
 #include <bitset>
@@ -120,14 +172,17 @@ class BIT{
                 i+=lowbit(i);//跳到后一个lowbit(x)的位置
             }
         }
-        int query(int l,int r)//区间查询 [l,r]的和
-        {
+        int pre(int x){
             int res=0;
-            while(r>=l){
-                res+=tree[r];
-                r-=lowbit(r);//跳到前一个lowbit(x)的位置
+            while(x>0){
+                res+=tree[x];
+                x-=lowbit(x);//跳到前一个lowbit(x)的位置
             }
             return res;
+        }
+        int query(int l,int r)//区间查询 [l,r]的和
+        {
+            return pre(r)-pre(l-1);
         }
         int query_diff(int i)//单点查询 a_diff[i] (维护差分数组)=sum[1,i]
         {
@@ -799,6 +854,246 @@ int main()
 }
 ```
 
+**jiangly线段树(改)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+#define lc(p) (p<<1)
+#define rc(p) (p<<1|1)
+template<class Info,class Tag>
+class SegTree{
+    public:
+    int n;
+    vector<Info> info;
+    vector<Tag> tag;
+    SegTree(int n):n(n),info((n<<2)+5),tag((n<<2)+5){}
+    SegTree(const vector<Info> &a):n(a.size()-1){
+        //a 1-Based
+        info.resize((n<<2)+5);
+        tag.resize((n<<2)+5);
+        bd(1,1,n,a);
+    }
+    inline void pushup(int p){
+        info[p]=info[lc(p)]+info[rc(p)];
+    }
+    inline void apply(int p,int l,int r,const Tag &v){
+        info[p].apply(l,r,v);
+        tag[p].apply(v);
+    }
+    inline void pushdown(int p,int l,int r){
+        if(!tag[p].has_tag()) return;
+        int m=(l+r)>>1;
+        apply(lc(p),l,m,tag[p]);
+        apply(rc(p),m+1,r,tag[p]);
+        tag[p]=Tag();
+    }
+    void bd(int p,int l,int r,const vector<Info> &a){
+        if(l==r){
+            info[p]=a[l];
+            return;
+        }
+        int m=(l+r)>>1;
+        bd(lc(p),l,m,a);
+        bd(rc(p),m+1,r,a);
+        pushup(p);
+    }
+    void upd(int p,int l,int r,int x,int y,const Tag &v){
+        if(x>r||y<l||x>y) return;
+        if(x<=l&&r<=y){
+            apply(p,l,r,v);
+            return;
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        if(x<=m) upd(lc(p),l,m,x,y,v);
+        if(m<y) upd(rc(p),m+1,r,x,y,v);
+        pushup(p);
+    }
+    void mdf(int p,int l,int r,int x,const Info &v){
+        if(l==r){
+            info[p]=v;
+            return;
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        if(x<=m) mdf(lc(p),l,m,x,v);
+        else mdf(rc(p),m+1,r,x,v);
+        pushup(p);
+    }
+    Info qry(int p,int l,int r,int x,int y){
+        if(x>r||y<l||x>y) return Info();
+        if(x<=l&&r<=y) return info[p];
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        Info res=Info();
+        if(x<=m) res=res+qry(lc(p),l,m,x,y);
+        if(m<y) res=res+qry(rc(p),m+1,r,x,y);
+        return res;
+    }
+    int findfirst(int p,int l,int r,int x,int y,
+        Info &v,const function<bool(const Info&)> &chk){
+        if(r<x||y<l) return n+1;
+        if(x<=l&&r<=y){
+            Info cmb=v+info[p];
+            if(!chk(cmb)) {
+                v=cmb;
+                return n+1;
+            }
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=findfirst(lc(p),l,m,x,y,v,chk);
+            if(res!=n+1) return res;
+            return findfirst(rc(p),m+1,r,x,y,v,chk);
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        int res=findfirst(lc(p),l,m,x,y,v,chk);
+        if(res!=n+1) return res;
+        return findfirst(rc(p),m+1,r,x,y,v,chk);
+    }
+    int findlast(int p,int l,int r,int x,int y,
+        Info &v,const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return 0;
+            if(x<=l&&r<=y){
+                Info cmb=v+info[p];
+                if(!chk(cmb)) {
+                    v=cmb;
+                    return 0;
+                }
+                if(l==r) return l;
+                pushdown(p,l,r);
+                int m=(l+r)>>1;
+                int res=findlast(rc(p),m+1,r,x,y,v,chk);
+                if(res!=0) return res;
+                return findlast(lc(p),l,m,x,y,v,chk);
+            }
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=findlast(rc(p),m+1,r,x,y,v,chk);
+            if(res!=0) return res;
+            return findlast(lc(p),l,m,x,y,v,chk);
+    }
+    int _findfirst(int p,int l,int r,int x,int y,
+        const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return n+1;
+            if(!chk(info[p])) return n+1;
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=_findfirst(lc(p),l,m,x,y,chk);
+            if(res!=n+1) return res;
+            return _findfirst(rc(p),m+1,r,x,y,chk);
+    }
+    int _findlast(int p,int l,int r,int x,int y,
+        const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return 0;
+            if(!chk(info[p])) return 0;
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=_findlast(rc(p),m+1,r,x,y,chk);
+            if(res!=0) return res;
+            return _findlast(lc(p),l,m,x,y,chk);
+    }
+    void upd(int l,int r,const Tag &v){
+        upd(1,1,n,l,r,v);
+    }
+    void mdf(int x,const Info &v){
+        mdf(1,1,n,x,v);
+    }
+    Info qry(int l,int r){
+        return qry(1,1,n,l,r);
+    }
+    //寻找在[l,r]的第一个[l,k] 满足Info{l,k}满足chk e.g.[1,4]的[1,2]满足sum(1,2)<10
+    //异常值: n+1
+    int findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        Info tp=Info();
+        return findfirst(1,1,n,l,r,tp,chk);
+    }
+    //寻找在[l,r]的最后一个[k,r] 满足Info{k,r}满足chk e.g.[1,4]的[3,4]满足sum(3,4)<10
+    //异常值: 0
+    int findlast(int l,int r,const function<bool(const Info&)> &chk){
+        Info tp=Info();
+        return findlast(1,1,n,l,r,tp,chk);
+    }
+    //寻找在[l,r]的第一个k 满足Info k满足chk e.g.[1,4]的第一个k=2满足info k<10
+    //异常值: n+1
+    int _findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        return _findfirst(1,1,n,l,r,chk);
+    }
+    //寻找在[l,r]的最后一个k 满足Info k满足chk e.g.[1,4]的最后一个k=3满足info k<10
+    //异常值: 0
+    int _findlast(int l,int r,const function<bool(const Info&)> &chk){
+        return _findlast(1,1,n,l,r,chk);
+    }
+};
+// Tag 结构体：定义懒标记
+// 需要实现:
+// 1. 成员变量: 存储懒标记信息
+// 2. 默认构造函数: 表示无标记状态
+// 3. apply(const Tag& v): 将另一个标记 v 合并到当前标记
+// 4. has_tag(): 判断当前是否是无标记状态
+struct Tag{
+    int tag;
+    Tag():tag(0){}
+    void apply(const Tag &v){
+        
+    }
+    bool has_tag(){
+        return tag!=0;
+    }
+};
+// Info 结构体：定义节点信息
+// 需要实现:
+// 1. 成员变量: 存储节点维护的信息
+// 2. 默认构造函数: Info 的单位元 (例如求和的0, 求积的1)
+// 3. apply(int l, int r, const Tag& v): 将懒标记 v 应用到当前节点信息上
+// 4. operator+(const Info& other): 合并两个子节点的信息
+struct Info{
+    //...
+    int info;
+    Info():info(0){}
+    void apply(int l,int r,const Tag &v){
+        
+    }
+};
+Info operator+(const Info &a,const Info &b){
+    //...
+    Info c;
+    return c;
+}
+signed main()
+{
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
+    return 0;
+}
+```
+
 **st表**
 ```cpp
 #include <algorithm>
@@ -896,6 +1191,239 @@ int main()
     }
     return 0;
 }
+```
+
+**主席树**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+#define lc(x) tr[x].l
+#define rc(x) tr[x].r
+class HJTree{
+    public:
+    struct node
+    {
+        int l,r,s;
+        //左右儿子，区间数频次
+    };
+    vector<node> tr;
+    vector<int> b,rt;
+    int tot,n,bn;
+    HJTree(int n,const vector<int>& a):tot(0),n(n){
+        //a 1-based
+        rt.resize(n+5);
+        tr.resize((log2(n)+4)*n+5);
+        b.resize(n);
+        //注意空间是2*n+(ceil(log2(n))+1)*n
+        b.assign(a.begin()+1,a.end());
+        sort(b.begin(),b.end());
+        b.erase(unique(b.begin(),b.end()),b.end());
+        bn=b.size();
+        bd(rt[0],1,bn);
+        for(int i=1;i<=n;i++) ins(rt[i-1],rt[i],1,bn,getid(a[i]));
+    };
+    int getid(int x){
+        //离散化 ->[1,n]
+        return lower_bound(b.begin(),b.end(),x)-b.begin()+1;
+    }
+    void bd(int &x,int l,int r)
+    {
+        x=++tot; tr[x].s=0;
+        if(l==r) return ;
+        int m=(l+r)>>1;
+        bd(lc(x),l,m);
+        bd(rc(x),m+1,r);
+    }
+    void ins(int x,int &y,int l,int r,int tar)
+    {
+        y=++tot; tr[y]=tr[x]; tr[y].s++;
+        if(l==r) return ;
+        int m=(l+r)>>1;
+        if(tar<=m) ins(lc(x),lc(y),l,m,tar);
+        else ins(rc(x),rc(y),m+1,r,tar);
+    }
+    int qry(int x,int y,int l,int r,int tar){
+        if(l==r) return l;
+        int m=(l+r)>>1;
+        int s=tr[lc(y)].s-tr[lc(x)].s;
+        if(tar<=s) return qry(lc(x),lc(y),l,m,tar);
+        else return qry(rc(x),rc(y),m+1,r,tar-s);
+    }
+    int qry(int l,int r,int k){
+        return b[qry(rt[l-1],rt[r],1,bn,k)-1];
+    }
+};
+signed main()
+{
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int n,m;cin>>n>>m;
+    vector<int> a(n+1);
+    for(int i=1;i<=n;i++) cin>>a[i];
+    HJTree hjt(n,a);
+    while(m--){
+        int l,r,k;cin>>l>>r>>k;
+        cout<<hjt.qry(l,r,k)<<'\n';
+    }
+    return 0;
+}
+//主席树 (静态区间第k小)
+//利用权值线段树,维护a[1]-a[n] n次插入的历史版本 
+//于是可以利用前缀和思想,求出任意区间第k小
+//时间复杂度qry(logn) 空间复杂度nlogn+2*n
+//本质上是做了一个单点更新 保存历史版本 维护一个前缀结构 以此可以处理很多二维偏序问题
+```
+
+**主席树(例2)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+#define lc(x) tr[x].l
+#define rc(x) tr[x].r
+class HJTree{
+    public:
+    struct node
+    {
+        int l,r,minn;
+        //左右儿子，区间minn
+    };
+    vector<node> tr;
+    vector<int> rt,rt_k;
+    int tot,n;
+    HJTree(int n,vector<vector<array<int,2>>>& q,int& maxdep):tot(0),n(n)
+    {
+        //a 1-based
+        rt.resize(n+5);
+        tr.resize((log2(n)+4)*n+5);
+        rt_k.resize(maxdep+5);
+        bd(rt[0],1,n);
+        int cur=1;
+        for(int i=1;i<=maxdep;i++)
+        {
+            for(auto [pos,val]:q[i])
+            {
+                ins(rt[cur-1],rt[cur],1,n,pos,val);
+                cur++;
+            }
+            rt_k[i]=cur-1;
+        }
+    };
+    void bd(int &x,int l,int r)
+    {
+        x=++tot; tr[x].minn=2e9;
+        if(l==r) return ;
+        int m=(l+r)>>1;
+        bd(lc(x),l,m);
+        bd(rc(x),m+1,r);
+    }
+    void ins(int x,int &y,int l,int r,int p,int val)
+    {
+        y=++tot; tr[y]=tr[x]; tr[y].minn=min(tr[y].minn,val);
+        if(l==r) return ;
+        int m=(l+r)>>1;
+        if(p<=m) ins(lc(x),lc(y),l,m,p,val);
+        else ins(rc(x),rc(y),m+1,r,p,val);
+    }
+    int qry(int rt,int l,int r,int s,int e){
+        if(l>e||r<s) return 2e9;
+        if(l>=s&&r<=e) return tr[rt].minn;
+        int m=(l+r)>>1;
+        return min(qry(lc(rt),l,m,s,e),qry(rc(rt),m+1,r,s,e));
+    }
+    int qry(int k,int s,int e)
+    {
+        return qry(rt[rt_k[k]],1,n,s,e);
+    }
+};
+signed main()
+{
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int n,r;cin>>n>>r;
+    vector<int> val(n+1);
+    for(int i=1;i<=n;i++) cin>>val[i];
+    vector<vector<int>> tre(n+1);
+    for(int i=1;i<n;i++){
+        int u,v;cin>>u>>v;
+        tre[u].push_back(v);
+        tre[v].push_back(u);
+    }
+    vector<int> dep(n+1,0),dfn(n+1,0),out(n+1,0);
+    int idx=0,maxdep=0;
+    auto dfs=[&](this auto&& dfs,int u,int fa)->void{
+        dfn[u]=++idx;
+        dep[u]=dep[fa]+1,maxdep=max(maxdep,dep[u]);
+        for(auto v:tre[u]) 
+            if(v!=fa) dfs(v,u);
+        out[u]=idx;
+    };
+    dep[r]=1;
+    dfs(r,0);
+    //在[1,n]建主席树 维护dep<=k的版本
+    vector<vector<array<int,2>>> q(maxdep+1);
+    for(int i=1;i<=n;i++)
+    {
+        q[dep[i]].push_back({dfn[i],val[i]});
+    }
+    int last=0,m;cin>>m;
+    HJTree hjt(n,q,maxdep);
+    while(m--)
+    {
+        int p,q;cin>>p>>q;
+        int x=(p+last)%n+1;
+        int k=(q+last)%n;
+        int ans=hjt.qry(min(maxdep,dep[x]+k),dfn[x],out[x]);
+        cout<<ans<<'\n';
+        last=ans;
+    }
+    return 0;
+}
+//https://codeforces.com/contest/893/problem/F
+//主席树维护一个前缀结构 解决二维偏序
 ```
 
 **二叉搜索树**
@@ -2208,6 +2736,269 @@ signed main()
     
     return 0;
 }
+```
+
+**线段树二分**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+#define lc(p) (p<<1)
+#define rc(p) (p<<1|1)
+template<class Info,class Tag>
+class SegTree{
+    public:
+    int n;
+    vector<Info> info;
+    vector<Tag> tag;
+    SegTree(int n):n(n),info((n<<2)+5),tag((n<<2)+5){}
+    SegTree(const vector<Info> &a):n(a.size()-1){
+        //a 1-Based
+        info.resize((n<<2)+5);
+        tag.resize((n<<2)+5);
+        bd(1,1,n,a);
+    }
+    inline void pushup(int p){
+        info[p]=info[lc(p)]+info[rc(p)];
+    }
+    inline void apply(int p,int l,int r,const Tag &v){
+        info[p].apply(l,r,v);
+        tag[p].apply(v);
+    }
+    inline void pushdown(int p,int l,int r){
+        if(!tag[p].has_tag()) return;
+        int m=(l+r)>>1;
+        apply(lc(p),l,m,tag[p]);
+        apply(rc(p),m+1,r,tag[p]);
+        tag[p]=Tag();
+    }
+    void bd(int p,int l,int r,const vector<Info> &a){
+        if(l==r){
+            info[p]=a[l];
+            return;
+        }
+        int m=(l+r)>>1;
+        bd(lc(p),l,m,a);
+        bd(rc(p),m+1,r,a);
+        pushup(p);
+    }
+    void upd(int p,int l,int r,int x,int y,const Tag &v){
+        if(x<=l&&r<=y){
+            apply(p,l,r,v);
+            return;
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        if(x<=m) upd(lc(p),l,m,x,y,v);
+        if(m<y) upd(rc(p),m+1,r,x,y,v);
+        pushup(p);
+    }
+    void mdf(int p,int l,int r,int x,const Info &v){
+        if(l==r){
+            info[p]=v;
+            return;
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        if(x<=m) mdf(lc(p),l,m,x,v);
+        else mdf(rc(p),m+1,r,x,v);
+        pushup(p);
+    }
+    Info qry(int p,int l,int r,int x,int y){
+        if(x<=l&&r<=y) return info[p];
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        Info res=Info();
+        if(x<=m) res=res+qry(lc(p),l,m,x,y);
+        if(m<y) res=res+qry(rc(p),m+1,r,x,y);
+        return res;
+    }
+    int findfirst(int p,int l,int r,int x,int y,
+        Info &v,const function<bool(const Info&)> &chk){
+        if(r<x||y<l) return n+1;
+        if(x<=l&&r<=y){
+            Info cmb=v+info[p];
+            if(!chk(cmb)) {
+                v=cmb;
+                return n+1;
+            }
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=findfirst(lc(p),l,m,x,y,v,chk);
+            if(res!=n+1) return res;
+            return findfirst(rc(p),m+1,r,x,y,v,chk);
+        }
+        pushdown(p,l,r);
+        int m=(l+r)>>1;
+        int res=findfirst(lc(p),l,m,x,y,v,chk);
+        if(res!=n+1) return res;
+        return findfirst(rc(p),m+1,r,x,y,v,chk);
+    }
+    int findlast(int p,int l,int r,int x,int y,
+        Info &v,const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return 0;
+            if(x<=l&&r<=y){
+                Info cmb=v+info[p];
+                if(!chk(cmb)) {
+                    v=cmb;
+                    return 0;
+                }
+                if(l==r) return l;
+                pushdown(p,l,r);
+                int m=(l+r)>>1;
+                int res=findlast(rc(p),m+1,r,x,y,v,chk);
+                if(res!=0) return res;
+                return findlast(lc(p),l,m,x,y,v,chk);
+            }
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=findlast(rc(p),m+1,r,x,y,v,chk);
+            if(res!=0) return res;
+            return findlast(lc(p),l,m,x,y,v,chk);
+    }
+    int _findfirst(int p,int l,int r,int x,int y,
+        const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return n+1;
+            if(!chk(info[p])) return n+1;
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=_findfirst(lc(p),l,m,x,y,chk);
+            if(res!=n+1) return res;
+            return _findfirst(rc(p),m+1,r,x,y,chk);
+    }
+    int _findlast(int p,int l,int r,int x,int y,
+        const function<bool(const Info&)> &chk){
+            if(r<x||y<l) return 0;
+            if(!chk(info[p])) return 0;
+            if(l==r) return l;
+            pushdown(p,l,r);
+            int m=(l+r)>>1;
+            int res=_findlast(rc(p),m+1,r,x,y,chk);
+            if(res!=0) return res;
+            return _findlast(lc(p),l,m,x,y,chk);
+    }
+    void upd(int l,int r,const Tag &v){
+        upd(1,1,n,l,r,v);
+    }
+    void mdf(int x,const Info &v){
+        mdf(1,1,n,x,v);
+    }
+    Info qry(int l,int r){
+        return qry(1,1,n,l,r);
+    }
+    //寻找在[l,r]的第一个[l,k] 满足Info{l,k}满足chk e.g.[1,4]的[1,2]满足sum(1,2)<10
+    //异常值: n+1
+    int findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        Info tp=Info();
+        return findfirst(1,1,n,l,r,tp,chk);
+    }
+    //寻找在[l,r]的最后一个[k,r] 满足Info{k,r}满足chk e.g.[1,4]的[3,4]满足sum(3,4)<10
+    //异常值: 0
+    int findlast(int l,int r,const function<bool(const Info&)> &chk){
+        Info tp=Info();
+        return findlast(1,1,n,l,r,tp,chk);
+    }
+    //寻找在[l,r]的第一个k 满足Info k满足chk e.g.[1,4]的第一个k=2满足info k<10
+    //异常值: n+1
+    int _findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        return _findfirst(1,1,n,l,r,chk);
+    }
+    //寻找在[l,r]的最后一个k 满足Info k满足chk e.g.[1,4]的最后一个k=3满足info k<10
+    //异常值: 0
+    int _findlast(int l,int r,const function<bool(const Info&)> &chk){
+        return _findlast(1,1,n,l,r,chk);
+    }
+};
+// Tag 结构体：定义懒标记
+// 需要实现:
+// 1. 成员变量: 存储懒标记信息
+// 2. 默认构造函数: 表示无标记状态
+// 3. apply(const Tag& v): 将另一个标记 v 合并到当前标记
+// 4. has_tag(): 判断当前是否是无标记状态
+struct Tag{
+    Tag(){}
+    void apply(const Tag &v){
+        
+    }
+    bool has_tag(){
+        return false;
+    }
+};
+// Info 结构体：定义节点信息
+// 需要实现:
+// 1. 成员变量: 存储节点维护的信息
+// 2. 默认构造函数: Info 的单位元 (例如求和的0, 求积的1)
+// 3. apply(int l, int r, const Tag& v): 将懒标记 v 应用到当前节点信息上
+// 4. operator+(const Info& other): 合并两个子节点的信息
+struct Info{
+    //...
+    int minn;
+    Info():minn(0){}
+    Info(int x):minn(x){}
+    void apply(int l,int r,const Tag &v){
+        
+    }
+};
+Info operator+(const Info &a,const Info &b){
+    //...
+    Info c;
+    c.minn=min(a.minn,b.minn);
+    return c;
+}
+signed main()
+{
+    int T_start=clock();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int n,m;cin>>n>>m;
+    vector<int> a(n+1);
+    for(int i=1;i<=n;i++) cin>>a[i];
+    vector<vector<array<int,2>>> q(n+1);
+    vector<int> ans(m+1);
+    for(int i=1;i<=m;i++){
+        int l,r;cin>>l>>r;
+        q[r].push_back({l,i});
+    }
+    //[0,n]->[1,n+1]
+    SegTree<Info,Tag> seg(n+1);
+    for(int r=1;r<=n;r++)
+    {
+        seg.mdf(a[r]+1,{r});
+        for(const auto& [l,id]:q[r])
+        {
+            ans[id]=seg._findfirst(1,n+1,[&](const Info &v)->bool{
+                return v.minn<l;
+            })-1;
+        }
+    }
+    for(int i=1;i<=m;i++) cout<<ans[i]<<'\n';
+    return 0;
+}
+//e.g 区间mex->
+//把询问离线，然后从左往右扫，每次把当前数最后一次出现下标加入权值线段树，然后处理每个[li,r]
+//询问每个最小的x lastidx<l 维护min树即可
 ```
 
 # Graph
@@ -6851,6 +7642,7 @@ signed main()
 //
 ```
 
+# 博弈论
 # 数论
 **(ex)CRT((扩展)中国剩余定理)**
 ```cpp
@@ -7468,6 +8260,33 @@ public:
             }
         }
         return mu;
+    }
+    //O(n*w(n)) 求1-n的不重质因子/质因数分解
+    vector<vector<int>> pri(int mulble){
+        vector<int> primes;
+        vector<bool>v(n+1,0);
+        vector<vector<int>> ans(n+1);
+        for(int i=2;i<=n;i++)
+        {
+            if(!v[i]) 
+            {
+                primes.push_back(i);
+                ans[i].push_back(i);
+            }
+            for(int j=0;j<primes.size()&&primes[j]*i<=n;j++)
+            {
+                int m=primes[j]*i;
+                v[m]=1;
+                if(i%primes[j]==0)
+                {
+                    ans[m]=ans[i];
+                    if(mulble==1) ans[m].push_back(primes[j]);
+                    break;
+                }
+                else ans[m]=ans[i],ans[m].push_back(primes[j]);
+            }
+        }
+        return ans;
     }
 };
 signed main()
@@ -8143,6 +8962,191 @@ signed main()
 ```
 
 # 计算几何
+**三分**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <cassert>
+//#define int long long //赫赫 要不要龙龙呢
+#define double long double
+const double eps=1e-12;
+const double pi=acos(-1);
+using namespace std;
+//const double eps=1e-8;
+struct vec{
+    double x,y;
+    vec(double x=0,double y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
+    vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
+    vec operator/(const double& o)const{return vec(x/o,y/o);} //数除
+    vec operator*(const double& o)const{return vec(x*o,y*o);} //数乘
+    double operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
+    double operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit
+{
+    double x,y;
+    pit(double x=0,double y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+    pit operator/(const double& o)const{return pit(x/o,y/o);}
+};
+double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
+double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
+//向量逆时针旋转theta弧度
+vec rotate(const vec& o,double theta){
+    return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
+} 
+//向量单位化
+vec norm(vec a){
+    return a/len(a);
+}
+//向量围成的平行四边形面积,b在a的逆时针方向为正，否则为负
+double area(vec a,vec b){return a*b;} 
+//点线关系(点c,直线ab)
+int cross(pit a,pit b,pit c){
+    if((b-a)*(c-a)>eps) return 1; //c在ab的逆时针方向
+    else if((b-a)*(c-a)<-eps) return -1; //c在ab的顺时针方向
+    return 0; //c,a,b共线
+}
+//判断点在线段上(p在ab上)
+bool onSeg(pit a,pit b,pit p){
+    return cross(a,b,p)==0&&((a-p)&(b-p))<=eps;
+}
+//线线关系
+//case1:直线ab与线段cd
+bool lcross(pit a,pit b,pit c,pit d){
+    if(cross(a,b,c)*cross(a,b,d)>0) return 0;//c,d在ab的同一侧 无交点
+    return 1; //有交点
+}
+//case2:线段ab与线段cd
+bool scross(pit a,pit b,pit c,pit d){
+    if(cross(a,b,c)*cross(a,b,d)>0||cross(c,d,a)*cross(c,d,b)>0) return 0;//c,d在ab 或 a,b在cd 的同一侧 无交点
+    return 1; //有交点
+}
+//case3:直线ab与直线cd
+bool pcross(pit a,pit b,pit c,pit d){
+    if(fabs((b-a)*(d-c))<=eps) return 0; //平行 无交点
+    return 1; //有交点
+}
+//求两直线ab,cd的交点(两点式)
+pit getNode(pit a,pit b,pit c,pit d){
+    vec u=b-a,v=d-c;
+    //assert(fabs(u*v)<=eps);
+    //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+pit getNode(pit a,vec u,pit c,vec v){
+    //assert(fabs(u*v)<=eps);
+    //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+signed main()
+{
+    int T_start=clock();
+    freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    int t;cin>>t;
+    while(t--){
+        int x1,y1,x2,y2;cin>>x1>>y1>>x2>>y2;
+        int x3,y3,x4,y4;cin>>x3>>y3>>x4>>y4;
+        pit s1(x1,y1),t1(x2,y2),s2(x3,y3),t2(x4,y4);
+        double T1=min(dis(s1,t1),dis(s2,t2));
+        vec v1=norm(t1-s1),v2=norm(t2-s2);
+        double l=0,r=T1;
+        while(r-l>eps){
+            double lmid=l+(r-l)/3,rmid=lmid+(r-l)/3;
+            double lans=dis(s1+v1*lmid,s2+v2*lmid);
+            double rans=dis(s1+v1*rmid,s2+v2*rmid);
+            if(rans-lans>eps) r=rmid;
+            else l=lmid;
+        }
+        //不过应该注意的是
+        double ans=dis(s1+v1*l,s2+v2*l);
+        if(dis(s1,t1)-dis(s2,t2)>eps) swap(s1,s2),swap(t1,t2),swap(v1,v2);
+        // now t1, s2->t2
+        s2=s2+v2*T1;
+        //cout<<s2.x<<' '<<s2.y<<endl;
+        vec v_rot=norm(rotate(v2,pi/2));
+        //cout<<v_rot.x<<' '<<v_rot.y<<endl;
+        //cout<<t1.x<<' '<<t1.y<<endl;
+        pit cropit=getNode(t1,v_rot,s2,v2);
+        //cout<<v2.x<<' '<<v2.y<<endl;
+        //cout<<cropit.x<<' '<<cropit.y<<endl;
+        if(onSeg(s2,t2,cropit)) 
+        {
+            //cout<<"Y"<<endl;
+            ans=min(ans,dis(t1,cropit));
+        }
+        ans=min(ans,dis(t1,s2)),ans=min(ans,dis(t1,t2));
+        cout<<fixed<<setprecision(12)<<ans<<endl;
+    }
+    return 0;
+}
+//注意我们通常不用浮点数三分 而是固定次数 t=100
+/*
+int l = 1,r = 100;
+while(l < r) {
+    int lmid = l + (r - l) / 3;
+    int rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid - 1;
+    else l = lmid + 1;
+    // 求凸函数的极大值
+    if(lasn >= rans) l = lmid + 1;
+    else r = rmid - 1;
+}
+// 求凹函数的极小值
+cout << min(lans,rans) << endl;
+// 求凸函数的极大值
+cout << max(lans,rans) << endl;
+*/
+
+
+/*
+const double EPS = 1e-9;
+while(r - l > EPS) {
+    double lmid = l + (r - l) / 3;
+    double rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid;
+    else l = lmid;
+    // 求凸函数的极大值
+    if(lans >= rans) l = lmid;
+    else r = rmid;
+}
+// 输出 l 或 r 都可
+cout << l << endl;
+*/
+
+
+```
+
 **三角剖分**
 ```cpp
 #include <algorithm>
@@ -8236,14 +9240,14 @@ pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 //求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 //计算线段ab与圆的交点和距离(此处的距离是有意义的距离 即线段离圆心的距离)
@@ -8538,14 +9542,14 @@ pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps);
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 //求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps);
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
-    double t=((a-c)*v)/(u*v);
+    double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
 signed main()

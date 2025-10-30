@@ -1,10 +1,11 @@
 线程池1：新知识队列 +杜教筛 +线段树合并
-线程池2：比赛 -adhoc? abc c,d,e cf d2c d
-线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I
+线程池2：比赛 -adhoc? abc c,d,e cf d2c d gym
+线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I luogu题单
 线程4：写题面出题
 线程5：打算看看之前做的所有题 然后整理一些trick和题单出来
 
 窝要做小常数选手(
+少用ai
 
 数据结构
 --树状数组                            ... 2025/2/3

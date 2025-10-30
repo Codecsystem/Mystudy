@@ -1,7 +1,7 @@
 import os
 
 # 根目录
-root = r"E:\Data\Work\algorithm_study\Mystudy_copy"
+root = r"E:\Data\Work\algorithm_study\Mystudy"
 # 输出文件
 output_file = os.path.join(root, "all_code.md")
 
