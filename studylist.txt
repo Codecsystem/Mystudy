@@ -1,6 +1,6 @@
-线程池1：新知识队列 +杜教筛 +线段树合并
-线程池2：比赛 -adhoc? abc c,d,e cf d2c d gym
-线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I luogu题单
+线程1：新知识队列 +杜教筛 +线段树合并
+线程2：比赛 -adhoc? abc c,d,e cf d2c d gym
+线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I luogu题单 https://www.matiji.net/exam/oj-questionbank/F16DA07A4D99E21DFFEF46BD18FF68AD
 线程4：写题面出题
 线程5：打算看看之前做的所有题 然后整理一些trick和题单出来
 
@@ -35,9 +35,11 @@
 //johnson->原始对偶->HLPP(HLPP,pass) ...2025/7/12
 --虚树,DSU on Tree                  ...2025/8/9
 --二分图匹配                        ...2025/9/1
+--二分图最大权完美匹配
+--基环树/圆方树
+--树直径相关问题
 --最大流最小割定理证明
 --上下界网络流
---二分图最大权完美匹配
 --基环树，最短路树,树分治
 --练习网络流
 --欧拉路径 Hierholzer 算法
@@ -92,6 +94,7 @@ trick
 --CDQ分治/整体二分
 --min-max容斥
 --01分数规划
+--康托展开
 
 
 非删莫队
