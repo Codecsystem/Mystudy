@@ -3,6 +3,10 @@
 线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I luogu题单 https://www.matiji.net/exam/oj-questionbank/F16DA07A4D99E21DFFEF46BD18FF68AD
 线程4：写题面出题
 线程5：打算看看之前做的所有题 然后整理一些trick和题单出来
+线程6：补体
+https://codeforces.com/gym/105486
+https://codeforces.com/contest/2169
+
 
 窝要做小常数选手(
 少用ai
@@ -41,6 +45,7 @@
 --最大流最小割定理证明
 --上下界网络流
 --基环树，最短路树,树分治
+--kruskal重构树
 --练习网络流
 --欧拉路径 Hierholzer 算法
 
@@ -50,13 +55,13 @@ dp
 --2                                ...OK
 --3                                ...OK(2025/4/1-2025/4/24)
 --4 树与图上dp
---5 状压dp
+--5 状压dp                          ...OK
 --数位dp
 --概率dp
 --单调队列优化/斜率优化/四边形不等式优化dp
 --换根dp
 --动态dp 凸优化dp
---树上背包
+--树上背包                          ...2025/11/15
 --复习一下背包
 
 数学
@@ -97,7 +102,6 @@ trick
 --康托展开
 
 
-非删莫队
 重构之前的代码，用class封装
 写出O(n)的FHQTreap初始化方法    咕咕咕(感觉没啥用)
 写个模数类                    ...2025/7/24
