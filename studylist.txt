@@ -4,9 +4,6 @@
 线程4：写题面出题
 线程5：打算看看之前做的所有题 然后整理一些trick和题单出来
 线程6：补体
-https://codeforces.com/gym/105486
-https://codeforces.com/contest/2169
-
 
 窝要做小常数选手(
 少用ai
@@ -39,6 +36,7 @@ https://codeforces.com/contest/2169
 //johnson->原始对偶->HLPP(HLPP,pass) ...2025/7/12
 --虚树,DSU on Tree                  ...2025/8/9
 --二分图匹配                        ...2025/9/1
+--树上前缀和/倍增/差分              ...2025/11/23
 --二分图最大权完美匹配
 --基环树/圆方树
 --树直径相关问题
@@ -77,8 +75,9 @@ dp
 --剩余系
 --BSGS/exgBSGS
 --威尔逊定理
---ntt
+--ntt   https://codeforces.com/contest/2169/problem/F 注意有on解
 --斯特林/二项式反演
+--组合数学结论
 
 计算几何
 --练习
@@ -92,7 +91,7 @@ dp
 
 字符串
 --tire tree                        ... 2025/2/1
---SA/SAM
+--SA/SAM  SA https://atcoder.jp/contests/abc433/tasks/abc433_g
 --练习
 
 trick
@@ -112,3 +111,5 @@ trick
 // 2025/9/15 网络赛寄了
 // 2025/11/2 武汉打星打铁祭
 
+
+垃圾堆：

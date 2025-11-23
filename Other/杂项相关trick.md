@@ -19,3 +19,14 @@ xorhash
 有些题有奇偶不变量/其他的不变量
 
 压维转化 0-base x+m*y 1base (x-1)+m*(y-1)+1
+
+曼哈顿距离 dis(x1,y1,x2,y2)=abs(x1-x2)+abs(y1-y2)
+切比雪夫距离 dis(x1,y1,x2,y2)=max(abs(x1-x2),abs(y1-y2))
+互转 (x,y) -> ((x+y)/2,(x-y)/2) 原坐标的曼哈顿距离等于新坐标的切比雪夫距离
+
+max(a,b)=(a+b+abs(a-b))/2
+min(a,b)=(a+b-abs(a-b))/2
+
+dillworth
+
+

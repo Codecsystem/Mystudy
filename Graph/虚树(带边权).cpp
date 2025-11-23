@@ -73,7 +73,7 @@ class vtree{
             }
         }
         return ans;
-    }
+    }//注意此处仅查询u到v的不跨lca的最小边权
     void getvTree(vector<int>& o){
         sort(o.begin(),o.end(),[&](int a,int b){return dfn[a]<dfn[b];});
         int p=o.size();
