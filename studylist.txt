@@ -1,4 +1,6 @@
 线程1：新知识队列 +杜教筛 +线段树合并
++炫酷反演魔术
+广义莫比乌斯反演->莫比乌斯反演/二项式反演/斯特林反演
 线程2：比赛 -adhoc? abc c,d,e cf d2c d gym
 线程3：练习 数位dp/2 cf1957D cf1891F gym/105335/problem/I luogu题单 https://www.matiji.net/exam/oj-questionbank/F16DA07A4D99E21DFFEF46BD18FF68AD
 线程4：写题面出题
@@ -96,8 +98,8 @@ dp
 
 trick
 --CDQ分治/整体二分
---min-max容斥
---01分数规划
+--min-max容斥 https://codeforces.com/gym/105484/problem/I
+--01分数规划 
 --康托展开
 
 
