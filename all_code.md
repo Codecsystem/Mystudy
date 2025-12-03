@@ -1193,6 +1193,105 @@ int main()
 }
 ```
 
+**st表(1-based)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+using namespace std;
+class st{
+    public:
+        vector<vector<int>> dp;//dp[i][j]是[i,i+2^j-1]的min/max
+        int inf(int a,int b)
+        {
+            return max(a,b);
+        }
+        void init(vector<int>& nums,int siz)
+        {
+            int len=log2(siz)+1;
+            dp.resize(siz+1);
+            for(auto &i:dp) i.resize(len);
+            for(int i=1;i<=siz;i++)
+            {
+                dp[i][0]=nums[i];
+            }
+            for(int j=1;j<=len;j++)
+            {
+                for(int i=1;i+(1<<j)-1<=siz;i++)
+                {
+                    dp[i][j]=inf(dp[i][j-1],dp[i+(1<<(j-1))][j-1]);
+                }
+            }
+        }
+        int query(int l,int r)
+        {
+            int k=log2(r-l+1);
+            return inf(dp[l][k],dp[r-(1<<k)+1][k]);
+        }
+        st(vector<int>& nums,int n){
+            init(nums,n);
+        }
+};
+int read()
+{
+    int s=0,f=1;
+    char ch=getchar();
+    while(ch<'0'||ch>'9')
+    {
+        if(ch=='-') f=-1;
+        ch=getchar();
+    }
+    while(ch>='0'&&ch<='9')
+    {
+        s=(s<<3)+(s<<1)+ch-'0';
+        ch=getchar();
+    }
+    return s*f;
+}
+inline void write(int x) 
+{
+    static int sta[35]; 
+    int top=0;
+    if(x<0&&x!=-2147483648) {putchar('-');x=-x;}
+    if(x==-2147483648) {printf("-2147483648");return;}
+    do{
+      sta[top++]=x%10, x/=10;
+      }while(x);
+    while(top) putchar(sta[--top]+48);
+}
+int main()
+{
+    int T_start=clock();
+    int n=read(),m=read();
+    vector<int> nums(n+1);
+    for(int i=1;i<=n;i++)
+    {
+        nums[i]=read();
+    }
+    st s(nums,n);
+    for(int i=0;i<m;i++)
+    {
+        int l=read(),r=read();
+        write(s.query(l,r));
+        putchar('\n');
+    }
+    return 0;
+}
+```
+
 **主席树**
 ```cpp
 #include <algorithm>
@@ -2167,6 +2266,68 @@ int main()
     return 0;
 }
 
+```
+
+**笛卡尔树(新版)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+class DKRTr{
+    public:
+    vector<array<int,4>> tr;
+    //[val,idx,lc,rc]
+    int root,n;
+    DKRTr(vector<int> a,int n):tr(a.size()+5,{0,0,0,0}),n(n){
+        //a 1-based
+        stack<int> s;
+        for(int i=1;i<=n;i++){
+            tr[i]={a[i],i,0,0};
+            int last=0;
+            while(!s.empty()&&tr[s.top()][0]>tr[i][0]){
+                //最大堆
+                last=s.top();
+                s.pop();
+            }
+            if(!s.empty()) tr[s.top()][3]=i;
+            if(last) tr[i][2]=last;
+            s.push(i);
+        }
+        while(!s.empty()){
+            root=s.top();
+            s.pop();
+        }
+    }
+};
+signed main()
+{
+    auto T_start=chrono::steady_clock::now();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
+    return 0;
+}
 ```
 
 **线段树(max&min),tested,class**
@@ -5961,6 +6122,276 @@ int main()
 }
 ```
 
+**树上倍增(点.边)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+class TreeEinf{
+    public:
+    vector<vector<array<int,2>>> tr;
+    vector<vector<int>> fa,inf;
+    vector<int> dep;
+    int n,k,INF,op;
+    int nop(int a,int b){
+        if(op==1) return max(a,b);
+        else return min(a,b);
+    }
+    TreeEinf(int n,vector<vector<array<int,2>>> &g,int op):
+        tr(g),n(n),k(__lg(n)+1),dep(n+1,0),op(op),
+        fa(k+1,vector<int>(n+1,0)){
+            //inf j点向上2^i步的最值
+            if(op==1) INF=-1e9;
+            else INF=1e9;
+            inf.assign(k+1,vector<int>(n+1,INF));
+            dfs(1,0,INF);
+    }
+    void dfs(int u,int f,int fw){
+        dep[u]=dep[f]+1;
+        fa[0][u]=f;
+        inf[0][u]=fw;
+        for(int i=1;i<=k;i++){
+            fa[i][u]=fa[i-1][fa[i-1][u]];
+            inf[i][u]=nop(inf[i-1][u],inf[i-1][fa[i-1][u]]);
+        }
+        for(auto [v,w]:tr[u]){
+            if(v!=f){
+                dfs(v,u,w);
+            }
+        }
+    }
+    int q(int u,int v){
+        int ans=INF;
+        if(dep[u]<dep[v]) swap(u,v);
+        for(int i=k;i>=0;i--){
+            if(dep[fa[i][u]]>=dep[v]){
+                ans=nop(ans,inf[i][u]);
+                u=fa[i][u];
+            }
+        }
+        if(u==v) return ans;
+        for(int i=k;i>=0;i--){
+            if(fa[i][u]!=fa[i][v]){
+                ans=nop(ans,inf[i][u]);
+                ans=nop(ans,inf[i][v]);
+                u=fa[i][u],v=fa[i][v];
+            }
+        }
+        ans=nop(ans,inf[0][u]);
+        ans=nop(ans,inf[0][v]);
+        return ans;
+    }
+};
+class TreeDinf{
+    public:
+    vector<vector<int>> tr;
+    vector<vector<int>> fa,inf;
+    vector<int> dep,val;
+    int n,k,INF,op;
+    int nop(int a,int b){
+        if(op==1) return max(a,b);
+        else return min(a,b);
+    }
+    TreeDinf(int n,vector<vector<int>> &g,
+        int op,vector<int> &val):
+        tr(g),n(n),k(__lg(n)+1),dep(n+1,0),op(op),
+        fa(k+1,vector<int>(n+1,0)),val(val){
+            //inf j点向上2^i步的最值
+            if(op==1) INF=-1e9;
+            else INF=1e9;
+            inf.assign(k+1,vector<int>(n+1,INF));
+            dfs(1,0);
+    }
+    void dfs(int u,int f){
+        dep[u]=dep[f]+1;
+        fa[0][u]=f;
+        inf[0][u]=(f==0?val[u]:nop(val[f],val[u]));
+        for(int i=1;i<=k;i++){
+            fa[i][u]=fa[i-1][fa[i-1][u]];
+            inf[i][u]=nop(inf[i-1][u],inf[i-1][fa[i-1][u]]);
+        }
+        for(auto v:tr[u]){
+            if(v!=f){
+                dfs(v,u);
+            }
+        }
+    }
+    int q(int u,int v){
+        int ans=INF;
+        if(dep[u]<dep[v]) swap(u,v);
+        for(int i=k;i>=0;i--){
+            if(dep[fa[i][u]]>=dep[v]){
+                ans=nop(ans,inf[i][u]);
+                u=fa[i][u];
+            }
+        }
+        if(u==v) return nop(ans,val[u]);
+        for(int i=k;i>=0;i--){
+            if(fa[i][u]!=fa[i][v]){
+                ans=nop(ans,inf[i][u]);
+                ans=nop(ans,inf[i][v]);
+                u=fa[i][u],v=fa[i][v];
+            }
+        }
+        ans=nop(ans,inf[0][u]);
+        ans=nop(ans,inf[0][v]);
+        return ans;
+    }
+};
+signed main()
+{
+    auto T_start=chrono::steady_clock::now();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
+    return 0;
+}
+```
+
+**树上前缀和(点.边.倍增lca.ver.)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+class TreeVsum{
+    public:
+    vector<vector<int>> fa;
+    vector<int> pre,val,dep;//pre是1到u的点权和
+    int n,k;
+
+    TreeVsum(int n,vector<vector<int>>& tr,vector<int>& a):
+        n(n),k(__lg(n)+1),pre(n+1,0),val(a),
+        fa(__lg(n)+2,vector<int>(n+1,0)),dep(n+1,0){
+        //a 1-base
+        dfs(1,0,tr);
+    }
+    void dfs(int u,int f,vector<vector<int>>& tr){
+        pre[u]=pre[f]+val[u];
+        dep[u]=dep[f]+1;
+        fa[0][u]=f;
+        for(int i=1;i<=k;i++){
+            fa[i][u]=fa[i-1][fa[i-1][u]];
+        }
+        for(auto v:tr[u]){
+            if(v==f)continue;
+            dfs(v,u,tr);
+        }
+    }
+    int lca(int u,int v){
+        if(dep[u]<dep[v])swap(u,v);
+        for(int i=k;i>=0;i--){
+            if(dep[fa[i][u]]>=dep[v])
+                u=fa[i][u];
+        }
+        if(u==v)return u;
+        for(int i=k;i>=0;i--){
+            if(fa[i][u]!=fa[i][v]){
+                u=fa[i][u];
+                v=fa[i][v];
+            }
+        }
+        return fa[0][u];
+    }
+    int q(int u,int v){
+        int lc=lca(u,v);
+        return pre[u]+pre[v]-pre[lc]-pre[fa[0][lc]];
+    }
+};
+class TreeEsum{
+    public:
+    vector<vector<int>> fa;
+    vector<int> pre,dep;//pre是1到u的边权和
+    int n,k;
+
+    TreeEsum(int n,vector<vector<array<int,2>>>& tr):
+        n(n),k(__lg(n)+1),pre(n+1,0),dep(n+1,0),
+        fa(__lg(n)+2,vector<int>(n+1,0)){
+        dfs(1,0,0,tr);
+    }
+    void dfs(int u,int f,int w,vector<vector<array<int,2>>>& tr){
+        pre[u]=pre[f]+w;
+        dep[u]=dep[f]+1;
+        fa[0][u]=f;
+        for(int i=1;i<=k;i++){
+            fa[i][u]=fa[i-1][fa[i-1][u]];
+        }
+        for(auto [v,w]:tr[u]){
+            if(v==f)continue;
+            dfs(v,u,w,tr);
+        }
+    }
+    int lca(int u,int v){
+        if(dep[u]<dep[v])swap(u,v);
+        for(int i=k;i>=0;i--){
+            if(dep[fa[i][u]]>=dep[v])
+                u=fa[i][u];
+        }
+        if(u==v)return u;
+        for(int i=k;i>=0;i--){
+            if(fa[i][u]!=fa[i][v]){
+                u=fa[i][u];
+                v=fa[i][v];
+            }
+        }
+        return fa[0][u];
+    }
+    int q(int u,int v){
+        int lc=lca(u,v);
+        return pre[u]+pre[v]-2*pre[lc];
+    }
+};
+signed main()
+{
+    auto T_start=chrono::steady_clock::now();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
+    return 0;
+}
+```
+
 **树上基本处理**
 ```cpp
 #include <algorithm>
@@ -6042,6 +6473,121 @@ signed main()
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
 
+    return 0;
+}
+```
+
+**树上差分(点,边.树剖lca.ver.)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+class TreeDiff{
+    public:
+    vector<int> cnt,dep,fa;
+    vector<int> siz,hson,top;
+    vector<vector<int>> tr;
+    //cnt在点差分的时候代表点上的数值
+    //cnt在边差分的时候代表该点和父亲连边上的数值
+    int n;
+
+    TreeDiff(int n,vector<vector<int>>& tr):
+        n(n),cnt(n+1,0),dep(n+1,0),siz(n+1,0),
+        hson(n+1,-1),top(n+1,-1),fa(n+1,0),tr(tr){ 
+        //a 默认根为1
+        dfs1(1,0,tr);
+        top[1]=1;
+        dfs2(1,tr);
+    }
+    void dfs1(int u,int f,vector<vector<int>>& tr){
+        dep[u]=dep[f]+1;
+        fa[u]=f;siz[u]=1;
+        for(auto v:tr[u]){
+            if(v==f)continue;
+            dfs1(v,u,tr);
+            siz[u]+=siz[v];
+            if(hson[u]==-1||siz[hson[u]]<siz[v])
+                hson[u]=v;
+        }
+    }
+    void dfs2(int u,vector<vector<int>>& tr){
+        if(hson[u]!=-1){
+            top[hson[u]]=top[u];
+            dfs2(hson[u],tr);
+        }
+        for(auto v:tr[u]){
+            if(v==fa[u]||v==hson[u])
+                continue;
+            top[v]=v;
+            dfs2(v,tr);
+        }
+    }
+    int lca(int u,int v){
+        while(top[u]!=top[v]){
+            if(dep[top[u]]<dep[top[v]])
+                swap(u,v);
+            u=fa[top[u]];
+        }
+        return dep[u]<dep[v]?u:v;
+    }
+    void Dadd(int u,int v,int w){
+        cnt[u]+=w,cnt[v]+=w;
+        cnt[lca(u,v)]-=w;
+        if(fa[lca(u,v)]!=0)
+            cnt[fa[lca(u,v)]]-=w;
+    }
+    void Eadd(int u,int v,int w){
+        cnt[u]+=w,cnt[v]+=w;
+        cnt[lca(u,v)]-=2*w;
+    }
+    void q(int u,int f){
+        for(auto v:tr[u]){
+            if(v==f)continue;
+            q(v,u);
+            cnt[u]+=cnt[v];
+        }
+    }
+    vector<int> dq() {return cnt;}
+    vector<array<int,4>> eq(){
+        vector<array<int,4>> res;
+        auto dfs=[&](auto self,int u,int f,int w)->void{
+            for(auto v:tr[u]){
+                if(v==f)continue;
+                self(self,v,u,w);
+            }
+            res.push_back({u,f,w,cnt[u]});
+        };
+        dfs(dfs,1,0,0);
+        return res;
+    }
+};
+signed main()
+{
+    auto T_start=chrono::steady_clock::now();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
     return 0;
 }
 ```
@@ -6641,7 +7187,7 @@ class vtree{
             }
         }
         return ans;
-    }
+    }//注意此处仅查询u到v的不跨lca的最小边权
     void getvTree(vector<int>& o){
         sort(o.begin(),o.end(),[&](int a,int b){return dfn[a]<dfn[b];});
         int p=o.size();
@@ -8047,6 +8593,66 @@ signed main()
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
 	
+    return 0;
+}
+```
+
+**安全取模类(精简版)**
+```cpp
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+using ll=long long;
+const int mod=998244353;
+template <int MOD>
+struct SMC {
+    int val;
+    SMC(ll v = 0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
+    SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
+    SMC& operator*=(const SMC &r) { val=1LL*val*r.val%MOD; return *this; }
+    SMC& operator/=(const SMC &r) { return *this*=r.inv(); }
+    friend SMC operator+(SMC a,const SMC &b) { return a+=b; }
+    friend SMC operator-(SMC a,const SMC &b) { return a-=b; }
+    friend SMC operator*(SMC a,const SMC &b) { return a*=b; }
+    friend SMC operator/(SMC a,const SMC &b) { return a/=b; }
+    SMC pow(ll k) const {
+        SMC res=1,a=*this;
+        for (;k;k>>=1,a*=a) if(k&1) res*=a;
+        return res;
+    }
+    SMC inv() const { return pow(MOD-2); }
+    friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
+    friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
+};
+using Z=SMC<mod>;
+signed main()
+{
+    auto T_start=chrono::steady_clock::now();
+    //freopen("in.txt","r",stdin);
+    //freopen("out.txt","w",stdout);
+    //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
+    
     return 0;
 }
 ```
