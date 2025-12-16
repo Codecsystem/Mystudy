@@ -26,7 +26,7 @@ const int mod=998244353;
 template <int MOD>
 struct SMC {
     int val;
-    SMC(ll v = 0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC(ll v=0) : val(v%MOD) { if (val<0) val+=MOD; }
     SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
     SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
     SMC& operator*=(const SMC &r) { val=1LL*val*r.val%MOD; return *this; }

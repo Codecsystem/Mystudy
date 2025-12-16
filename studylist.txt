@@ -15,7 +15,8 @@
 --线段树进阶
 --主席树                              ...2025/9/24
 --把主席树写成info的形式
---线段树二分/合并/分裂
+--动态开点线段树
+--线段树二分/合并/分裂          https://www.luogu.com.cn/problem/P2824
 --吉司机线段树 https://atcoder.jp/contests/abc430/tasks/abc430_g
 --可持久化平衡树/tire/
 --kd树
@@ -77,6 +78,7 @@ dp
 --BSGS/exgBSGS
 --威尔逊定理
 --ntt   https://codeforces.com/contest/2169/problem/F 注意有on解
+        https://atcoder.jp/contests/abc436/tasks/abc436_g
 --斯特林/二项式反演              ...2025/11/27
 --组合数学结论                   ...2025/11/27
 --浮点数分子分母表示
@@ -115,3 +117,4 @@ trick
 
 
 待做:
+https://codeforces.com/contest/2176

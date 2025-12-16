@@ -33,7 +33,7 @@ class DKRTr{
             tr[i]={a[i],i,0,0};
             int last=0;
             while(!s.empty()&&tr[s.top()][0]>tr[i][0]){
-                //最大堆
+                //最小堆
                 last=s.top();
                 s.pop();
             }
