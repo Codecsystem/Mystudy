@@ -28,6 +28,9 @@ unordered_map<int,int> dis(vector<int> a)
 int main()
 {
     int T_start=clock();
-    
+    vector<int> a;
+    sort(a.begin(),a.end());
+    a.erase(unique(a.begin(),a.end()),a.end());
+    auto getid=[&](int x){return lower_bound(a.begin(),a.end(),x)-a.begin()+1;};
     return 0;
 }
