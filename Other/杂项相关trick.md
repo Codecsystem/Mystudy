@@ -62,3 +62,10 @@ https://www.luogu.com.cn/problem/AT_arc201_d
 具体来说是拆点 x->x,x+n x代表黑色 x+n代表白色
 (u,v) 连边的时候 merge(u,v+n) merge(u+n,v) 如果same(u,v) 则说明两个点同色 不成立
 
+float 有效位数是6-7位
+double 有效位数是15-16位
+long double 有效位数是18-19位
+
+记得sqrtl和atanl
+acos(-1)=pi
+
