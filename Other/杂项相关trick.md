@@ -13,6 +13,9 @@ eg x <- floor(x/2) = x>>1
 位运算计数某些经典技巧是拆位，每位独立贡献
 https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&returnHomeType=1&uid=719203876
 
+压位 ull st=((ull)a<<32)|b;
+
+
 xorhash
 通常存在于某些2/1性质 奇偶性质的题里面
 
@@ -68,4 +71,7 @@ long double 有效位数是18-19位
 
 记得sqrtl和atanl
 acos(-1)=pi
+
+完全图最小生成树可以用boruvka算法
+也可能可以用数据结构优化prim算法
 

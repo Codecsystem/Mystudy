@@ -87,6 +87,7 @@ dp
 --威尔逊定理
 --**ntt**   https://codeforces.com/contest/2169/problem/F 注意有on解
         https://atcoder.jp/contests/abc436/tasks/abc436_g
+--类欧  https://atcoder.jp/contests/abc443/tasks/abc443_g
 --浮点数分子分母表示
 
 计算几何
