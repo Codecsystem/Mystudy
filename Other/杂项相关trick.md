@@ -15,13 +15,15 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&return
 
 压位 ull st=((ull)a<<32)|b;
 
+x-y<=x^y<=x+y
+
 
 xorhash
 通常存在于某些2/1性质 奇偶性质的题里面
 
 有些题有奇偶不变量/其他的不变量
 
-压维转化 0-base x+m*y 1base (x-1)+m*(y-1)+1
+压维转化 0-base x*m+*y 1base (x-1)*m+(y-1)+1 (有错)
 
 曼哈顿距离 dis(x1,y1,x2,y2)=abs(x1-x2)+abs(y1-y2)
 切比雪夫距离 dis(x1,y1,x2,y2)=max(abs(x1-x2),abs(y1-y2))

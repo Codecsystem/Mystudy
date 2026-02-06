@@ -45,6 +45,16 @@ struct SMC {
     friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
 };
 using Z=SMC<mod>;
+
+template<typename T>
+struct SZ{
+    T v=1; 
+    int z=0; 
+    void mul(const T &r) { if(r.val==0) z++; else v*=r; }
+    void div(const T &r) { if(r.val==0) z--; else v/=r; }
+    T val() const { return z?0:v; }
+};
+//全局维护乘积有逆元不存在的情况 调用 SZ<Z>
 signed main()
 {
     auto T_start=chrono::steady_clock::now();
