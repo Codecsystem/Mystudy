@@ -77,3 +77,5 @@ acos(-1)=pi
 完全图最小生成树可以用boruvka算法
 也可能可以用数据结构优化prim算法
 
+x->floor(x/2),ceil(x/2) 在递归的每一层都是v,v+1
+

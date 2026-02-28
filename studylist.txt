@@ -9,6 +9,9 @@
 https://codeforces.com/contest/2176
 
 待补：
+牛客寒假
+atc typical dp
+fan's problems list
 
 忠告：
 窝要做小常数选手(
@@ -82,6 +85,7 @@ dp
 --**拉插**
 --多项式科技
 --**高斯消元**
+--高斯整数
 --剩余系
 --BSGS/exgBSGS
 --威尔逊定理

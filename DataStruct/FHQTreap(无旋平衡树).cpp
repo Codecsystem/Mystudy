@@ -29,7 +29,7 @@ class FHQTreap{
     //树堆：BST+Heap
     public:
         struct Node{
-            ll val,tag;      
+            ll val,sum,tag;      
             int sz,rnd,l,r,id;
         };
         vector<Node> tr;
@@ -48,14 +48,21 @@ class FHQTreap{
 
         int nw(ll val,int id=0){
             tot++;
-            tr[tot]={val,0,1,(int)rng(),0,0,id};
+            tr[tot]={val,val,0,1,(int)rng(),0,0,id};
             return tot;
         }
 
         void pushup(int u){
             tr[u].sz=1;
-            if(tr[u].l) tr[u].sz+=tr[tr[u].l].sz;
-            if(tr[u].r) tr[u].sz+=tr[tr[u].r].sz;
+            tr[u].sum=tr[u].val;
+            if(tr[u].l){
+                tr[u].sz+=tr[tr[u].l].sz;
+                tr[u].sum+=tr[tr[u].l].sum;
+            }
+            if(tr[u].r){
+                tr[u].sz+=tr[tr[u].r].sz;
+                tr[u].sum+=tr[tr[u].r].sum;
+            }
         }
 
         void pushdown(int u){
@@ -63,10 +70,12 @@ class FHQTreap{
                 ll t=tr[u].tag;
                 if(tr[u].l){
                     tr[tr[u].l].val+=t;
+                    tr[tr[u].l].sum+=t*tr[tr[u].l].sz;
                     tr[tr[u].l].tag+=t;
                 }
                 if(tr[u].r){
                     tr[tr[u].r].val+=t;
+                    tr[tr[u].r].sum+=t*tr[tr[u].r].sz;
                     tr[tr[u].r].tag+=t;
                 }
                 tr[u].tag=0;
