@@ -9,9 +9,21 @@
 https://codeforces.com/contest/2176
 
 待补：
-牛客寒假
-atc typical dp
-fan's problems list
+牛客寒假：
+寒假营1F 寒假营3 寒假营6 FJL
+atc typical dp 进度 0/last4
+fan's problems list 进度0
+ARC58-ARC90的后两题 进度58/90
+天梯赛真题 l1 5t/d l2 3t/d l3 2t/d
+23ic南京
+
+马上想学的知识点：
+图上找环
+欧拉路径 Hierholzer 算法
+ntt
+多项式科技，gf
+
+哎哎，能不能按照计划来，，，
 
 忠告：
 窝要做小常数选手(
@@ -58,7 +70,7 @@ fan's problems list
 --上下界网络流
 --最短路树,树分治
 --练习网络流
---欧拉路径 Hierholzer 算法
+--**欧拉路径 Hierholzer 算法**
 
 dp
 --练习
@@ -68,7 +80,7 @@ dp
 --4 树与图上dp                      ...OK(?)
 --5 状压dp                          ...OK
 --树上背包                          ...2025/11/15
---**数位dp(练习)**
+--**数位dp(练习)**                  
 --**概率/期望 dp**
 --单调队列优化/斜率优化/四边形不等式优化dp
 --换根dp
@@ -108,7 +120,7 @@ dp
 --SA/SAM  SA https://atcoder.jp/contests/abc433/tasks/abc433_g
 
 trick
---整体二分       ...2026/12/27
+--整体二分       ...2025/12/27
 --**CDQ分治**
 --min-max容斥 https://codeforces.com/gym/105484/problem/I
 --01分数规划 
