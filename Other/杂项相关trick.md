@@ -17,13 +17,21 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&return
 
 x-y<=x^y<=x+y
 
+实际上 一个x异或上一个区间得到的数构成的连续段是log的
+具体来说 考虑log个相同前缀的区间
+e.g 11001=[00000,01111]+[10000,10111]+[11000,11001]
+考虑他的一个后缀是任意的，所有这个连续段的上下界可以O(1)算
+
+对一个x异或一个区间，得到的上下界可以log算，参见2026校赛 ex题
+
+对一个x异或一个区间，得到的连续段是一个的充要条件好像很深刻，我看不懂现在。
 
 xorhash
 通常存在于某些2/1性质 奇偶性质的题里面
 
 有些题有奇偶不变量/其他的不变量
 
-压维转化 0-base x*m+*y 1base (x-1)*m+(y-1)+1 (有错)
+压维转化 0-base x*m+y  1base (x-1)*m+(y-1)+1 (有错)
 
 曼哈顿距离 dis(x1,y1,x2,y2)=abs(x1-x2)+abs(y1-y2)
 切比雪夫距离 dis(x1,y1,x2,y2)=max(abs(x1-x2),abs(y1-y2))
@@ -80,3 +88,15 @@ acos(-1)=pi
 x->floor(x/2),ceil(x/2) 在递归的每一层都是v,v+1
 
 经常忘的：根号做法，调和级数
+
+安全取整 注意负数下取整是往负无穷，上取整是往0
+// floor(a/b)
+long long floor_div(long long a,long long b){
+    return a/b - ((a^b)<0 && a%b);
+}
+
+// ceil(a/b)
+long long ceil_div(long long a,long long b){
+    return a/b + ((a^b)>0 && a%b);
+}
+正数ceil a+b-1/b

@@ -7,3 +7,5 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&return
 
 原来aj*2>ai的时候aj一定不整除ai
 https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
+
+考虑算[l,r]中被p整除的数，一个好的实现是先算[1,r]中被p整除的数，再减去[1,l-1]中被p整除的数。

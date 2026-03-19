@@ -93,15 +93,21 @@ $e.g.$ $12 = 2^2 \times 3^1$，那么 $12$ 可以看作是 $(2, 1, 0...)$。
 现在我们有至少 考虑恰好的关系
 
 用一下超集反演：
-$$f(S) = \sum_{S \subseteq T} g(T) \iff g(S) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert - \lvert S \rvert} f(T)$$
+$$
+f(S) = \sum_{S \subseteq T} g(T) \iff g(S) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert - \lvert S \rvert} f(T)
+$$
 
 我们知道
-$$f(0) = \sum_{S \subseteq T} g(T) $$
+$$
+f(0) = \sum_{S \subseteq T} g(T)
+$$
 >这里的f函数含义是 答案是0的超集的方案数
 >右边是 对所有0的超集 恰好为t的方案数
 
 所以
-$$g(0) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert} f(T) $$
+$$
+g(0) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert} f(T)
+$$
 
 >其实这是简单容斥
 
@@ -110,10 +116,14 @@ $$g(0) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert} f(T) $$
 ### FMT(快速莫比乌斯变换)
 
 回忆多项式乘法
-$$C_k = \sum_{i + j = k} A_i \times B_j$$
+$$
+C_k = \sum_{i + j = k} A_i \times B_j
+$$
 
 考虑把下标 换成按位或
-$$C_k = \sum_{i \lor j = k} A_i \times B_j$$
+$$
+C_k = \sum_{i \lor j = k} A_i \times B_j
+$$
 
 >你如果把下标看成集合意义下的状压的话 可能比较好理解一点
 > e.g. $i \lor j = k$ 就是说 $i$ 和 $j$ 的并集是 $k$
@@ -125,23 +135,35 @@ $$C_k = \sum_{i \lor j = k} A_i \times B_j$$
 or卷积也能这样加速
 
 定义：
-$$FMT(A)[k] = \sum_{i \subseteq k} A[i]$$
+$$
+FMT(A)[k] = \sum_{i \subseteq k} A[i]
+$$
 
 >注意这是子集和的形式
 
 考虑：
-$$FMT(A)[k] \times FMT(B)[k] = (\sum_{i \subseteq k} A[i]) \times (\sum_{j \subseteq k} B[j])$$
-$$= \sum_{i \subseteq k} \sum_{j \subseteq k} A[i] B[j]$$
+$$
+FMT(A)[k] \times FMT(B)[k] = (\sum_{i \subseteq k} A[i]) \times (\sum_{j \subseteq k} B[j])
+$$
+$$
+= \sum_{i \subseteq k} \sum_{j \subseteq k} A[i] B[j]
+$$
 
 注意条件：如果 $i$ 是 $k$ 的子集，且 $j$ 也是 $k$ 的子集，那么 $i \lor j$ 一定也是 $k$ 的子集。
 所以上面那坨式子其实等于：
-    $$ \sum_{(i \lor j) \subseteq k} A[i] B[j]$$
+    $$
+    \sum_{(i \lor j) \subseteq k} A[i] B[j]
+    $$
 
 按定义，我们知道：
-$$FMT(C)[k] = \sum_{i \subseteq k} C[i] = \sum_{(i \lor j) \subseteq k} A[i] B[j]$$
+$$
+FMT(C)[k] = \sum_{i \subseteq k} C[i] = \sum_{(i \lor j) \subseteq k} A[i] B[j]
+$$
 
 所以：
-$$FMT(A)[k] \times FMT(B)[k] = FMT(C)[k]$$
+$$
+FMT(A)[k] \times FMT(B)[k] = FMT(C)[k]
+$$
 
 所以我们可以把多项式乘法变成 $FMT$ 乘法，然后再 $IFMT$ 回去。
 
@@ -158,12 +180,16 @@ $C_k = \sum_{i \land j = k} A_i \times B_j$
 FWT除了可以处理and/or卷积，还可以处理异或卷积
 
 异或卷积：
-$$C_k = \sum_{i \oplus j = k} A_i \times B_j$$
+$$
+C_k = \sum_{i \oplus j = k} A_i \times B_j
+$$
 
 下面详细推导一下xor卷积的FWT
 
 构造：
-$$FWT(A)_k = \sum_{i=0}^{2^n-1} (-1)^{|i \cap k|} A_i$$
+$$
+FWT(A)_k = \sum_{i=0}^{2^n-1} (-1)^{|i \cap k|} A_i
+$$
 
 其中 $|x|$ 表示 $x$ 二进制表示中 $1$ 的个数（popcount）。
 $|i \cap k|$ 表示 $i$ 和 $k$ 按位与之后，包含 $1$ 的个数。
@@ -176,10 +202,14 @@ FWT(C)_k &= \sum_{p} (-1)^{|p \cap k|} C_p \\
 &= \sum_{p} (-1)^{|p \cap k|} \left( \sum_{i \oplus j = p} A_i B_j \right)
 \end{aligned}$$
 由于 $p = i \oplus j$，我们可以把求和号展开，直接枚举 $i$ 和 $j$：
-$$FWT(C)_k = \sum_{i} \sum_{j} (-1)^{|(i \oplus j) \cap k|} A_i B_j$$
+$$
+FWT(C)_k = \sum_{i} \sum_{j} (-1)^{|(i \oplus j) \cap k|} A_i B_j
+$$
 关键性质：$$| (i \oplus j) \cap k | \equiv |i \cap k| + |j \cap k| \pmod 2$$
 解释：$i$ 和 $j$ 在第 $m$ 位异或为 1，当且仅当它们在该位上一个为 0 一个为 1。与 $k$ 做 AND 后，只有当 $k$ 在该位也是 1 时才会产生贡献。这一位的贡献要么是 $1+0=1$，要么是 $0+1=1$，奇偶性都和加法一致。因为 $(-1)^x$ 只关心 $x$ 的奇偶性，所以：
-$$(-1)^{|(i \oplus j) \cap k|} = (-1)^{|i \cap k| + |j \cap k|} = (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|}$$
+$$
+(-1)^{|(i \oplus j) \cap k|} = (-1)^{|i \cap k| + |j \cap k|} = (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|}
+$$
 代回原式：
 $$\begin{aligned}
 FWT(C)_k &= \sum_{i} \sum_{j} \left( (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|} \right) A_i B_j \\
@@ -210,7 +240,9 @@ $$
 * **右半边和 ($A_1$)**：$i$ 的最高位是 1，$k$ 的最高位是 0。$i \cap k$ **依然不涉及最高位**（因为 $1 \ \& \ 0 = 0$）。这部分就是 $FWT(A_1)_k$。
 
 **结论 1：**
-$$FWT(A)_{left} = FWT(A_0) + FWT(A_1)$$
+$$
+FWT(A)_{left} = FWT(A_0) + FWT(A_1)
+$$
 
 #### 情况 2：结果下标最高位为 1 ($k \ge 2^{n-1}$)
 令实际计算的下标为 $k + 2^{n-1}$（其中 $k < 2^{n-1}$）。
@@ -225,7 +257,9 @@ $$
     这部分变成了 $-FWT(A_1)_k$。
 
 **结论 2：**
-$$FWT(A)_{right} = FWT(A_0) - FWT(A_1)$$
+$$
+FWT(A)_{right} = FWT(A_0) - FWT(A_1)
+$$
 
 综合上面的推导，我们得到了递归式：$$FWT(A) = \text{merge}(FWT(A_0), FWT(A_1))$$其中 merge 操作为：
 $$\begin{cases}
@@ -240,7 +274,9 @@ A'_{right} = A_0' - A_1'
 同理 我们可以推导
 #### and卷积的FWT
 
-$$FWT(A)_k = \sum_{i \subseteq k} A_i$$
+$$
+FWT(A)_k = \sum_{i \subseteq k} A_i
+$$
 
 假设数组 $A$ 长度为 $2^n$。我们将 $A$ 一分为二，同样可以推导
 正变换:
@@ -257,7 +293,9 @@ A'_1 = A'_{right} - A'_{left}
 
 #### or卷积的FWT
 
-$$FWT(A)_k = \sum_{k \subseteq i} A_i$$
+$$
+FWT(A)_k = \sum_{k \subseteq i} A_i
+$$
 
 正变换:$$\begin{cases}
 A'_{left} = A'_0 + A'_1 \\
