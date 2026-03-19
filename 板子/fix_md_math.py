@@ -112,6 +112,14 @@ def fix_md_math(text: str) -> str:
         line = line.replace(r'\dbinom', r'\binom')
         line = line.replace(r'\bmod', r'\mod')
 
+        # 8. 修复 (mod \ m) 格式 → \pmod{m}
+        #    匹配 (mod \ X) 或 (mod\ X) 在数学环境中
+        #    这样 Pandoc 不会把 \( 当成 inline math 开始
+        line = re.sub(r'\(mod\s*\\\s*(\w+(?:\([^)]*\))?)\s*\)', r'\\pmod{\1}', line)
+
+        # 9. 修复 \therefore 等 Pandoc 不支持的命令
+        #    (保留原样，由 generate_typst.py 后处理)
+
         out.append(line)
         i += 1
 

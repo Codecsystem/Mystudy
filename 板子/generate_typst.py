@@ -784,6 +784,56 @@ def pandoc_md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = ''
     typst_text = re.sub(r'^(=+)\s+(.*)', adjust_heading, typst_text, flags=re.MULTILINE)
     # Pandoc 兼容：替换 #horizontalrule
     typst_text = typst_text.replace('#horizontalrule', '#line(length: 100%, stroke: 0.5pt + luma(180))')
+
+    # ── 修复 Pandoc 输出中的 Typst 数学问题 ──
+
+    # 1. \pmod 修复: Pandoc 将 \pmod{m} 输出为 \( mod med m \)
+    #    Typst 中 \( 会被当作未闭合的分隔符，需要替换为普通括号
+    #    Pattern: \( mod med ... \) → (mod ...)
+    #    Also handles: \( med mod med ... \) from \bmod
+    typst_text = re.sub(
+        r'\\\\?\(\s*(?:med\s+)?mod\s+med\s+(.+?)\s*\\\\?\)',
+        r'(mod \1)',
+        typst_text
+    )
+
+    # 2. 修复 Pandoc 未转换的 $$...$$ 块（显示为 \$\$...\$\$）
+    #    这些通常是 Pandoc 无法解析的 LaTeX（如含 \therefore 等）
+    def fix_raw_math_block(m):
+        raw_latex = m.group(1).strip()
+        # 去掉转义的反斜杠
+        raw_latex = raw_latex.replace('\\\\', '\\')
+        raw_latex = raw_latex.replace('\\$', '$')
+        raw_latex = raw_latex.replace('\\_', '_')
+        # 尝试用 Pandoc 单独转换这段数学
+        inner_result = subprocess.run(
+            ['pandoc', '-f', 'markdown', '-t', 'typst', '--wrap=none'],
+            input=f'$$\n{raw_latex}\n$$',
+            capture_output=True, text=True, encoding='utf-8'
+        )
+        inner = inner_result.stdout.strip()
+        if inner and not inner.startswith('\\$'):
+            return inner
+        # 回退：原样保留为代码块
+        return f'```\n{raw_latex}\n```'
+    typst_text = re.sub(
+        r'\\$\\$\n?(.*?)\n?\\$\\$',
+        fix_raw_math_block,
+        typst_text,
+        flags=re.DOTALL
+    )
+
+    # 3. 修复 Pandoc 输出中 \( 和 \) 在数学上下文中的其他残留
+    #    在 $ ... $ 内部，\( 和 \) 应该是普通括号
+    def fix_math_parens(m):
+        content = m.group(0)
+        # 替换数学内部的 \( 和 \) 为普通括号
+        content = content.replace('\\(', '(')
+        content = content.replace('\\)', ')')
+        return content
+    # 匹配 $...$ 块（包括多行 display math）
+    typst_text = re.sub(r'\$[^$]+\$', fix_math_parens, typst_text)
+
     # 修复图片路径：将相对路径转为绝对路径
     if img_base:
         def fix_img_path(m):

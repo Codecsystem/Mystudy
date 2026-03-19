@@ -26,6 +26,56 @@ python 板子/generate_typst.py
 
 ---
 
+## Agent 自动操作
+
+以下两项操作应在每次维护会话开始或结束时由 Agent 自动执行，无需用户指示。
+
+### 1. 自动清理垃圾文件
+
+**触发时机**：每次维护会话结束前、或重新生成 PDF 后。
+
+**清理范围**：
+
+| 位置 | 清理规则 |
+|------|----------|
+| `板子/generated/` | 删除所有 `_` 开头的临时文件（`_test*.typ`、`_test*.pdf`、`_validate.typ`、`_check.py` 等） |
+| `板子/` | 删除根目录下的临时脚本（如 `_check.py`、`_debug*.py` 等调试用文件） |
+| `板子/output/` | 仅保留三份正式 PDF，删除其他文件 |
+
+**保留文件（不可删除）**：
+- `AGENT.md`、`generate_typst.py`、`fix_md_math.py`、`cpp模板.cpp`
+- `generated/board*.typ`、`generated/manifest.json`
+- `output/board*.pdf`
+- `typst/*.typ`
+
+**执行方式**：
+```bash
+# 清理 generated/ 下的临时文件
+find 板子/generated/ -name '_*' -delete
+
+# 清理板子/根目录下的临时脚本
+find 板子/ -maxdepth 1 -name '_*' -delete
+```
+
+### 2. 自动更新 AGENT.md
+
+**触发时机**：当以下任一情况发生时，Agent 应自动更新本文件：
+
+| 变更类型 | 更新内容 |
+|----------|----------|
+| `fix_md_math.py` 新增/修改规则 | 更新「fix_md_math.py 修复规则」表格 |
+| `generate_typst.py` 新增后处理 | 更新「generate_typst.py 后处理规则」表格 |
+| 新增/删除笔记分组 | 更新「数据源与收录规则」中的分组表格 |
+| 新增/删除源目录 | 更新 Board 1 目录列表 |
+| 发现新的 .md 格式要求 | 更新「.md 源文件格式要求」 |
+| 新增依赖或工具 | 更新「依赖」表格 |
+| 发现新的已知限制 | 更新「已知限制」列表 |
+| 修复了编译错误 | 在「编译失败排查」中补充对应条目 |
+
+**原则**：本文件是后续 Agent 的唯一入口文档，必须保持与代码同步。任何影响构建流程的变更都应反映在此。
+
+---
+
 ## 目录结构
 
 ```
@@ -123,8 +173,23 @@ python 板子/generate_typst.py
 | `$ content $` → `$content$` | 去除 `$` 与内容间的空格 | `$ m $` → `$m$`（Pandoc 要求紧贴） |
 | `\dbinom` → `\binom` | Pandoc 不支持的命令替换 | |
 | `\bmod` → `\mod` | 同上 | |
+| `(mod \ X)` → `\pmod{X}` | 修复 mod 记号避免 Pandoc 把 `\(` 当成 inline math | `(mod \ m)` → `\pmod{m}` |
 
 **扫描目录**：`数论/`、`动态规划/`、`Graph/`、`博弈论/`、`Other/`
+
+### generate_typst.py 后处理规则（Pandoc 输出修复）
+
+| 规则 | 说明 |
+|------|------|
+| `\( mod ... \)` → `(mod ...)` | 修复 Pandoc 将 `\pmod{}` 输出为 Typst 中无效的 `\(` 分隔符 |
+| `\$\$...\$\$` → 重新转换 | 修复 Pandoc 未能转换的 display math 块 |
+| 数学内 `\(` `\)` → `(` `)` | 修复 `$...$` 内部残留的转义括号 |
+
+### .md 源文件格式要求
+
+- **heading 前必须有空行**：Pandoc 要求 `#` 标题前有空行，否则不识别
+- **`$$` 块内不要以 `=` 开头**：会被 Pandoc 误识别为 Typst heading。使用 `\begin{aligned}` + `&=` 代替
+- **`(mod m)` 写法**：使用 `\pmod{m}` 而非 `(mod \ m)`，后者会导致 Pandoc 产生无效的 `\(` 分隔符
 
 ---
 
