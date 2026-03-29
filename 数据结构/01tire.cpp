@@ -16,44 +16,66 @@
 #include <unordered_map>
 using namespace std;
 class O1Tire{
-	public:
-		struct node
-		{
-			node* ch[2];
-			int cnt;
-			node():ch{nullptr,nullptr},cnt(0){}
-		};
-		node* root;
-		O1Tire():root(new node){}
-		void set(int x,int t)//从高到低建树
-		{
-			node* p=root;
-			for(int i=31;i>=0;i--)
-			{
-				int d=(x>>i)&1;
-				if(!p->ch[d])
-					p->ch[d]=new node();
-				p->ch[d]->cnt+=t;
-				p=p->ch[d];
-			}
-		}
-		int findMax(int x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
-		{
-			node* p=root;
-			int res=0;
-			for(int i=31;i>=0;i--)
-			{
-				int d=(x>>i)&1;
-				if(p->ch[d^1]&&p->ch[d^1]->cnt)
-					p=p->ch[d^1],res+=(1<<i);
-				else
-					p=p->ch[d];
-				if(!p)
-					return res;
-			}
-			return res;
-		}
-		
+    public:
+        struct node
+        {
+            int ch[2];
+            int cnt;
+            node():ch{0,0},cnt(0){}
+        };
+        vector<node> trie;
+        int tot,root;
+        O1Tire(int len):trie(len+5),tot(0),root(0){}
+		//len:节点数,此处一般是32*n
+        void set(int x,int t)//从高到低建树
+        {
+            int p=root;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                if(!trie[p].ch[d])
+                    trie[p].ch[d]=++tot;
+                trie[trie[p].ch[d]].cnt+=t;
+                p=trie[p].ch[d];
+            }
+        }
+        int findMax(int x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
+        {
+            int p=root;
+            int res=0;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                if(trie[p].ch[d^1]&&trie[trie[p].ch[d^1]].cnt)
+                    p=trie[p].ch[d^1],res+=(1<<i);
+                else
+                    p=trie[p].ch[d];
+                if(!p)
+                    return res;
+            }
+            return res;
+        }
+		//求解x对tire中所有数的xor中<=k的个数
+		int qry(int x,int k){
+            int res=0,p=root;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                int kd=(k>>i)&1;
+                if(kd){
+                    if(trie[p].ch[d]) res+=trie[trie[p].ch[d]].cnt;
+                    if(!trie[p].ch[d^1]) return res;
+                    p=trie[p].ch[d^1];
+                }
+                else{
+                    if(!trie[p].ch[d]) return res;
+                    p=trie[p].ch[d];
+                }
+            }
+            res+=trie[p].cnt;
+            return res;
+        }
+		//其他逻辑反着来即可
 };
 int main()
 {
@@ -65,7 +87,7 @@ int main()
 	    vector<int> a(n);
 	    for(int i=0;i<n;i++)
 	        cin>>a[i];
-		O1Tire tire;
+		O1Tire tire(n*32);
 		int ans=0xfffffff;
 		for(int i=0,j=0;i<n;i++)
 		{

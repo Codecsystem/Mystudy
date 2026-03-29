@@ -18,7 +18,8 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
-#define int long long //赫赫 要不要龙龙呢
+//#define int long long //赫赫 要不要龙龙呢
+using ll=long long;
 using namespace std;
 class basic{
     public:
@@ -51,12 +52,12 @@ class basic{
         bas.assign(num.begin(),num.begin()+cnt);
     }
     //求第k小的数 k:1base
-    int kth(int k){
+    int kth(ll k){
         //k个基向量能构造出2^k-1个数
         //case1 :cnt<n 意味这能构造出 0 所以能构造2^k个数
         //case2 :cnt=n 意味这不能构造出 0 所以只能构造2^k-1个数
         if(cnt<n) k--;
-        if(k>=(1ll<<cnt)) return -1;
+        if(k>=(1ull<<cnt)) return -1;
         int ans=0;
         for(int i=0;i<cnt;i++){
             if(k>>i&1) ans^=bas[cnt-1-i];
@@ -65,22 +66,22 @@ class basic{
     }
     //求一个数用一个数列异或得到的方案数
     //约简为0的向量是不必要的 于是可以任选
-    int count(int x){
+    ll count(int x){
         for(auto b:bas){
-            if(x&b) x^=b;
+            if((x^b)<x) x^=b;
         }
         return x==0?(1ll<<(n-cnt)):0;
     }
     //求一个数在数列xor和中的排名
-    int rk(int x){
+    ll rk(int x){
         int tp=x;
         for(auto b:bas){
-            if(tp&b) tp^=b;
+            if((tp^b)<tp) tp^=b;
         }
         if(tp) return -1;
         int id=0;
         for(int i=0;i<cnt;i++){
-            if(x&(bas[i]))
+            if((x^bas[i])<x)
             {
                 id|=(1ll<<(cnt-1-i));
                 x^=bas[i];
@@ -88,6 +89,13 @@ class basic{
         }
         if(cnt<n) id++;
         return id;
+    }
+    //求一个数在xor线性基的数中得到最小值
+    int getmin(int x){
+        for(auto b:bas){
+            if((x^b)<x) x=x^b;
+        }
+        return x;
     }
 };
 signed main()
