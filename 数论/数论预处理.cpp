@@ -101,7 +101,7 @@ public:
         vector<bool>v(n+1,0);
         for(int i=2;i<=n;i++)
         {
-            if(!v[i])primes.push_back(i),phi[i]=i-1;
+            if(!v[i]) primes.push_back(i),phi[i]=i-1;
             for(int j=0;j<primes.size()&&primes[j]*i<=n;j++)
             {
                 int m=primes[j]*i;
@@ -233,6 +233,7 @@ public:
         }
         return ans;
     }
+    //一个常数更小的写法是求出i的最小质因数，然后递归的查,见原根的实现。
 };
 signed main()
 {

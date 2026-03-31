@@ -72,6 +72,7 @@ class O1Tire{
                     p=trie[p].ch[d];
                 }
             }
+			//加上=k的情况
             res+=trie[p].cnt;
             return res;
         }
