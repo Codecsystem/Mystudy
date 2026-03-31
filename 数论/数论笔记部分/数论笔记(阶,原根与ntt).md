@@ -2,15 +2,23 @@
 **欧拉定理**：设 $a\in\mathbb{Z},\,m\in\mathbb{N}^*$，若 $\gcd(a,m)=1$，则 $a^{\varphi(m)}\equiv 1\pmod m$。
 $\varphi(m)$ 是欧拉函数，表示小于 $m$ 且与 $m$ 互质的正整数个数。
 >证明：考虑模 $m$ 的简化剩余系，即
- $$R=\{r_1,r_2,\cdots,r_{\varphi(m)}\}$$
+ $$
+ R=\{r_1,r_2,\cdots,r_{\varphi(m)}\}
+ $$
 这个集合包含了所有在 $1$ 到 $m$ 之间且与 $m$ 互质的整数。显然，这个集合里有 $\varphi(m)$ 个元素。
 现在，我们把集合 $R$ 里的每一个元素都乘上 $a$，注意$\gcd(a, m) = 1$，得到一个新的集合：$$S = \{ar_1, ar_2, \dots, ar_{\varphi(m)}\}$$
 注意到 1.$S$ 中的元素都与 $m$ 互质; 2.$S$ 中的元素在模 $m$ 下两两不同(可以用反证法证明)。
 既然 $S$ 中有 $\varphi(m)$ 个与 $m$ 互质且模 $m$ 两两不同的数，那么它们在模 $m$ 意义下一定与 $R$ 里的数一一对应。
 那么：
-$$\prod_{i=1}^{\varphi(m)} (ar_i) \equiv \prod_{i=1}^{\varphi(m)} r_i \pmod m$$
-$$a^{\varphi(m)} \prod_{i=1}^{\varphi(m)} r_i \equiv \prod_{i=1}^{\varphi(m)} r_i \pmod m$$
-$$a^{\varphi(m)} \equiv 1 \pmod m$$
+$$
+\prod_{i=1}^{\varphi(m)} (ar_i) \equiv \prod_{i=1}^{\varphi(m)} r_i \pmod m
+$$
+$$
+a^{\varphi(m)} \prod_{i=1}^{\varphi(m)} r_i \equiv \prod_{i=1}^{\varphi(m)} r_i \pmod m
+$$
+$$
+a^{\varphi(m)} \equiv 1 \pmod m
+$$
 
 这边用到的一个厉害的性质是，模 $m$ 的简化剩余系，他在模 $m$ 意义下对乘法（和 $m$ 互质的数 $a$）是封闭的。
 
@@ -66,25 +74,43 @@ NTT（模 $p$ 域）： 这是一个等比数列求和：$$\sum_{j=0}^{n-1} (g_n
 偶数项：$A_0(x) = a_0 + a_2x + a_4x^2 + \dots + a_{n-2}x^{\frac{n}{2}-1}$
 奇数项：$A_1(x) = a_1 + a_3x + a_5x^2 + \dots + a_{n-1}x^{\frac{n}{2}-1}$
 于是：
-$$A(x) = A_0(x^2) + x \cdot A_1(x^2)$$
+$$
+A(x) = A_0(x^2) + x \cdot A_1(x^2)
+$$
 带入$x = g_n^k$ :
-$$A(g_n^k) = A_0((g_n^k)^2) + g_n^k \cdot A_1((g_n^k)^2)$$
+$$
+A(g_n^k) = A_0((g_n^k)^2) + g_n^k \cdot A_1((g_n^k)^2)
+$$
 注意:
-$$(g_n^k)^2 \equiv \left(g^{k \cdot \frac{p-1}{n}}\right)^2 \equiv g^{k \cdot \frac{p-1}{n/2}} \equiv g_{n/2}^k \pmod p$$
+$$
+(g_n^k)^2 \equiv \left(g^{k \cdot \frac{p-1}{n}}\right)^2 \equiv g^{k \cdot \frac{p-1}{n/2}} \equiv g_{n/2}^k \pmod p
+$$
 于是:
-$$A(g_n^k) \equiv A_0(g_{n/2}^k) + g_n^k \cdot A_1(g_{n/2}^k) \pmod p$$
+$$
+A(g_n^k) \equiv A_0(g_{n/2}^k) + g_n^k \cdot A_1(g_{n/2}^k) \pmod p
+$$
 考虑后半段$g_n^{k + n/2}$（此时 $k < n/2$），代入：
-$$A(g_n^{k + n/2}) = A_0((g_n^{k + n/2})^2) + g_n^{k + n/2} \cdot A_1((g_n^{k + n/2})^2)$$
+$$
+A(g_n^{k + n/2}) = A_0((g_n^{k + n/2})^2) + g_n^{k + n/2} \cdot A_1((g_n^{k + n/2})^2)
+$$
 
 注意：
-$$(g_n^{k + n/2})^2 \equiv g_n^{2k + n} \equiv g_n^{2k} \cdot g_n^n \equiv g_n^{2k} \cdot 1 \equiv (g_n^k)^2 \equiv g_{n/2}^k \pmod p$$
+$$
+(g_n^{k + n/2})^2 \equiv g_n^{2k + n} \equiv g_n^{2k} \cdot g_n^n \equiv g_n^{2k} \cdot 1 \equiv (g_n^k)^2 \equiv g_{n/2}^k \pmod p
+$$
 
 再次注意：
-$$g_n^{k + n/2} \equiv g_n^k \cdot g_n^{n/2} \pmod p$$
+$$
+g_n^{k + n/2} \equiv g_n^k \cdot g_n^{n/2} \pmod p
+$$
 其中 $g_n^{n/2}$：
-$$g_n^{n/2} \equiv \left(g^{\frac{p-1}{n}}\right)^{\frac{n}{2}} \equiv g^{\frac{p-1}{2}} \pmod p$$
+$$
+g_n^{n/2} \equiv \left(g^{\frac{p-1}{n}}\right)^{\frac{n}{2}} \equiv g^{\frac{p-1}{2}} \pmod p
+$$
 于是：
-$$g_n^{k + n/2} \equiv -g_n^k \pmod p$$
+$$
+g_n^{k + n/2} \equiv -g_n^k \pmod p
+$$
 
 最终：
 前半段：$$A(g_n^k) \equiv A_0(g_{n/2}^k) + g_n^k \cdot A_1(g_{n/2}^k) \pmod p$$
@@ -95,14 +121,24 @@ $$g_n^{k + n/2} \equiv -g_n^k \pmod p$$
 经过正向 NTT 后，我们得到了 $n$ 个点值 $y_0, y_1, \dots, y_{n-1}$。
 正向 NTT 的方程是这样的：$$y_k = \sum_{j=0}^{n-1} a_j (g_n^k)^j \pmod p$$
 构造：
-$$c_i = \sum_{k=0}^{n-1} y_k (g_n^{-1})^{ki} \pmod p$$
+$$
+c_i = \sum_{k=0}^{n-1} y_k (g_n^{-1})^{ki} \pmod p
+$$
 代入：
-$$c_i = \sum_{k=0}^{n-1} \left( \sum_{j=0}^{n-1} a_j g_n^{kj} \right) g_n^{-ki} \pmod p$$
+$$
+c_i = \sum_{k=0}^{n-1} \left( \sum_{j=0}^{n-1} a_j g_n^{kj} \right) g_n^{-ki} \pmod p
+$$
 交换求和顺序：
-$$c_i = \sum_{j=0}^{n-1} a_j \left( \sum_{k=0}^{n-1} (g_n^{j-i})^k \right) \pmod p$$
+$$
+c_i = \sum_{j=0}^{n-1} a_j \left( \sum_{k=0}^{n-1} (g_n^{j-i})^k \right) \pmod p
+$$
 对括号里面的东西用求和引理，当仅当$j = i$等于 $n$，否则等于 $0$。
 于是：
-$$c_i \equiv a_i \cdot n \pmod p$$
+$$
+c_i \equiv a_i \cdot n \pmod p
+$$
 那么：
-$$a_i \equiv c_i \cdot n^{-1} \pmod p$$
+$$
+a_i \equiv c_i \cdot n^{-1} \pmod p
+$$
 于是对做完点乘的点值做一次反向 NTT ，然后乘上 $n$ 的逆元即可。

@@ -35,36 +35,37 @@ except ImportError:
 
 # ── Board 1 目录顺序 ──
 BOARD1_FOLDERS = [
-    "DataStruct", "Graph", "string", "hash",
-    "动态规划", "数论", "计算几何", "博弈论", "Other",
+    "数据结构", "图论", "字符串", "哈希",
+    "动态规划", "数论", "计算几何", "博弈论", "其他",
 ]
 
 # ── Board 2 数论笔记主题分组 ──
 BOARD2_GROUPS = {
     "基础与工具": [
-        "数论笔记(筛法).md",
-        "数论笔记(线性逆元).md",
-        "数论笔记(不定方程与同余方程组).md",
-        "数论小结论.md",
+        "数论笔记部分/数论笔记(筛法).md",
+        "数论笔记部分/数论笔记(线性逆元).md",
+        "数论笔记部分/数论笔记(不定方程与同余方程组).md",
+        "数论笔记部分/数论小结论.md",
     ],
     "卷积与反演": [
-        "数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
-        "数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
-        "数论笔记(炫酷反演魔术).md",
-        "数论笔记(和式变换).md",
+        "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
+        "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
+        "数论笔记部分/数论笔记(炫酷反演魔术).md",
+        "数论笔记部分/数论笔记(和式变换).md",
     ],
     "组合与生成函数": [
-        "数论笔记(排列组合).md",
-        "数论笔记(排列组合进阶).md",
-        "数论笔记(生成函数).md",
+        "数论笔记部分/数论笔记(排列组合).md",
+        "数论笔记部分/数论笔记(排列组合进阶).md",
+        "数论笔记部分/数论笔记(生成函数).md",
     ],
     "变换与多项式": [
-        "FFT笔记.md",
-        "数论笔记(sosdp&fmt&fwt).md",
+        "数论笔记部分/FFT笔记.md",
+        "数论笔记部分/数论笔记(sosdp&fmt&fwt).md",
+        "数论笔记部分/数论笔记(阶,原根与ntt).md",
     ],
     "Trick 与杂项": [
-        "数学相关trick.md",
-        "数论笔记(杂项).md",
+        "Trick/数学相关trick.md",
+        "数论笔记部分/数论笔记(杂项).md",
     ],
 }
 
@@ -72,19 +73,19 @@ BOARD2_GROUPS = {
 BOARD3_GROUPS = {
     "动态规划": [
         ("动态规划", "对dp的一些思考.md"),
-        ("动态规划", "数位dp笔记.md"),
-        ("动态规划", "普通dp常见状态.md"),
-        ("动态规划", "状压dp常见状态.md"),
+        ("动态规划", "dp笔记/数位dp笔记.md"),
+        ("动态规划", "dp笔记/普通dp常见状态.md"),
+        ("动态规划", "dp笔记/状压dp常见状态.md"),
     ],
     "图论": [
-        ("Graph", "图相关trick.md"),
-        ("Graph", "图论笔记(几类特殊图).md"),
+        ("图论", "Trick/图相关trick.md"),
+        ("图论", "图论笔记/图论笔记(几类特殊图).md"),
     ],
     "博弈论": [
         ("博弈论", "nim游戏 SG函数.md"),
     ],
     "通用 Trick 与杂项": [
-        ("Other", "杂项相关trick.md"),
+        ("其他", "Trick/杂项相关trick.md"),
     ],
 }
 
@@ -784,6 +785,8 @@ def pandoc_md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = ''
     typst_text = re.sub(r'^(=+)\s+(.*)', adjust_heading, typst_text, flags=re.MULTILINE)
     # Pandoc 兼容：替换 #horizontalrule
     typst_text = typst_text.replace('#horizontalrule', '#line(length: 100%, stroke: 0.5pt + luma(180))')
+    # 修复 Pandoc 生成的尾随逗号（如 table/tuple 参数中的 `,)`），否则 Typst 会报 unexpected comma
+    typst_text = re.sub(r',\s*\)', ')', typst_text)
 
     # ── 修复 Pandoc 输出中的 Typst 数学问题 ──
 
@@ -845,7 +848,7 @@ def pandoc_md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = ''
                 gen_rel = os.path.relpath(abs_path, GEN_DIR).replace('\\', '/')
                 return f'{prefix}"{gen_rel}")'
             else:
-                return f'/* 图片缺失: {rel_path} */'
+                return f'[#text(fill: red)[图片缺失: {escape_typst(rel_path)}]]'
         typst_text = re.sub(r'(#?(?:box\()?image\()"([^"]+)"\)', fix_img_path, typst_text)
     return typst_text
 
@@ -897,7 +900,8 @@ def generate_board2() -> tuple[str, list]:
 
             manifest.append(entry)
             parts.append(f'== {title}\n')
-            converted = pandoc_md_to_typst(md_text, heading_offset=2, img_base=nt_dir)
+            img_base = os.path.dirname(fpath)
+            converted = pandoc_md_to_typst(md_text, heading_offset=2, img_base=img_base)
             parts.append(converted)
             parts.append('')
 
@@ -939,7 +943,7 @@ def generate_board3() -> tuple[str, list]:
 
             manifest.append(entry)
             parts.append(f'== {title}\n')
-            img_base = os.path.join(ROOT, folder)
+            img_base = os.path.dirname(fpath)
             converted = pandoc_md_to_typst(md_text, heading_offset=2, img_base=img_base)
             parts.append(converted)
             parts.append('')

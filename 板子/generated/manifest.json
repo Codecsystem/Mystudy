@@ -9,7 +9,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "01tire.cpp",
     "title": "01tire",
     "has_usage": true,
@@ -17,7 +17,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "[应用]Treap维护数对.cpp",
     "title": "[应用]Treap维护数对",
     "has_usage": true,
@@ -25,7 +25,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "BIT(树状数组,0base).cpp",
     "title": "BIT(树状数组,0base)",
     "has_usage": false,
@@ -33,7 +33,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "BIT(树状数组,1base).cpp",
     "title": "BIT(树状数组,1base)",
     "has_usage": true,
@@ -41,7 +41,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "DSU(并查集).cpp",
     "title": "DSU(并查集)",
     "has_usage": true,
@@ -49,7 +49,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "FHQTreap(无旋平衡树).cpp",
     "title": "FHQTreap(无旋平衡树)",
     "has_usage": true,
@@ -57,7 +57,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "jiangly线段树(info).cpp",
     "title": "jiangly线段树(info)",
     "has_usage": false,
@@ -65,7 +65,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "jiangly线段树(改).cpp",
     "title": "jiangly线段树(改)",
     "has_usage": false,
@@ -73,7 +73,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "st表(1-based).cpp",
     "title": "st表(1-based)",
     "has_usage": true,
@@ -81,7 +81,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "st表.cpp",
     "title": "st表",
     "has_usage": true,
@@ -89,7 +89,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "主席树(例2).cpp",
     "title": "主席树(例2)",
     "has_usage": true,
@@ -97,7 +97,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "主席树.cpp",
     "title": "主席树",
     "has_usage": true,
@@ -105,7 +105,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "二叉搜索树.cpp",
     "title": "二叉搜索树",
     "has_usage": true,
@@ -113,7 +113,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "可删改堆.cpp",
     "title": "可删改堆",
     "has_usage": true,
@@ -121,7 +121,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "回撤并查集&可持久化并查集(离线).cpp",
     "title": "回撤并查集&可持久化并查集(离线)",
     "has_usage": true,
@@ -129,7 +129,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "手写堆.cpp",
     "title": "手写堆",
     "has_usage": true,
@@ -137,7 +137,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "普通莫队.cpp",
     "title": "普通莫队",
     "has_usage": true,
@@ -145,7 +145,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "李超线段树.cpp",
     "title": "李超线段树",
     "has_usage": false,
@@ -153,7 +153,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "珂朵莉树(ODT).cpp",
     "title": "珂朵莉树(ODT)",
     "has_usage": false,
@@ -161,7 +161,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "笛卡尔树(新版).cpp",
     "title": "笛卡尔树(新版)",
     "has_usage": false,
@@ -169,7 +169,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "笛卡尔树.cpp",
     "title": "笛卡尔树",
     "has_usage": true,
@@ -177,7 +177,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树(max&min),tested,class.cpp",
     "title": "线段树(max&min),tested,class",
     "has_usage": false,
@@ -185,7 +185,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树(max&min,upd+set),tested,class.cpp",
     "title": "线段树(max&min,upd+set),tested,class",
     "has_usage": true,
@@ -193,7 +193,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树(sum),tested ,class.cpp",
     "title": "线段树(sum),tested ,class",
     "has_usage": false,
@@ -201,7 +201,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树(sum,update+set),tested,class.cpp",
     "title": "线段树(sum,update+set),tested,class",
     "has_usage": false,
@@ -209,7 +209,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树二分.cpp",
     "title": "线段树二分",
     "has_usage": true,
@@ -217,7 +217,7 @@
   },
   {
     "board": "board1",
-    "folder": "DataStruct",
+    "folder": "数据结构",
     "file": "线段树分治.cpp",
     "title": "线段树分治",
     "has_usage": true,
@@ -225,7 +225,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "2-sat.cpp",
     "title": "2-sat",
     "has_usage": true,
@@ -233,7 +233,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "BCC（点双连通分量，tarjan）.cpp",
     "title": "BCC（点双连通分量，tarjan）",
     "has_usage": true,
@@ -241,7 +241,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "dfs&bfs.cpp",
     "title": "dfs&bfs",
     "has_usage": true,
@@ -249,7 +249,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "DSU on tree(树上启发式合并).cpp",
     "title": "DSU on tree(树上启发式合并)",
     "has_usage": true,
@@ -257,7 +257,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "EDCC (边双联通分量，tarjan）.cpp",
     "title": "EDCC (边双联通分量，tarjan）",
     "has_usage": true,
@@ -265,7 +265,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "johnson最短路.cpp",
     "title": "johnson最短路",
     "has_usage": true,
@@ -273,7 +273,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "MCS（最大势算法）.cpp",
     "title": "MCS（最大势算法）",
     "has_usage": true,
@@ -281,7 +281,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "SCC（低注释）.cpp",
     "title": "SCC（低注释）",
     "has_usage": true,
@@ -289,7 +289,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "SCC（强联通分量，缩点，tarjan）.cpp",
     "title": "SCC（强联通分量，缩点，tarjan）",
     "has_usage": true,
@@ -297,7 +297,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "ShortestPath（Bellman_Ford,SPFA).cpp",
     "title": "ShortestPath（Bellman_Ford,SPFA)",
     "has_usage": true,
@@ -305,7 +305,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "ShortestPath（dijkstra）.cpp",
     "title": "ShortestPath（dijkstra）",
     "has_usage": true,
@@ -313,7 +313,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "ShortestPath（Floyed）.cpp",
     "title": "ShortestPath（Floyed）",
     "has_usage": true,
@@ -321,7 +321,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "二分图最大匹配.cpp",
     "title": "二分图最大匹配",
     "has_usage": true,
@@ -329,7 +329,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "二分图染色.cpp",
     "title": "二分图染色",
     "has_usage": true,
@@ -337,7 +337,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "分层图.cpp",
     "title": "分层图",
     "has_usage": true,
@@ -345,7 +345,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "差分约束.cpp",
     "title": "差分约束",
     "has_usage": true,
@@ -353,7 +353,15 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
+    "file": "找环(topsort).cpp",
+    "title": "找环(topsort)",
+    "has_usage": true,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
     "file": "拓扑排序.cpp",
     "title": "拓扑排序",
     "has_usage": true,
@@ -361,7 +369,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最大流(dinic).cpp",
     "title": "最大流(dinic)",
     "has_usage": true,
@@ -369,7 +377,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小斯坦纳树.cpp",
     "title": "最小斯坦纳树",
     "has_usage": true,
@@ -377,7 +385,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小生成树（boruvka,标）.cpp",
     "title": "最小生成树（boruvka,标）",
     "has_usage": true,
@@ -385,7 +393,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小生成树（boruvka）.cpp",
     "title": "最小生成树（boruvka）",
     "has_usage": true,
@@ -393,7 +401,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小生成树（kruskal）.cpp",
     "title": "最小生成树（kruskal）",
     "has_usage": true,
@@ -401,7 +409,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小生成树（prim）.cpp",
     "title": "最小生成树（prim）",
     "has_usage": true,
@@ -409,7 +417,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小费用最大流(dinic).cpp",
     "title": "最小费用最大流(dinic)",
     "has_usage": true,
@@ -417,7 +425,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小费用最大流(dinic,浮点).cpp",
     "title": "最小费用最大流(dinic,浮点)",
     "has_usage": true,
@@ -425,7 +433,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最小费用最大流(原始对偶).cpp",
     "title": "最小费用最大流(原始对偶)",
     "has_usage": true,
@@ -433,7 +441,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最近公共祖先（LCA）(targan,静态).cpp",
     "title": "最近公共祖先（LCA）(targan,静态)",
     "has_usage": true,
@@ -441,7 +449,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "最近公共祖先（LCA）(倍增).cpp",
     "title": "最近公共祖先（LCA）(倍增)",
     "has_usage": true,
@@ -449,7 +457,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "树上倍增(点.边).cpp",
     "title": "树上倍增(点.边)",
     "has_usage": false,
@@ -457,7 +465,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "树上前缀和(点.边.倍增lca.ver.).cpp",
     "title": "树上前缀和(点.边.倍增lca.ver.)",
     "has_usage": false,
@@ -465,7 +473,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "树上基本处理.cpp",
     "title": "树上基本处理",
     "has_usage": false,
@@ -473,7 +481,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "树上差分(点,边.树剖lca.ver.).cpp",
     "title": "树上差分(点,边.树剖lca.ver.)",
     "has_usage": false,
@@ -481,7 +489,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "树链剖分（线段树ver.）.cpp",
     "title": "树链剖分（线段树ver.）",
     "has_usage": true,
@@ -489,7 +497,15 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
+    "file": "欧拉回路(路径,Hierholzer法).cpp",
+    "title": "欧拉回路(路径,Hierholzer法)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
     "file": "点分治.cpp",
     "title": "点分治",
     "has_usage": true,
@@ -497,7 +513,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "线段树优化建图.cpp",
     "title": "线段树优化建图",
     "has_usage": true,
@@ -505,7 +521,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "虚树(可拓展版).cpp",
     "title": "虚树(可拓展版)",
     "has_usage": true,
@@ -513,7 +529,7 @@
   },
   {
     "board": "board1",
-    "folder": "Graph",
+    "folder": "图论",
     "file": "虚树(带边权).cpp",
     "title": "虚树(带边权)",
     "has_usage": true,
@@ -521,7 +537,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "AC自动机(dp版).cpp",
     "title": "AC自动机(dp版)",
     "has_usage": true,
@@ -529,7 +545,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "AC自动机(可拓展版).cpp",
     "title": "AC自动机(可拓展版)",
     "has_usage": true,
@@ -537,7 +553,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "exKMP.cpp",
     "title": "exKMP",
     "has_usage": true,
@@ -545,7 +561,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "kmp.cpp",
     "title": "kmp",
     "has_usage": false,
@@ -553,7 +569,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "Manacher.cpp",
     "title": "Manacher",
     "has_usage": true,
@@ -561,7 +577,7 @@
   },
   {
     "board": "board1",
-    "folder": "string",
+    "folder": "字符串",
     "file": "tiretree.cpp",
     "title": "tiretree",
     "has_usage": true,
@@ -569,7 +585,7 @@
   },
   {
     "board": "board1",
-    "folder": "hash",
+    "folder": "哈希",
     "file": "hash表.cpp",
     "title": "hash表",
     "has_usage": true,
@@ -577,19 +593,11 @@
   },
   {
     "board": "board1",
-    "folder": "hash",
+    "folder": "哈希",
     "file": "字符串双hash.cpp",
     "title": "字符串双hash",
     "has_usage": true,
     "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "动态规划",
-    "file": "数位dp(例题1,数位和).cpp",
-    "title": "数位dp(例题1,数位和)",
-    "has_usage": true,
-    "has_tail": true
   },
   {
     "board": "board1",
@@ -598,6 +606,14 @@
     "title": "(ex)CRT((扩展)中国剩余定理)",
     "has_usage": true,
     "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "数论",
+    "file": "(最小)原根.cpp",
+    "title": "(最小)原根",
+    "has_usage": true,
+    "has_tail": false
   },
   {
     "board": "board1",
@@ -612,6 +628,14 @@
     "folder": "数论",
     "file": "FMT&FWT(快速莫比乌斯&沃尔什变换).cpp",
     "title": "FMT&FWT(快速莫比乌斯&沃尔什变换)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数论",
+    "file": "NTT(快速数论变换).cpp",
+    "title": "NTT(快速数论变换)",
     "has_usage": true,
     "has_tail": false
   },
@@ -745,7 +769,7 @@
   },
   {
     "board": "board1",
-    "folder": "Other",
+    "folder": "其他",
     "file": "动态bitset.cpp",
     "title": "动态bitset",
     "has_usage": false,
@@ -753,7 +777,7 @@
   },
   {
     "board": "board1",
-    "folder": "Other",
+    "folder": "其他",
     "file": "整体二分.cpp",
     "title": "整体二分",
     "has_usage": true,
@@ -761,7 +785,7 @@
   },
   {
     "board": "board1",
-    "folder": "Other",
+    "folder": "其他",
     "file": "离散化.cpp",
     "title": "离散化",
     "has_usage": true,
@@ -770,106 +794,113 @@
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记(筛法).md",
-    "title": "数论笔记(筛法)",
+    "file": "数论笔记部分/数论笔记(筛法).md",
+    "title": "数论笔记部分/数论笔记(筛法)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记(线性逆元).md",
-    "title": "数论笔记(线性逆元)",
+    "file": "数论笔记部分/数论笔记(线性逆元).md",
+    "title": "数论笔记部分/数论笔记(线性逆元)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记(不定方程与同余方程组).md",
-    "title": "数论笔记(不定方程与同余方程组)",
+    "file": "数论笔记部分/数论笔记(不定方程与同余方程组).md",
+    "title": "数论笔记部分/数论笔记(不定方程与同余方程组)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论小结论.md",
-    "title": "数论小结论",
+    "file": "数论笔记部分/数论小结论.md",
+    "title": "数论笔记部分/数论小结论",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
-    "title": "数论笔记(狄利克雷卷积与莫比乌斯反演 1)",
+    "file": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
+    "title": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
-    "title": "数论笔记(狄利克雷卷积与莫比乌斯反演 2)",
+    "file": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
+    "title": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记(炫酷反演魔术).md",
-    "title": "数论笔记(炫酷反演魔术)",
+    "file": "数论笔记部分/数论笔记(炫酷反演魔术).md",
+    "title": "数论笔记部分/数论笔记(炫酷反演魔术)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记(和式变换).md",
-    "title": "数论笔记(和式变换)",
+    "file": "数论笔记部分/数论笔记(和式变换).md",
+    "title": "数论笔记部分/数论笔记(和式变换)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记(排列组合).md",
-    "title": "数论笔记(排列组合)",
+    "file": "数论笔记部分/数论笔记(排列组合).md",
+    "title": "数论笔记部分/数论笔记(排列组合)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记(排列组合进阶).md",
-    "title": "数论笔记(排列组合进阶)",
+    "file": "数论笔记部分/数论笔记(排列组合进阶).md",
+    "title": "数论笔记部分/数论笔记(排列组合进阶)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记(生成函数).md",
-    "title": "数论笔记(生成函数)",
+    "file": "数论笔记部分/数论笔记(生成函数).md",
+    "title": "数论笔记部分/数论笔记(生成函数)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "变换与多项式",
-    "file": "FFT笔记.md",
-    "title": "FFT笔记",
+    "file": "数论笔记部分/FFT笔记.md",
+    "title": "数论笔记部分/FFT笔记",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "变换与多项式",
-    "file": "数论笔记(sosdp&fmt&fwt).md",
-    "title": "数论笔记(sosdp&fmt&fwt)",
+    "file": "数论笔记部分/数论笔记(sosdp&fmt&fwt).md",
+    "title": "数论笔记部分/数论笔记(sosdp&fmt&fwt)",
+    "warnings": []
+  },
+  {
+    "board": "board2",
+    "group": "变换与多项式",
+    "file": "数论笔记部分/数论笔记(阶,原根与ntt).md",
+    "title": "数论笔记部分/数论笔记(阶,原根与ntt)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "Trick 与杂项",
-    "file": "数学相关trick.md",
-    "title": "数学相关trick",
+    "file": "Trick/数学相关trick.md",
+    "title": "Trick/数学相关trick",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "Trick 与杂项",
-    "file": "数论笔记(杂项).md",
-    "title": "数论笔记(杂项)",
+    "file": "数论笔记部分/数论笔记(杂项).md",
+    "title": "数论笔记部分/数论笔记(杂项)",
     "warnings": []
   },
   {
@@ -882,36 +913,36 @@
   {
     "board": "board3",
     "group": "动态规划",
-    "file": "动态规划/数位dp笔记.md",
-    "title": "数位dp笔记",
+    "file": "动态规划/dp笔记/数位dp笔记.md",
+    "title": "dp笔记/数位dp笔记",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
-    "file": "动态规划/普通dp常见状态.md",
-    "title": "普通dp常见状态",
+    "file": "动态规划/dp笔记/普通dp常见状态.md",
+    "title": "dp笔记/普通dp常见状态",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
-    "file": "动态规划/状压dp常见状态.md",
-    "title": "状压dp常见状态",
+    "file": "动态规划/dp笔记/状压dp常见状态.md",
+    "title": "dp笔记/状压dp常见状态",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "图论",
-    "file": "Graph/图相关trick.md",
-    "title": "图相关trick",
+    "file": "图论/Trick/图相关trick.md",
+    "title": "Trick/图相关trick",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "图论",
-    "file": "Graph/图论笔记(几类特殊图).md",
-    "title": "图论笔记(几类特殊图)",
+    "file": "图论/图论笔记/图论笔记(几类特殊图).md",
+    "title": "图论笔记/图论笔记(几类特殊图)",
     "warnings": []
   },
   {
@@ -924,8 +955,8 @@
   {
     "board": "board3",
     "group": "通用 Trick 与杂项",
-    "file": "Other/杂项相关trick.md",
-    "title": "杂项相关trick",
+    "file": "其他/Trick/杂项相关trick.md",
+    "title": "Trick/杂项相关trick",
     "warnings": []
   }
 ]

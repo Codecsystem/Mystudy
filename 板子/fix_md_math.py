@@ -150,7 +150,19 @@ def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dry_run = '--dry-run' in sys.argv
 
-    dirs = ['数论', '动态规划', 'Graph', '博弈论', 'Other']
+    dirs = [
+        '数论',
+        os.path.join('数论', 'Trick'),
+        os.path.join('数论', '数论笔记部分'),
+        '动态规划',
+        os.path.join('动态规划', 'dp笔记'),
+        '图论',
+        os.path.join('图论', 'Trick'),
+        os.path.join('图论', '图论笔记'),
+        '博弈论',
+        '其他',
+        os.path.join('其他', 'Trick'),
+    ]
     md_files = []
     for d in dirs:
         dpath = os.path.join(root, d)

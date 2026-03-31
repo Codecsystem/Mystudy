@@ -37,50 +37,73 @@ signed main()
 }
 ```
 
-= DataStruct
+= 数据结构
 
 == 01tire
 
 ```cpp
 class O1Tire{
-	public:
-		struct node
-		{
-			node* ch[2];
-			int cnt;
-			node():ch{nullptr,nullptr},cnt(0){}
-		};
-		node* root;
-		O1Tire():root(new node){}
-		void set(int x,int t)//从高到低建树
-		{
-			node* p=root;
-			for(int i=31;i>=0;i--)
-			{
-				int d=(x>>i)&1;
-				if(!p->ch[d])
-					p->ch[d]=new node();
-				p->ch[d]->cnt+=t;
-				p=p->ch[d];
-			}
-		}
-		int findMax(int x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
-		{
-			node* p=root;
-			int res=0;
-			for(int i=31;i>=0;i--)
-			{
-				int d=(x>>i)&1;
-				if(p->ch[d^1]&&p->ch[d^1]->cnt)
-					p=p->ch[d^1],res+=(1<<i);
-				else
-					p=p->ch[d];
-				if(!p)
-					return res;
-			}
-			return res;
-		}
-		
+    public:
+        struct node
+        {
+            int ch[2];
+            int cnt;
+            node():ch{0,0},cnt(0){}
+        };
+        vector<node> trie;
+        int tot,root;
+        O1Tire(int len):trie(len+5),tot(0),root(0){}
+		//len:节点数,此处一般是32*n
+        void set(int x,int t)//从高到低建树
+        {
+            int p=root;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                if(!trie[p].ch[d])
+                    trie[p].ch[d]=++tot;
+                trie[trie[p].ch[d]].cnt+=t;
+                p=trie[p].ch[d];
+            }
+        }
+        int findMax(int x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
+        {
+            int p=root;
+            int res=0;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                if(trie[p].ch[d^1]&&trie[trie[p].ch[d^1]].cnt)
+                    p=trie[p].ch[d^1],res+=(1<<i);
+                else
+                    p=trie[p].ch[d];
+                if(!p)
+                    return res;
+            }
+            return res;
+        }
+		//求解x对tire中所有数的xor中<=k的个数
+		int qry(int x,int k){
+            int res=0,p=root;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                int kd=(k>>i)&1;
+                if(kd){
+                    if(trie[p].ch[d]) res+=trie[trie[p].ch[d]].cnt;
+                    if(!trie[p].ch[d^1]) return res;
+                    p=trie[p].ch[d^1];
+                }
+                else{
+                    if(!trie[p].ch[d]) return res;
+                    p=trie[p].ch[d];
+                }
+            }
+			//加上=k的情况
+            res+=trie[p].cnt;
+            return res;
+        }
+		//其他逻辑反着来即可
 };
 ```
 
@@ -93,7 +116,7 @@ class O1Tire{
 	    vector<int> a(n);
 	    for(int i=0;i<n;i++)
 	        cin>>a[i];
-		O1Tire tire;
+		O1Tire tire(n*32);
 		int ans=0xfffffff;
 		for(int i=0,j=0;i<n;i++)
 			tire.set(a[i],1);
@@ -2926,7 +2949,7 @@ public:
     for(int i=1;i<=k;i++) cout<<(segdiv.ans[i]==1?"Yes":"No")<<'\n';
 ```
 
-= Graph
+= 图论
 
 == 2-sat
 
@@ -4513,6 +4536,36 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
         for(int i=1;i<=n;i++)
             printf("%d ",ans[i]);
         printf("\n");
+```
+
+== 找环(topsort)
+
+// 无向图,跑完topsort后,度数>1的点一定在环上
+
+// 有向图只要把入度=0的入队,跑完topsort后,入度>0的点一定在环上
+
+// 同理topsort可以用来判环
+
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m;cin>>n>>m;
+    vector<vector<int>> mp(n+1);
+    vector<int> deg(n+1,0);
+    for(int i=1;i<=m;i++)
+        int u,v;cin>>u>>v;
+        mp[u].push_back(v);
+        mp[v].push_back(u);
+        deg[u]++,deg[v]++;
+    queue<int> q;
+    for(int i=1;i<=n;i++)
+        if(deg[i]==1) q.push(i);
+    while(!q.empty())
+        int u=q.front();q.pop();
+        for(int v:mp[u])
+            deg[v]--;
+            if(deg[v]==1) q.push(v);
 ```
 
 == 拓扑排序
@@ -6271,6 +6324,89 @@ class cutTree
 	//cout<<"time: "<<(double)(T_end-T_start)/CLOCKS_PER_SEC<<"s"<<endl;
 ```
 
+== 欧拉回路(路径,Hierholzer法)
+
+```cpp
+//有向图的情况,注意一下此处假设图的基图全联通，未考虑孤立点
+//即此处只考虑处理一个联通分量的情况
+class HierholzerD{
+    public:
+        vector<vector<int>> mp;
+        vector<int> in,out,del;
+        int n;
+        HierholzerD(vector<vector<int>> &mp,int n):
+        mp(mp),n(n),in(n+1,0),out(n+1,0),del(n+1,0){
+            for(int i=1;i<=n;i++){
+                for(auto &j:mp[i]){
+                    out[i]++;
+                    in[j]++;
+                }
+            }
+        }
+        vector<int> get(){
+            int s=-1,t=-1,cnts=0,cntt=0;
+            for(int i=1;i<=n;i++){
+                if(out[i]==in[i]) continue;
+                if(out[i]-in[i]==1) s=i,cnts++;
+                else if(in[i]-out[i]==1) t=i,cntt++;
+                else return {};
+            }
+            if(!((cnts==0&&cntt==0)||(cnts==1&&cntt==1))) return {};
+            if(s==-1) s=1;
+            vector<int> res;
+            auto dfs=[&](this auto&& dfs,int u)->void{
+                for(int &i=del[u];i<mp[u].size();){
+                    int v=mp[u][i++];
+                    dfs(v);
+                }
+                res.push_back(u);
+            };
+            dfs(s);
+            reverse(res.begin(),res.end());
+            return res;
+        }
+        //返回欧拉回路/欧拉路径
+};
+//无向图的情况,注意一下此处假设图的基图全联通，未考虑孤立点
+//即此处只考虑处理一个联通分量的情况
+//注意存双向边的时候存下编号，eg.u->v 编号为0，v->u编号为1
+class HierholzerN{
+    public:
+        vector<vector<array<int,2>>> mp;
+        vector<int> deg,del,vis;
+        int n,m;
+        HierholzerN(vector<vector<array<int,2>>> &mp,int n,int m):
+        mp(mp),n(n),deg(n+1,0),del(n+1,0),vis(2*m+5){
+            for(int i=1;i<=n;i++){
+                deg[i]=mp[i].size();
+            }
+        }
+        vector<int> get(){
+            int s=-1,odd=0,even=0;
+            for(int i=1;i<=n;i++){
+                if(deg[i]&1) odd++,s=i;
+                else even++;
+            }
+            if(!(odd==0||odd==2)) return {};
+            if(s==-1) s=1;
+            vector<int> res;
+            auto dfs=[&](this auto&& dfs,int u)->void{
+                for(int &i=del[u];i<mp[u].size();){
+                    auto [v,id]=mp[u][i++];
+                    if(vis[id]) continue;
+                    vis[id]=vis[id^1]=1;
+                    dfs(v);
+                }
+                res.push_back(u);
+            };
+            dfs(s);
+            reverse(res.begin(),res.end());
+            return res;
+        }
+        //返回欧拉回路/欧拉路径
+};
+```
+
 == 点分治
 
 // 淀粉质：把树上路径问题转化为子树分治问题
@@ -6732,7 +6868,7 @@ class vtree{
         for(auto x:co) iskey[x]=0;
 ```
 
-= string
+= 字符串
 
 == AC自动机(dp版)
 
@@ -7150,7 +7286,7 @@ public:
     cout<<fin-2*trie.fin<<endl;
 ```
 
-= hash
+= 哈希
 
 == hash表
 
@@ -7281,145 +7417,6 @@ class SHash{
         cout<<n-ans<<endl;
 ```
 
-= 动态规划
-
-== 数位dp(例题1,数位和)
-
-// 数位dp 计算[l,r]内所有数的数位和
-
-// dfs 形参总结
-
-
-```cpp
-#define int long long //赫赫 要不要龙龙呢
-using namespace std;
-const int mod=1e9+7;;
-template <int MOD>
-struct SMC {
-    int64_t val;
-    constexpr SMC(int64_t v=0){
-        val=(v%MOD+MOD)%MOD;
-    }
-    SMC& operator=(int64_t v){
-        val=(v%MOD+MOD)%MOD;
-        return *this;
-    }
-    SMC& operator+=(const SMC &rhs){
-        val+=rhs.val;
-        if(val>=MOD) val-=MOD;
-        return *this;
-    }
-    SMC& operator-=(const SMC &rhs){
-        val-=rhs.val;
-        if(val<0) val+=MOD;
-        return *this;
-    }
-    SMC& operator*=(const SMC &rhs){
-        val=1LL*val*rhs.val%MOD;
-        return *this;
-    }
-    static int64_t qpow(int64_t a,int64_t b){
-        int64_t res=1;
-        while(b){
-            if(b&1) res=res*a%MOD;
-            a=a*a%MOD;
-            b>>=1;
-        }
-        return res;
-    }
-    SMC pow(int64_t k) const{
-        return SMC(qpow(val,k));
-    }
-    SMC inv() const{
-        return pow(MOD-2);
-    }
-    SMC& operator/=(const SMC &rhs){
-        return *this*=rhs.inv();
-    }
-    friend SMC operator+(SMC a,const SMC &b){ return a+=b;}
-    friend SMC operator-(SMC a,const SMC &b){ return a-=b;}
-    friend SMC operator*(SMC a,const SMC &b){ return a*=b;}
-    friend SMC operator/(SMC a,const SMC &b){ return a/=b;}
-    SMC& operator++() { return *this += 1; }
-	SMC& operator--() { return *this -= 1; }
-	SMC operator++(int32_t dummy) { SMC t=*this; ++*this; return t; }
-	SMC operator--(int32_t dummy) { SMC t=*this; --*this; return t; }
-    friend bool operator==(const SMC &a,const SMC &b){ return a.val==b.val;}
-	friend bool operator<(const SMC &a,const SMC &b){ return a.val<b.val;}
-    friend bool operator>(const SMC &a,const SMC &b){ return a.val>b.val;}
-    friend bool operator<=(const SMC &a,const SMC &b){ return a.val<=b.val;}
-    friend bool operator>=(const SMC &a,const SMC &b){ return a.val>=b.val;}
-    friend bool operator!=(const SMC &a,const SMC &b){ return a.val!=b.val;}
-
-    friend std::istream& operator>>(std::istream &in,SMC &a){
-        int64_t v;
-        in>>v,a=SMC(v);
-        return in;
-    }
-
-    friend std::ostream& operator<<(std::ostream &out,const SMC &a){
-        out<<a.val;
-        return out;
-    }
-    explicit operator long long() const{
-        return val;
-    }
-    SMC operator-() const{
-        return SMC(-val);
-    }
-	SMC& operator+=(int64_t x) { return *this+=SMC(x); }
-	SMC& operator-=(int64_t x) { return *this-=SMC(x); }
-	SMC& operator*=(int64_t x) { return *this*=SMC(x); }
-	SMC& operator/=(int64_t x) { return *this/=SMC(x); }
-
-	friend SMC operator+(SMC a, int64_t b) { return a+=b; }
-	friend SMC operator-(SMC a, int64_t b) { return a-=b; }
-	friend SMC operator*(SMC a, int64_t b) { return a*=b; }
-	friend SMC operator/(SMC a, int64_t b) { return a/=b; }
-
-	friend SMC operator+(int64_t a, SMC b) { return b+a; }
-	friend SMC operator-(int64_t a, SMC b) { return SMC(a)-b; }
-	friend SMC operator*(int64_t a, SMC b) { return b*a; }
-	friend SMC operator/(int64_t a, SMC b) { return SMC(a)/b; }
-};
-using Z=SMC<mod>;
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-	int t;cin>>t;
-	vector<vector<Z>> dp(20,vector<Z>(18*9+5,-1));
-	//dp[i][j]表示[i+1,len](除低i位的高位)数位和=j时,[1,i]任选的所有方案的数位和
-	while(t--)
-	    int l,r;cin>>l>>r;
-		vector<int> bit;
-		auto work=[&](int x)->int{
-			bit.clear();
-			bit.push_back(0);//1-based
-			while(x) bit.push_back(x%10),x/=10;
-			return bit.size()-1;
-		};
-		auto dfs=[&](this auto&& dfs,int pos,bool lim,int sum)->Z{
-			//从len位填到pos+1位,lim表示是否受上界限制,sum表示当前数位和
-			//现在填pos位 也就是说dfs的含义是[pos+1,len]数位和=sum时,pos位受lim限制的方案数
-			if(pos==0) return sum;//第0位,直接返回sum
-			if(!lim&&dp[pos][sum]!=-1) return dp[pos][sum];
-			int up=lim?bit[pos]:9;
-			Z res=0;
-			for(int i=0;i<=up;i++)
-				res+=dfs(pos-1,lim&&i==up,sum+i);
-				//传递受上界限制的状态
-			if(!lim) dp[pos][sum]=res;
-			return res;
-		};
-		auto solve=[&](int x)->Z{
-			int len=work(x);
-			return dfs(len,1,0);
-		};
-		cout<<solve(r)-solve(l-1)<<endl;
-```
-
 = 数论
 
 == (ex)CRT((扩展)中国剩余定理)
@@ -7546,6 +7543,127 @@ class exCRT{
     for(int i=0;i<n;i++) cin>>m[i]>>r[i];
     exCRT ex(r,m);
     cout<<ex.CRT()<<endl;
+```
+
+== (最小)原根
+
+```cpp
+class Pre{
+public:
+    int n;
+    vector<int> phi,primes,ex,spf;
+    Pre(int n):n(n),phi(n+1,0),ex(n+1,0),spf(n+1){
+        prep();
+    }
+    ll qpow(int a,int b,int m)//快速幂
+    {
+        ll ans=1;
+        while(b)
+        {
+            if(b&1) ans=ans*a%m;
+            a=1ll*a*a%m,b>>=1;
+        }
+        return ans;
+    }
+    void prep()
+    {
+        phi[1]=1;
+        vector<bool> v(n+1,0);
+        for(int i=2;i<=n;i++)
+        {
+            if(!v[i]) 
+            {
+                primes.push_back(i);
+                phi[i]=i-1;
+                spf[i]=i;
+            }
+            for(int j=0;j<primes.size()&&primes[j]*i<=n;j++)
+            {
+                int m=primes[j]*i;
+                v[m]=1;spf[m]=primes[j];
+                if(i%primes[j]==0)
+                {
+                    phi[m]=phi[i]*primes[j];
+                    break;
+                }
+                else phi[m]=phi[i]*(primes[j]-1);
+            }
+        }
+        assert(n>=4);
+        ex[2]=ex[4]=1;
+        for(auto p:primes){
+            if(p&1){
+                ll tp=p;
+                while(tp<=n){
+                    ex[tp]=1;
+                    if(2*tp<=n) ex[2*tp]=1;
+                    tp*=p;
+                }
+            }
+        }
+        return ;
+    }
+    //O(m^1/4*logm^2) 求最小原根
+    int getr(int m){
+        if(!ex[m]) return -1;
+        vector<int> now;
+        int tp=phi[m];
+        while(tp>1){
+            int p=spf[tp];
+            now.push_back(phi[m]/p);
+            while(tp%p==0) tp/=p;
+        }
+        for(int j=1;j<=m;j++){
+            if(__gcd(j,m)!=1) continue;
+            int flag=1;
+            for(auto k:now){
+                if(qpow(j,k,m)==1){
+                    flag=0;
+                    break;
+                }
+            }
+            if(flag) return j;
+        }
+    }
+    //O(phi(m)*log phi(m)) 求m的所有原根
+    vector<int> getar(int m){
+        vector<int> ans;
+        int mi=getr(m);
+        if(mi==-1) return ans;
+        int tp=mi;
+        for(int i=1;i<=phi[m];i++){
+            if(__gcd(i,phi[m])==1){
+                ans.push_back(tp);
+            }
+            tp=1ll*tp*mi%m;
+        }
+        sort(ans.begin(),ans.end());
+        return ans;
+    }
+    //O(n^5/4logn) 求1-n的所有最小原根
+    vector<int> get()
+    {
+        vector<int> ans(n+1,-1);
+        for(int i=1;i<=n;i++)
+        {
+            ans[i]=getr(i);
+        }
+        return ans;
+    }
+};
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    Pre p(1e6+5);
+    int t;cin>>t;
+    while(t--)
+        int n,d;cin>>n>>d;
+        auto now=p.getar(n);
+        cout<<now.size()<<'\n';
+        for(int i=d-1;i<now.size();i+=d) cout<<now[i]<<" ";
+        cout<<'\n';
 ```
 
 == FFT(快速傅里叶变换)
@@ -7705,6 +7823,143 @@ public:
     cout<<endl;
     for(auto i:c3) cout<<i<<" ";
     cout<<endl;
+```
+
+== NTT(快速数论变换)
+
+```cpp
+constexpr int P1=998244353;  
+constexpr int P2=1004535809; 
+constexpr int P3=469762049; 
+constexpr int P4=167772161;  
+constexpr ll P5=4179340454199820289LL;   
+//大质数可用于答案不超过1e18的多项式乘法
+//g=3
+const int mod=998244353;
+//防爆ll的模运算
+template <ll MOD>
+struct SMC {
+    ll val;
+    SMC(ll v=0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
+    SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
+    SMC& operator*=(const SMC &r) { val=(ll)((__int128_t)val*r.val%MOD); return *this; }
+    SMC& operator/=(const SMC &r) { return *this*=r.inv(); }
+    friend SMC operator+(SMC a,const SMC &b) { return a+=b; }
+    friend SMC operator-(SMC a,const SMC &b) { return a-=b; }
+    friend SMC operator*(SMC a,const SMC &b) { return a*=b; }
+    friend SMC operator/(SMC a,const SMC &b) { return a/=b; }
+    SMC pow(ll k) const {
+        SMC res=1,a=*this;
+        for (;k;k>>=1,a*=a) if(k&1) res*=a;
+        return res;
+    }
+    SMC inv() const { return pow(MOD-2); }
+    friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
+    friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
+};
+//Montgomery 模乘，快很多
+template<uint32_t MOD>
+struct Mont {
+    static constexpr uint32_t M_PRIME = []() {
+        uint32_t x = MOD;
+        for (int i = 0; i < 4; ++i) x *= 2u - MOD * x;
+        return ~x + 1;
+    }();
+    static constexpr uint32_t R2 = []() {
+        uint64_t x = 1ull << 32;
+        x %= MOD;
+        return (x * x) % MOD;
+    }();
+
+    uint32_t val; 
+    static constexpr uint32_t reduce(uint64_t T) {
+        uint32_t m = uint32_t(T) * M_PRIME;
+        uint32_t res = (T + (uint64_t)m * MOD) >> 32;
+        return res >= MOD ? res - MOD : res;
+    }
+    constexpr Mont(long long x = 0) : val(reduce((uint64_t)(x % MOD + MOD) % MOD * R2)) {}
+    constexpr uint32_t get() const { return reduce(val); }
+    constexpr Mont& operator+=(const Mont& rhs) { val += rhs.val; if (val >= MOD) val -= MOD; return *this; }
+    constexpr Mont& operator-=(const Mont& rhs) { if (val < rhs.val) val += MOD; val -= rhs.val; return *this; }
+    constexpr Mont& operator*=(const Mont& rhs) {
+        val = reduce((uint64_t)val * rhs.val);
+        return *this;
+    }
+    friend constexpr Mont operator+(Mont lhs, const Mont& rhs) { return lhs += rhs; }
+    friend constexpr Mont operator-(Mont lhs, const Mont& rhs) { return lhs -= rhs; }
+    friend constexpr Mont operator*(Mont lhs, const Mont& rhs) { return lhs *= rhs; }
+    constexpr Mont pow(uint64_t n) const {
+        Mont res(1), a(*this);
+        while (n) { if (n & 1) res *= a; a *= a; n >>= 1; }
+        return res;
+    }
+    constexpr Mont inv() const { return pow(MOD - 2); }
+    constexpr Mont operator/(const Mont& rhs) const { return *this * rhs.inv(); }
+    friend istream& operator>>(istream &in, Mont &a) { 
+        long long v; 
+        in >> v; 
+        a = Mont(v); 
+        return in; 
+    }
+    friend ostream& operator<<(ostream &out, const Mont &a) { 
+        return out << a.get(); 
+    }
+};
+using Z=SMC<mod>;
+class NTT{
+public:
+    const int G=3;
+    vector<int> R; vector<Z> rt;
+    NTT(int len=0){ 
+        int n=1; 
+        while(n<len*2) n<<=1; 
+        init(n); 
+    }
+    void init(int n){
+        if(rt.empty()) rt={0,1};
+        if(rt.size()>=n) return;
+        for(int i=rt.size();i<n;i<<=1){
+            rt.resize(i<<1); Z w=Z(G).pow((mod-1)/(i<<1)); rt[i]=1;
+            for(int j=1;j<i;j++) rt[i+j]=rt[i+j-1]*w;
+        }
+    }
+    void ntt(vector<Z>& a,int n,int op){
+        for(int i=0;i<n;i++) R[i]=(R[i>>1]>>1)|((i&1)*(n>>1));
+        for(int i=0;i<n;i++) if(i<R[i]) swap(a[i],a[R[i]]);
+        for(int i=2;i<=n;i<<=1)
+            for(int m=i>>1,j=0;j<n;j+=i)
+                for(int k=j;k<j+m;k++){
+                    Z x=a[k],y=rt[m+k-j]*a[k+m];
+                    a[k]=x+y,a[k+m]=x-y;
+                }
+        if(op==-1){
+            reverse(a.begin()+1,a.end()); Z in=Z(n).inv();
+            for(int i=0;i<n;i++) a[i]*=in;
+        }
+    }
+    vector<Z> calc(vector<Z> a,vector<Z> b){
+        if(a.empty()||b.empty()) return {};
+        int sz=a.size()+b.size()-1,len=1;
+        while(len<sz) len<<=1;
+        init(len); R.resize(len); a.resize(len); b.resize(len);
+        ntt(a,len,1); ntt(b,len,1);
+        for(int i=0;i<len;i++) a[i]*=b[i];
+        ntt(a,len,-1); a.resize(sz);
+        return a;
+    }
+};
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m;cin>>n>>m;
+    vector<Z> a(n+1),b(m+1);
+    for(int i=0;i<=n;i++) cin>>a[i];
+    for(int i=0;i<=m;i++) cin>>b[i];
+    NTT ntt; vector<Z> c=ntt.calc(a,b);
+    for(int i=0;i<=n+m;i++) cout<<c[i]<<' ';
 ```
 
 == 乘法逆元
@@ -7964,7 +8219,7 @@ public:
         vector<bool>v(n+1,0);
         for(int i=2;i<=n;i++)
         {
-            if(!v[i])primes.push_back(i),phi[i]=i-1;
+            if(!v[i]) primes.push_back(i),phi[i]=i-1;
             for(int j=0;j<primes.size()&&primes[j]*i<=n;j++)
             {
                 int m=primes[j]*i;
@@ -8096,6 +8351,7 @@ public:
         }
         return ans;
     }
+    //一个常数更小的写法是求出i的最小质因数，然后递归的查,见原根的实现。
 };
 ```
 
@@ -8203,8 +8459,13 @@ class MatQpow{
         vector<vector<Z>> C(n,vector<Z>(n,0));
         for(int i=0;i<n;i++)
             for(int k=0;k<n;k++)
+            {
+                if(!A[i][k].val) continue;
                 for(int j=0;j<n;j++)
+                {
                     C[i][j]+=A[i][k]*B[k][j];
+                }      
+            }
         return C;
     }
     vector<vector<Z>> qpow(ll k) const{
@@ -8311,8 +8572,6 @@ vector<int> primes(int n)
 
 
 ```cpp
-#define int long long //赫赫 要不要龙龙呢
-using namespace std;
 class basic{
     public:
     vector<int> num,bas;
@@ -8344,12 +8603,12 @@ class basic{
         bas.assign(num.begin(),num.begin()+cnt);
     }
     //求第k小的数 k:1base
-    int kth(int k){
+    int kth(ll k){
         //k个基向量能构造出2^k-1个数
         //case1 :cnt<n 意味这能构造出 0 所以能构造2^k个数
         //case2 :cnt=n 意味这不能构造出 0 所以只能构造2^k-1个数
         if(cnt<n) k--;
-        if(k>=(1ll<<cnt)) return -1;
+        if(k>=(1ull<<cnt)) return -1;
         int ans=0;
         for(int i=0;i<cnt;i++){
             if(k>>i&1) ans^=bas[cnt-1-i];
@@ -8358,22 +8617,22 @@ class basic{
     }
     //求一个数用一个数列异或得到的方案数
     //约简为0的向量是不必要的 于是可以任选
-    int count(int x){
+    ll count(int x){
         for(auto b:bas){
-            if(x&b) x^=b;
+            if((x^b)<x) x^=b;
         }
         return x==0?(1ll<<(n-cnt)):0;
     }
     //求一个数在数列xor和中的排名
-    int rk(int x){
+    ll rk(int x){
         int tp=x;
         for(auto b:bas){
-            if(tp&b) tp^=b;
+            if((tp^b)<tp) tp^=b;
         }
         if(tp) return -1;
         int id=0;
         for(int i=0;i<cnt;i++){
-            if(x&(bas[i]))
+            if((x^bas[i])<x)
             {
                 id|=(1ll<<(cnt-1-i));
                 x^=bas[i];
@@ -8381,6 +8640,13 @@ class basic{
         }
         if(cnt<n) id++;
         return id;
+    }
+    //求一个数在xor线性基的数中得到最小值
+    int getmin(int x){
+        for(auto b:bas){
+            if((x^b)<x) x=x^b;
+        }
+        return x;
     }
 };
 ```
@@ -9379,7 +9645,7 @@ void psort(vector<pit>& a)
 }
 ```
 
-= Other
+= 其他
 
 == 动态bitset
 
