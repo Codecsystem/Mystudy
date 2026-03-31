@@ -18,7 +18,6 @@ ARC58-ARC90的后两题 进度58/90
 
 
 马上想学的知识点：
-ntt
 多项式科技，gf
 
 哎哎，能不能按照计划来，，，
@@ -92,6 +91,9 @@ dp
 --线性基(贪心法)                  ...2025/8/30
 --斯特林/二项式反演              ...2025/11/27
 --组合数学结论                   ...2025/11/27
+--**ntt**                       ...2026/3/31
+https://codeforces.com/contest/2169/problem/F 注意有on解
+https://atcoder.jp/contests/abc436/tasks/abc436_g
 --**杜教筛**
 --**拉插**
 --多项式科技
@@ -100,8 +102,8 @@ dp
 --剩余系
 --BSGS/exgBSGS
 --威尔逊定理
---**ntt**   https://codeforces.com/contest/2169/problem/F 注意有on解
-        https://atcoder.jp/contests/abc436/tasks/abc436_g
+--Montgomery 模乘,ntt的实现
+
 --类欧  https://atcoder.jp/contests/abc443/tasks/abc443_g
 --浮点数分子分母表示
 

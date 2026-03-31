@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(python -c \"from pathlib import Path; root=Path\\(r''E:/Data/Work/algorithm_study/Mystudy/Other''\\); files=sorted\\([p for p in root.rglob\\(''*''\\) if p.is_file\\(\\) and p.suffix.lower\\(\\) in {''.cpp'',''.md''}]\\);:*)"
-    ]
-  }
-}
