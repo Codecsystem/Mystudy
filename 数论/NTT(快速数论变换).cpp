@@ -54,6 +54,30 @@ struct SMC {
     friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
     friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
 };
+//1e9级别模数应该优先使用这个
+/*
+template <int MOD>
+struct SMC {
+    int val;
+    SMC(ll v=0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
+    SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
+    SMC& operator*=(const SMC &r) { val=1LL*val*r.val%MOD; return *this; }
+    SMC& operator/=(const SMC &r) { return *this*=r.inv(); }
+    friend SMC operator+(SMC a,const SMC &b) { return a+=b; }
+    friend SMC operator-(SMC a,const SMC &b) { return a-=b; }
+    friend SMC operator*(SMC a,const SMC &b) { return a*=b; }
+    friend SMC operator/(SMC a,const SMC &b) { return a/=b; }
+    SMC pow(ll k) const {
+        SMC res=1,a=*this;
+        for (;k;k>>=1,a*=a) if(k&1) res*=a;
+        return res;
+    }
+    SMC inv() const { return pow(MOD-2); }
+    friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
+    friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
+};
+*/
 //Montgomery 模乘，快很多
 template<uint32_t MOD>
 struct Mont {
@@ -107,6 +131,7 @@ class NTT{
 public:
     const int G=3;
     vector<int> R; vector<Z> rt;
+    //多项式的最高项数
     NTT(int len=0){ 
         int n=1; 
         while(n<len*2) n<<=1; 
@@ -134,6 +159,7 @@ public:
             for(int i=0;i<n;i++) a[i]*=in;
         }
     }
+    //仅记录ntt计算过程，直接调用可能增加常数开销
     vector<Z> calc(vector<Z> a,vector<Z> b){
         if(a.empty()||b.empty()) return {};
         int sz=a.size()+b.size()-1,len=1;

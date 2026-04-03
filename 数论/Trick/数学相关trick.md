@@ -14,3 +14,5 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&return
 注意$dp[i] = W[1]dp[i-1] + W[2]dp[i-2] + \dots + W[d]dp[i-d]$。
 构造的矩阵为第一行为系数矩阵，然后是从(2,1)开始的类似于单位矩阵的矩阵(d行d列)。
 可以把$$(dp[i-1],dp[i-2],\dots,dp[i-d])$$看作一个列向量，然后乘上构造的矩阵，就可以得到$$(dp[i],dp[i-1],\dots,dp[i-d+1])$$。
+
+ntt如果有多次intt，有可能可以不用先intt然后答案相加，而是直接在ntt后把点值加起来，最后做一次intt就行

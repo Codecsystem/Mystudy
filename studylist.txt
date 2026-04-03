@@ -10,7 +10,6 @@ https://codeforces.com/contest/2176
 
 待补：
 牛客寒假：
-寒假营3 寒假营6 FJL
 atc typical dp 进度 0/last4
 fan's problems list 进度0
 ARC58-ARC90的后两题 进度58/90
