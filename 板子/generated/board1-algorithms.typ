@@ -2045,7 +2045,7 @@ class DKRTr{
         }
     }
     //获取每个节点的管辖区间
-    //x[i]是往左找<=x的第一个树，y[i]是往右找<x的第一个数(均不包含)
+    //x[i]是往左找<=x的第一个数，y[i]是往右找<x的第一个数(均不包含)
     array<vector<int>,2> get(){
         vector<int> x(n+1),y(n+1);
         auto dfs=[&](auto&& dfs,int u,int l,int r)->void{
@@ -7286,6 +7286,150 @@ public:
     cout<<fin-2*trie.fin<<endl;
 ```
 
+== 后缀自动机(SAM)
+
+```cpp
+class SAM{
+    public:
+    vector<vector<int>> ch,tree;
+    int n,tot,last; // 根节点为0, 节点总数tot
+    vector<int> len,fa,sz,fpos,is_np,id;
+    SAM(int n):n(n),ch(2*n+5,vector<int>(26,0)),tree(2*n+5),
+               len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),fpos(2*n+5,0),
+               is_np(2*n+5,0),id(2*n+5,0),tot(0),last(0){fa[0]=-1;}
+    void extend(int c){
+        int p=last,np=last=++tot;
+        len[np]=len[p]+1,sz[np]=1,fpos[np]=len[np],is_np[np]=1;
+        for(;~p&&!ch[p][c];p=fa[p]) ch[p][c]=np;
+        if(!~p) fa[np]=0;
+        else{
+            int q=ch[p][c];
+            if(len[q]==len[p]+1) fa[np]=q;
+            else{
+                int nq=++tot;
+                len[nq]=len[p]+1,fpos[nq]=fpos[q];
+                fa[nq]=fa[q],ch[nq]=ch[q];
+                fa[q]=fa[np]=nq;
+                for(;~p&&ch[p][c]==q;p=fa[p]) ch[p][c]=nq;
+            }
+        }
+    }
+    void insert(string s){for(auto c:s) extend(c-'a');}
+    void build(){
+        vector<int> cnt(tot+1,0);
+        for(int i=0;i<=tot;i++) cnt[len[i]]++;
+        for(int i=1;i<=tot;i++) cnt[i]+=cnt[i-1];
+        for(int i=0;i<=tot;i++) id[cnt[len[i]]--]=i;
+        for(int i=tot+1;i>=2;i--) sz[fa[id[i]]]+=sz[id[i]],tree[fa[id[i]]].push_back(id[i]);
+    }
+    // 1.判定子串是否出现
+    bool check(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return false;p=ch[p][c-'a'];}
+        return true;
+    }
+    // 2.不同子串个数
+    long long dist_sub(){
+        long long ans=0;
+        for(int i=1;i<=tot;i++) ans+=len[i]-len[fa[i]];
+        return ans;
+    }
+    // 3.所有不同子串总长度
+    long long dist_sub_len(){
+        vector<long long> c(tot+1,0),ans(tot+1,0);
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];c[u]=1;
+            for(int j=0;j<26;j++) if(ch[u][j]) c[u]+=c[ch[u][j]],ans[u]+=ans[ch[u][j]]+c[ch[u][j]];
+        }
+        return ans[0];
+    }
+    // 4.字典序第K小(T=0本质不同,T=1位置不同)
+    string kth_sub(int T,long long k){
+        vector<long long> s(tot+1,0),w(tot+1,0);
+        for(int i=tot+1;i>=2;i--) w[id[i]]=T?sz[id[i]]:1;
+        w[0]=0;
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];s[u]=w[u];
+            for(int j=0;j<26;j++) if(ch[u][j]) s[u]+=s[ch[u][j]];
+        }
+        if(k>s[0]) return "-1";
+        string res="";
+        for(int u=0;k>0;){
+            if(k<=w[u]) break;
+            k-=w[u];
+            for(int j=0;j<26;j++){
+                if(int v=ch[u][j]){
+                    if(k>s[v]) k-=s[v];
+                    else{res+=(char)(j+'a'),u=v;break;}
+                }
+            }
+        }
+        return res;
+    }
+    // 5.最小循环移位(初始化需insert(S+S),传原串长)
+    string min_cyclic(int m){
+        string res="";
+        for(int p=0,i=0;i<m;i++){
+            for(int j=0;j<26;j++) if(ch[p][j]){res+=(char)(j+'a'),p=ch[p][j];break;}
+        }
+        return res;
+    }
+    // 6.最短未出现子串
+    string short_unapp(){
+        queue<int> q;q.push(0);
+        vector<int> pre(tot+1,-1),edge(tot+1,0);
+        while(!q.empty()){
+            int u=q.front();q.pop();
+            for(int j=0;j<26;j++){
+                if(!ch[u][j]){
+                    string res="";res+=(char)(j+'a');
+                    for(;u!=0;u=pre[u]) res+=(char)(edge[u]+'a');
+                    reverse(res.begin(),res.end());return res;
+                }else if(pre[ch[u][j]]==-1){
+                    pre[ch[u][j]]=u,edge[ch[u][j]]=j,q.push(ch[u][j]);
+                }
+            }
+        }
+        return "";
+    }
+    // 7.求出现次数
+    int count(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return 0;p=ch[p][c-'a'];}
+        return sz[p];
+    }
+    // 8.首次出现起始位置(1-indexed)
+    int first_pos(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return -1;p=ch[p][c-'a'];}
+        return fpos[p]-s.size()+1;
+    }
+    // 9.所有出现起始位置(1-indexed)
+    void _dfs_pos(int u,int len,vector<int>& res){
+        if(is_np[u]) res.push_back(fpos[u]-len+1);
+        for(auto v:tree[u]) _dfs_pos(v,len,res);
+    }
+    vector<int> all_pos(string s){
+        vector<int> res;int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return res;p=ch[p][c-'a'];}
+        _dfs_pos(p,s.size(),res);
+        return res;
+    }
+    // 10.两串LCS
+    int lcs(string t){
+        int u=0,l=0,ans=0;
+        for(auto c:t){
+            int x=c-'a';
+            for(;u>0&&!ch[u][x];u=fa[u]) l=len[fa[u]];
+            if(ch[u][x]) u=ch[u][x],l++;
+            else u=0,l=0;
+            ans=max(ans,l);
+        }
+        return ans;
+    }
+};
+```
+
 = 哈希
 
 == hash表
@@ -7858,6 +8002,30 @@ struct SMC {
     friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
     friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
 };
+//1e9级别模数应该优先使用这个
+/*
+template <int MOD>
+struct SMC {
+    int val;
+    SMC(ll v=0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
+    SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
+    SMC& operator*=(const SMC &r) { val=1LL*val*r.val%MOD; return *this; }
+    SMC& operator/=(const SMC &r) { return *this*=r.inv(); }
+    friend SMC operator+(SMC a,const SMC &b) { return a+=b; }
+    friend SMC operator-(SMC a,const SMC &b) { return a-=b; }
+    friend SMC operator*(SMC a,const SMC &b) { return a*=b; }
+    friend SMC operator/(SMC a,const SMC &b) { return a/=b; }
+    SMC pow(ll k) const {
+        SMC res=1,a=*this;
+        for (;k;k>>=1,a*=a) if(k&1) res*=a;
+        return res;
+    }
+    SMC inv() const { return pow(MOD-2); }
+    friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
+    friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
+};
+*/
 //Montgomery 模乘，快很多
 template<uint32_t MOD>
 struct Mont {
@@ -7911,6 +8079,7 @@ class NTT{
 public:
     const int G=3;
     vector<int> R; vector<Z> rt;
+    //多项式的最高项数
     NTT(int len=0){ 
         int n=1; 
         while(n<len*2) n<<=1; 
@@ -7938,6 +8107,7 @@ public:
             for(int i=0;i<n;i++) a[i]*=in;
         }
     }
+    //仅记录ntt计算过程，直接调用可能增加常数开销
     vector<Z> calc(vector<Z> a,vector<Z> b){
         if(a.empty()||b.empty()) return {};
         int sz=a.size()+b.size()-1,len=1;

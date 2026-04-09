@@ -585,6 +585,14 @@
   },
   {
     "board": "board1",
+    "folder": "字符串",
+    "file": "后缀自动机(SAM).cpp",
+    "title": "后缀自动机(SAM)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
     "folder": "哈希",
     "file": "hash表.cpp",
     "title": "hash表",

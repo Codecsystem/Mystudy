@@ -47,7 +47,7 @@ class DKRTr{
         }
     }
     //获取每个节点的管辖区间
-    //x[i]是往左找<=x的第一个树，y[i]是往右找<x的第一个数(均不包含)
+    //x[i]是往左找<=x的第一个数，y[i]是往右找<x的第一个数(均不包含)
     array<vector<int>,2> get(){
         vector<int> x(n+1),y(n+1);
         auto dfs=[&](auto&& dfs,int u,int l,int r)->void{
