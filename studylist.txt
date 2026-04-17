@@ -9,7 +9,6 @@
 https://codeforces.com/contest/2176
 
 待补：
-牛客寒假：
 atc typical dp 进度 0/last4
 fan's problems list 进度0
 ARC58-ARC90的后两题 进度58/90
@@ -98,7 +97,7 @@ https://atcoder.jp/contests/abc436/tasks/abc436_g
 --多项式科技
 --**高斯消元**
 --高斯整数
---剩余系
+--剩余系，二次剩余
 --BSGS/exgBSGS
 --威尔逊定理
 --Montgomery 模乘,ntt的实现
