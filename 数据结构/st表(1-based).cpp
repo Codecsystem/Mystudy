@@ -17,36 +17,24 @@
 using namespace std;
 class st{
     public:
-        vector<vector<int>> dp;//dp[i][j]是[i,i+2^j-1]的min/max
-        int inf(int a,int b)
+        vector<vector<int>> dp;
+        int inf(int a,int b){return max(a,b);}
+        void init(vector<int>& a,int n)
         {
-            return max(a,b);
-        }
-        void init(vector<int>& nums,int siz)
-        {
-            int len=log2(siz)+1;
-            dp.resize(siz+1);
-            for(auto &i:dp) i.resize(len);
-            for(int i=1;i<=siz;i++)
-            {
-                dp[i][0]=nums[i];
-            }
-            for(int j=1;j<=len;j++)
-            {
-                for(int i=1;i+(1<<j)-1<=siz;i++)
-                {
-                    dp[i][j]=inf(dp[i][j-1],dp[i+(1<<(j-1))][j-1]);
-                }
-            }
+            if(!n) return;
+            int len=__lg(n)+1;
+            dp.assign(len,vector<int>(n+1));
+            for(int i=1;i<=n;i++) dp[0][i]=a[i];
+            for(int j=1;j<len;j++)
+                for(int i=1;i+(1<<j)-1<=n;i++)
+                    dp[j][i]=inf(dp[j-1][i],dp[j-1][i+(1<<(j-1))]);
         }
         int query(int l,int r)
         {
-            int k=log2(r-l+1);
-            return inf(dp[l][k],dp[r-(1<<k)+1][k]);
+            int k=__lg(r-l+1);
+            return inf(dp[k][l],dp[k][r-(1<<k)+1]);
         }
-        st(vector<int>& nums,int n){
-            init(nums,n);
-        }
+        st(vector<int>& a,int n){init(a,n);}
 };
 int read()
 {
