@@ -45,7 +45,7 @@ class tree{
         }
         return siz[u];
     }
-
+    //求u,v的最近公共祖先
     int lca(int u,int v){
         if(dep[u]<dep[v]) swap(u,v);
         for(int i=k;i>=0;i--){
@@ -60,15 +60,14 @@ class tree{
         }
         return fa[u][0];
     }
-    //求u,v的最近公共祖先
+    //求u,v距离
     int dis(int u,int v){
         return dep[u]+dep[v]-2*dep[lca(u,v)];
     }
-    //求u,v距离
+    //判断x是否在s,t的路径上
     bool con(int s,int t,int x){
         return dis(s,x)+dis(t,x)==dis(s,t);
     }
-    //判断x是否在s,t的路径上
 };
 signed main()
 {

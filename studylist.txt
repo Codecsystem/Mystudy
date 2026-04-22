@@ -6,15 +6,12 @@
 线程6：补体
 
 待做:
-https://codeforces.com/contest/2176
 https://www.luogu.com.cn/problem/P9549
-P3346
 
 待补：
 atc typical dp 进度 0/last4
 fan's problems list 进度0
 ARC58-ARC90的后两题 进度58/90
-天梯赛真题 l1 5t/d l2 3t/d l3 2t/d
 
 
 马上想学的知识点：
@@ -140,5 +137,6 @@ other:
 // 2025/9/15 网络赛寄了
 // 2025/11/2 武汉打星打铁祭
 // 2025/12/7 astar荣获cu倒一，我恨thu出题组
+
 
 
