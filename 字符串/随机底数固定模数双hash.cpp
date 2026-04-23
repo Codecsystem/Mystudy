@@ -33,7 +33,7 @@ class SHASH{
         //m 预估的最长字符串长度
         SHASH(int m):p1(m+1,1),p2(m+1,1),h1(m+1,0),h2(m+1,0){
             mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
-            b1=rng()%(int)1e9+1e6,b2=rng()%(int)1e9+1e6;
+            b1=rng()%(m1-1313131)+1313131,b2=rng()%(m2-133331)+133331;
             //b1=131,b2=13331;
             for(int i=1;i<=m;i++){
                 p1[i]=(1ll*p1[i-1]*b1)%m1;
