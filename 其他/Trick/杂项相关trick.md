@@ -1,6 +1,14 @@
 括号序列合法的充要是 +1 -1 trick-> 所有前缀和>=0 sum=0
 -->能推导出 这样的串里一定存在() 子串
 
+考虑m是一个奇数长度序列中位数的充要条件是 >=m的数 > <m的数 && <=m的数 > <m的数
+于是我们可以考虑使用+1 -1 trick 然后算前缀和
+
+更一般的
+考虑中位数是下中位数 满足 >=m的数 > <m的数 && <=m的数 >= <m的数 
+考虑中位数是上中位数 满足 >=m的数 >= <m的数 && <=m的数 > <m的数
+
+
 sqrt 对longlong精度不够  要用sqrtl
 
 某些区间问题 可以利用前后缀处理的思想
@@ -16,6 +24,8 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&return
 压位 ull st=((ull)a<<32)|b;
 
 x-y<=x^y<=x+y
+$$|S \oplus M| = |S \cup M| - |S \cap M|$$
+S,M是状压的集合
 
 实际上 一个x异或上一个区间得到的数构成的连续段是log的
 具体来说 考虑log个相同前缀的区间

@@ -79,6 +79,8 @@ public:
         tr.resize((n<<2)+5);
         ans.resize(n+5);
     }
+    // p:根节点为1
+    // l,r:线段树值域范围 ql,qr:插入的区间
     void ins(int p,int l,int r,int ql,int qr,array<int,2> d){
         if(ql<=l&&r<=qr){
             tr[p].ed.push_back(d);
@@ -88,6 +90,8 @@ public:
         if(ql<=mid) ins(lc(p),l,mid,ql,qr,d);
         if(mid<qr) ins(rc(p),mid+1,r,ql,qr,d);
     }
+    // p:根节点为1
+    // l,r:线段树值域范围,注意一个性质:在[l,r]的时候，所有[l,r]的信息是没有的,如果你挂的信息是排除w的。
     void q(int p,int l,int r,REDSU &dsu){
         int k=0;
         for(const auto &[u,v]:tr[p].ed){
