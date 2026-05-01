@@ -1,9 +1,10 @@
 以下的 $Hash$ 均采用这个生成：
 ```cpp
-mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char));
 vector<ull> h(n+1);
-for(int i=1;i<=n;i++) h[i]=rng()|((1ull<<50)+1);
+for(int i=1;i<=n;i++) h[i]=Xhash::splitmix64(rng())|((1ull<<50)+1);
 ```
+>XHash类见 防hack的umap,gp_hash_table.cpp
 对字符集/数集中的每个元素都随机分配一个 $Hash$ 值（大奇数）。
 采取自然溢出 $Hash$。
 

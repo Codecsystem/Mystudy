@@ -34,7 +34,7 @@ class SHASH{
         inline ull sub(ull a,ull b){ return a>=b?a-b:a+mod-b;}
         inline ull mul(ull a,ull b){ ui128 c=ui128(a)*b; return (add(c>>61,c&mod));}
         SHASH(int m):p(m+1,1),h(m+1,0){
-            mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count());
+            mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char));
             b=rng()%(mod-1313131)+1313131;
             for(int i=1;i<=m;i++) p[i]=mul(p[i-1],b);
         }

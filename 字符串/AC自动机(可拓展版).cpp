@@ -23,7 +23,7 @@ using namespace std;
 class AC{
     public:
     vector<vector<int>> ch;
-    int n,tot; //节点数>=模式串总长
+    int n,tot; //节点数>=模式串总长 根节点0 节点编号1-tot
     vector<int> cnt,ne;
     AC(int n):n(n),ch(n+1,vector<int>(26,0)),
     cnt(n+1,0),ne(n+1,0),tot(0){}
@@ -43,6 +43,7 @@ class AC{
         }
         while(!q.empty()){
             int u=q.front();q.pop();
+            //如果要做一个拓扑序的信息合并（例如根到点的串数，串长前缀和（即匹配到的串的这些信息），可以在这里用u和ne[u]合并信息）
             for(int i=0;i<26;i++){
                 int v=ch[u][i];
                 if(v) ne[v]=ch[ne[u]][i],q.push(v);//构建回跳边
@@ -90,3 +91,4 @@ signed main()
 //ac自动机的结构其实就是一个 trans 函数，而构建好这个函数后，在匹配字符串的过程中，我们会舍弃部分前缀达到最低限度的匹配。
 //本质上就是一个状态，接受一个输入，转移到另一个状态，
 //注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
+//注意匹配到一个点其实就是匹配到这个点及其fail链上所有串。
