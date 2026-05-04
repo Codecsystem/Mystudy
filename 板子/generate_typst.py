@@ -35,7 +35,7 @@ except ImportError:
 
 # ── Board 1 目录顺序 ──
 BOARD1_FOLDERS = [
-    "数据结构", "图论", "字符串", "哈希",
+    "数据结构", "图论", "字符串",
     "动态规划", "数论", "计算几何", "博弈论", "其他",
 ]
 
@@ -86,6 +86,10 @@ BOARD3_GROUPS = {
     ],
     "通用 Trick 与杂项": [
         ("其他", "Trick/杂项相关trick.md"),
+    ],
+    "字符串": [
+        ("字符串", "笔记/一些比较神秘的hash手法.md"),
+        ("字符串", "笔记/字符串trick.md"),
     ],
 }
 
@@ -716,7 +720,7 @@ def generate_board1() -> tuple[str, list]:
         if not os.path.isdir(folder_path):
             continue
         cpp_files = sorted(
-            [f for f in os.listdir(folder_path) if f.endswith('.cpp')],
+            glob.glob(os.path.join(folder_path, '**', '*.cpp'), recursive=True),
             key=lambda x: x.lower()
         )
         if not cpp_files:
@@ -724,8 +728,8 @@ def generate_board1() -> tuple[str, list]:
 
         parts.append(f'= {folder}\n')
 
-        for fname in cpp_files:
-            fpath = os.path.join(folder_path, fname)
+        for fpath in cpp_files:
+            fname = os.path.basename(fpath)
             title = os.path.splitext(fname)[0]
             result = extract_cpp_content(fpath)
 

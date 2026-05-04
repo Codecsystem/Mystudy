@@ -24,7 +24,9 @@ https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79091623&return
 压位 ull st=((ull)a<<32)|b;
 
 x-y<=x^y<=x+y
-$$|S \oplus M| = |S \cup M| - |S \cap M|$$
+$$
+|S \oplus M| = |S \cup M| - |S \cap M|
+$$
 S,M是状压的集合
 
 实际上 一个x异或上一个区间得到的数构成的连续段是log的

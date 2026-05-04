@@ -84,7 +84,7 @@
     "folder": "数据结构",
     "file": "st表.cpp",
     "title": "st表",
-    "has_usage": true,
+    "has_usage": false,
     "has_tail": false
   },
   {
@@ -102,14 +102,6 @@
     "title": "主席树",
     "has_usage": true,
     "has_tail": true
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "二叉搜索树.cpp",
-    "title": "二叉搜索树",
-    "has_usage": true,
-    "has_tail": false
   },
   {
     "board": "board1",
@@ -164,46 +156,6 @@
     "folder": "数据结构",
     "file": "笛卡尔树(新版).cpp",
     "title": "笛卡尔树(新版)",
-    "has_usage": false,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "笛卡尔树.cpp",
-    "title": "笛卡尔树",
-    "has_usage": true,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "线段树(max&min),tested,class.cpp",
-    "title": "线段树(max&min),tested,class",
-    "has_usage": false,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "线段树(max&min,upd+set),tested,class.cpp",
-    "title": "线段树(max&min,upd+set),tested,class",
-    "has_usage": true,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "线段树(sum),tested ,class.cpp",
-    "title": "线段树(sum),tested ,class",
-    "has_usage": false,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "线段树(sum,update+set),tested,class.cpp",
-    "title": "线段树(sum,update+set),tested,class",
     "has_usage": false,
     "has_tail": false
   },
@@ -378,6 +330,14 @@
   {
     "board": "board1",
     "folder": "图论",
+    "file": "最大费用可行流.cpp",
+    "title": "最大费用可行流",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
     "file": "最小斯坦纳树.cpp",
     "title": "最小斯坦纳树",
     "has_usage": true,
@@ -442,8 +402,8 @@
   {
     "board": "board1",
     "folder": "图论",
-    "file": "最近公共祖先（LCA）(targan,静态).cpp",
-    "title": "最近公共祖先（LCA）(targan,静态)",
+    "file": "最近公共祖先（LCA）(tarjan,静态).cpp",
+    "title": "最近公共祖先（LCA）(tarjan,静态)",
     "has_usage": true,
     "has_tail": false
   },
@@ -586,26 +546,58 @@
   {
     "board": "board1",
     "folder": "字符串",
-    "file": "后缀自动机(SAM).cpp",
-    "title": "后缀自动机(SAM)",
+    "file": "后缀自动机(SAM,低注释).cpp",
+    "title": "后缀自动机(SAM,低注释)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "字符串",
+    "file": "后缀自动机(SAM,高注释).cpp",
+    "title": "后缀自动机(SAM,高注释)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "字符串",
+    "file": "广义后缀自动机(GSAM).cpp",
+    "title": "广义后缀自动机(GSAM)",
+    "has_usage": false,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "字符串",
+    "file": "防hack的umap,gp_hash_table.cpp",
+    "title": "防hack的umap,gp_hash_table",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "字符串",
+    "file": "随机底数固定模数单hash.cpp",
+    "title": "随机底数固定模数单hash",
     "has_usage": false,
     "has_tail": false
   },
   {
     "board": "board1",
-    "folder": "哈希",
-    "file": "hash表.cpp",
-    "title": "hash表",
-    "has_usage": true,
+    "folder": "字符串",
+    "file": "随机底数固定模数双hash.cpp",
+    "title": "随机底数固定模数双hash",
+    "has_usage": false,
     "has_tail": false
   },
   {
     "board": "board1",
-    "folder": "哈希",
-    "file": "字符串双hash.cpp",
-    "title": "字符串双hash",
+    "folder": "动态规划",
+    "file": "数位dp(例题1,数位和).cpp",
+    "title": "数位dp(例题1,数位和)",
     "has_usage": true,
-    "has_tail": false
+    "has_tail": true
   },
   {
     "board": "board1",
@@ -774,6 +766,14 @@
     "title": "极角排序",
     "has_usage": false,
     "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "其他",
+    "file": "SWAG(滑动窗口聚合).cpp",
+    "title": "SWAG(滑动窗口聚合)",
+    "has_usage": true,
+    "has_tail": false
   },
   {
     "board": "board1",
@@ -965,6 +965,20 @@
     "group": "通用 Trick 与杂项",
     "file": "其他/Trick/杂项相关trick.md",
     "title": "Trick/杂项相关trick",
+    "warnings": []
+  },
+  {
+    "board": "board3",
+    "group": "字符串",
+    "file": "字符串/笔记/一些比较神秘的hash手法.md",
+    "title": "笔记/一些比较神秘的hash手法",
+    "warnings": []
+  },
+  {
+    "board": "board3",
+    "group": "字符串",
+    "file": "字符串/笔记/字符串trick.md",
+    "title": "笔记/字符串trick",
     "warnings": []
   }
 ]

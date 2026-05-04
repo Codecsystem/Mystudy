@@ -1033,36 +1033,24 @@ Info operator+(const Info &a,const Info &b){
 ```cpp
 class st{
     public:
-        vector<vector<int>> dp;//dp[i][j]是[i,i+2^j-1]的min/max
-        int inf(int a,int b)
+        vector<vector<int>> dp;
+        int inf(int a,int b){return max(a,b);}
+        void init(vector<int>& a,int n)
         {
-            return max(a,b);
-        }
-        void init(vector<int>& nums,int siz)
-        {
-            int len=log2(siz)+1;
-            dp.resize(siz+1);
-            for(auto &i:dp) i.resize(len);
-            for(int i=1;i<=siz;i++)
-            {
-                dp[i][0]=nums[i];
-            }
-            for(int j=1;j<=len;j++)
-            {
-                for(int i=1;i+(1<<j)-1<=siz;i++)
-                {
-                    dp[i][j]=inf(dp[i][j-1],dp[i+(1<<(j-1))][j-1]);
-                }
-            }
+            if(!n) return;
+            int len=__lg(n)+1;
+            dp.assign(len,vector<int>(n+1));
+            for(int i=1;i<=n;i++) dp[0][i]=a[i];
+            for(int j=1;j<len;j++)
+                for(int i=1;i+(1<<j)-1<=n;i++)
+                    dp[j][i]=inf(dp[j-1][i],dp[j-1][i+(1<<(j-1))]);
         }
         int query(int l,int r)
         {
-            int k=log2(r-l+1);
-            return inf(dp[l][k],dp[r-(1<<k)+1][k]);
+            int k=__lg(r-l+1);
+            return inf(dp[k][l],dp[k][r-(1<<k)+1]);
         }
-        st(vector<int>& nums,int n){
-            init(nums,n);
-        }
+        st(vector<int>& a,int n){init(a,n);}
 };
 int read()
 {
@@ -1112,36 +1100,24 @@ inline void write(int x)
 ```cpp
 class st{
     public:
-        vector<vector<int>> dp;//dp[i][j]是[i,i+2^j-1]的min/max
-        int inf(int a,int b)
+        vector<vector<int>> dp;
+        int inf(int a,int b){return max(a,b);}
+        void init(vector<int>& a,int n)
         {
-            return max(a,b);
-        }
-        void init(vector<int>& nums,int siz)
-        {
-            int len=log2(siz)+1;
-            dp.resize(siz);
-            for(auto &i:dp) i.resize(len);
-            for(int i=0;i<siz;i++)
-            {
-                dp[i][0]=nums[i];
-            }
-            for(int j=1;j<=len;j++)
-            {
-                for(int i=0;i+(1<<j)-1<siz;i++)
-                {
-                    dp[i][j]=inf(dp[i][j-1],dp[i+(1<<(j-1))][j-1]);
-                }
-            }
+            if(!n) return;
+            int len=__lg(n)+1;
+            dp.assign(len,vector<int>(n+1));
+            for(int i=1;i<=n;i++) dp[0][i]=a[i];
+            for(int j=1;j<len;j++)
+                for(int i=1;i+(1<<j)-1<=n;i++)
+                    dp[j][i]=inf(dp[j-1][i],dp[j-1][i+(1<<(j-1))]);
         }
         int query(int l,int r)
         {
-            int k=log2(r-l+1);
-            return inf(dp[l][k],dp[r-(1<<k)+1][k]);
+            int k=__lg(r-l+1);
+            return inf(dp[k][l],dp[k][r-(1<<k)+1]);
         }
-        st(vector<int>& nums){
-            init(nums,nums.size());
-        }
+        st(vector<int>& a,int n){init(a,n);}
 };
 int read()
 {
@@ -1170,20 +1146,6 @@ inline void write(int x)
       }while(x);
     while(top) putchar(sta[--top]+48);
 }
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-    int n=read(),m=read();
-    vector<int> nums(n);
-    for(int i=0;i<n;i++)
-        nums[i]=read();
-    st s(nums);
-    for(int i=0;i<m;i++)
-        int l=read(),r=read();
-        write(s.query(l-1,r-1));
-        putchar('\n');
 ```
 
 == 主席树(例2)
@@ -1372,147 +1334,6 @@ class HJTree{
     while(m--){
         int l,r,k;cin>>l>>r>>k;
         cout<<hjt.qry(l,r,k)<<'\n';
-```
-
-== 二叉搜索树
-
-```cpp
-struct SBTreeNode{
-    int key;
-    SBTreeNode* left;
-    SBTreeNode* right;
-    int size; //子树大小
-    int count; //重复个数
-
-    SBTreeNode(int val):
-        key(val),left(nullptr),right(nullptr),size(1),count(1){}
-};
-//二叉查找树具有以下性质：
-//1. 若任意节点的左子树不空，则左子树上所有节点的值均小于它的根节点的值；
-//2. 若任意节点的右子树不空，则右子树上所有节点的值均大于它的根节点的值；
-//3. 任意节点的左、右子树也分别为二叉查找树；
-int FindMin(SBTreeNode* root)
-{
-    if(root==nullptr) return -0x3f3f3f3f;
-    while(root->left!=nullptr) root=root->left;
-    return root->key;
-}
-int FindMax(SBTreeNode* root)
-{
-    if(root==nullptr) return 0x3f3f3f3f;
-    while(root->right!=nullptr) root=root->right;
-    return root->key;
-}
-SBTreeNode* FindMinNode(SBTreeNode* root)
-{
-    if(root==nullptr) return nullptr;
-    while(root->left!=nullptr) root=root->left;
-    return root;
-}
-void Inorder(SBTreeNode* root){
-    if(root==nullptr) return;
-    Inorder(root->left);
-    cout<<root->key<<" ";
-    Inorder(root->right);
-}
-
-bool search(SBTreeNode* root,int val){
-    if(root==nullptr) return false;
-    if(root->key==val) return true;
-    if(val<root->key) return search(root->left,val);
-    else return search(root->right,val);
-}
-
-SBTreeNode* insert(SBTreeNode* root,int val){
-    if(root==nullptr) return new SBTreeNode(val);
-    if(val<root->key) root->left=insert(root->left,val);
-    else if(val>root->key) root->right=insert(root->right,val);
-    else root->count++;
-    root->size=root->count+(root->left?root->left->size:0)+(root->right?root->right->size:0);
-    return root;
-}
-//先搜索到，再判断子树有无，再删除
-SBTreeNode* deleteNode(SBTreeNode* root,int val){
-    if(root==nullptr) return nullptr;
-    if(val<root->key) root->left=deleteNode(root->left,val);
-    else if(val>root->key) root->right=deleteNode(root->right,val);
-    else{
-        if(root->count>1) root->count--;
-        else{
-            if(root->left==nullptr) 
-            {
-                SBTreeNode* temp=root->right;
-                delete root;
-                return temp;
-            }
-            else if(root->right==nullptr) 
-            {
-                SBTreeNode* temp=root->left;
-                delete root;
-                return temp;
-            }
-            else if(root->left!=nullptr&&root->right!=nullptr)
-            {
-                SBTreeNode* temp=FindMinNode(root->right);//右子树最小值代替该节点
-                root->key=temp->key;
-                root->count=temp->count;
-                temp->count=1;
-                root->right=deleteNode(root->right,temp->key);
-            }
-        }
-    }
-    root->size=root->count+(root->left?root->left->size:0)+(root->right?root->right->size:0);
-    return root;
-}
-int QueryRank(SBTreeNode* root,int val){
-    if(root==nullptr) return 0;
-    if(val==root->key) return (root->left?root->left->size:0)+1; //找到，返回左子树大小+1
-    if(val<root->key) return QueryRank(root->left,val); //向左走
-    else return QueryRank(root->right,val)+(root->left?root->left->size:0)+root->count; //向右走，加上左子树大小+根节点个数
-}
-//左子树的大小>=k,在左子树中找第k个
-//左子树的大小在[k-count,k-1],为根节点
-//左子树的大小<k-count,在右子树中找
-int KthQuery(SBTreeNode* root,int k){
-    if(root==nullptr) return -0x3f3f3f3f;
-    if(root->left)
-    {
-        if(root->left->size>=k) return KthQuery(root->left,k);
-        else if(root->left->size+root->count>=k) return root->key;
-        else 
-        {
-            if(k==1) return root->key;
-        }
-    }
-    return KthQuery(root->right,k-(root->left?root->left->size:0)-root->count);
-}
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-    //生成测试代码
-    vector<int> v(0,10);
-    for(int i=0;i<10;i++) v.push_back(rand()%100);
-    for(int i=0;i<10;i++) cout<<v[i]<<" ";
-    cout<<endl;
-    SBTreeNode* root=nullptr;
-    for(int i=0;i<10;i++) root=insert(root,v[i]);
-    Inorder(root);
-    cout<<endl;
-    cout<<"v[0]:"<<v[0]<<endl;
-    cout<<QueryRank(root,v[0])<<endl;
-    cout<<KthQuery(root,4)<<endl;
-    cout<<search(root,v[0])<<endl;
-    root=deleteNode(root,v[0]);
-    Inorder(root);
-    cout<<endl;
-    int insertded=39;
-    root=insert(root,insertded);
-    Inorder(root);
-    int T_end=clock();
-    cout<<"Time cost: "<<T_end-T_start<<endl;
-    //测试代码结束
 ```
 
 == 可删改堆
@@ -2060,544 +1881,6 @@ class DKRTr{
 };
 ```
 
-== 笛卡尔树
-
-```cpp
-struct DKRTreeNode{
-    int val;
-    int index;
-    DKRTreeNode *left, *right;
-    DKRTreeNode(int x,int i):val(x),index(i),left(NULL),right(NULL){}
-};
-//笛卡尔树具有一下性质：
-//1.二叉搜索树，2.堆
-//i:index,val:nums[i]
-//因为BST的中序遍历一定是原序列，所以新插入的节点一定在右边
-//需要调整最右边的纵向位置，使其满足堆的性质，用单调栈维护最右链
-//大根堆
-DKRTreeNode* buildTree(vector<int> &nums){
-    stack<DKRTreeNode*> s;
-    DKRTreeNode* root=nullptr;
-    for(int i=0;i<nums.size();i++)
-    {
-        DKRTreeNode* node=new DKRTreeNode(nums[i],i);
-        DKRTreeNode* last=nullptr;
-        while(!s.empty()&&s.top()->val<node->val)
-        {
-            last=s.top();
-            s.pop();
-        }//单调栈维护
-        if(!s.empty()) s.top()->right=node;//栈顶元素的右子树为node
-        if(last) node->left=last;//栈弹出的元素为node的左子树
-        s.push(node);
-    }
-    while(!s.empty()) root=s.top(),s.pop();//最后一个元素为根节点
-    return root;
-}
-void printTree(DKRTreeNode* root)
-{
-    if(root==nullptr) return;
-    printTree(root->left);
-    cout<<root->val<<" ";
-    printTree(root->right);
-}
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-    vector<int> nums(10,0);
-    for(int i=0;i<nums.size();i++) nums[i]=rand()%100;
-    for(auto i:nums) cout<<i<<" ";
-    cout<<endl;
-    DKRTreeNode* root=buildTree(nums);
-    printTree(root);
-    cout<<root->val<<endl;
-```
-
-== 线段树(max&min),tested,class
-
-```cpp
-class SegTree{
-    public:
-        pair<int,int> error={-0x3f3f3f3f,0x3f3f3f3f};
-        struct Node{
-            int start;int end;
-            int high;int low;
-            int lazy=0;
-            Node* left;
-            Node* right;
-            Node(int start,int end,int high,int low)
-                :start(start),end(end),high(high),
-                low(low),left(nullptr),right(nullptr){}
-        };
-        Node* root;
-        Node* Build(vector<int>& nums,int start,int end)
-        {
-            if(start>end) return nullptr;
-            if(start==end) return new Node(start,end,nums[start],nums[start]);
-            int mid=(start+end)>>1;
-            Node* root=new Node(start,end,-0x3f3f3f3f,0x3f3f3f3f);
-            Node* leftchild=Build(nums,start,mid);
-            Node* rightchild=Build(nums,mid+1,end);
-            if(leftchild) 
-            {
-                root->left=leftchild;
-                root->high=max(root->high,leftchild->high);
-                root->low=min(root->low,leftchild->low);
-            }
-            if(rightchild)
-            {
-                root->right=rightchild;
-                root->high=max(root->high,rightchild->high);
-                root->low=min(root->low,rightchild->low);
-            }
-            return root;
-        }
-        void init(vector<int>& nums)
-        {
-            root=Build(nums,0,nums.size()-1);
-            return ;
-        }
-        
-        void taglazy(Node* root,int val)
-        {
-            if(root==nullptr) return ;
-            root->low+=val,root->high+=val;
-            root->lazy+=val;
-        }
-        void pushdown(Node* root)
-        {
-            if(root==nullptr) return ;
-            if(root->lazy!=0)
-            {
-                taglazy(root->left,root->lazy);
-                taglazy(root->right,root->lazy);
-                root->lazy=0;
-            }
-        }
-        void update(Node* root,int l,int r,int val)
-        {
-            if(root==nullptr) return;
-            if(root->end<l||root->start>r) return ;
-            if(root->start>=l&&root->end<=r) 
-            {
-                taglazy(root,val);
-                return;
-            }
-            pushdown(root);
-            update(root->left,l,r,val);
-            update(root->right,l,r,val);
-            if(root->left) 
-            {
-                root->high=max(root->left->high,root->high);
-                root->low=min(root->left->low,root->low);
-            }
-            if(root->right)
-            {
-                root->high=max(root->right->high,root->high);
-                root->low=min(root->right->low,root->low);
-            }
-            return ;
-        }
-        void update(int l,int r,int val) {update(root,l,r,val);}
-        pair<int,int> query(Node* root,int l,int r)
-        {
-            pushdown(root);
-            if(root==nullptr) return error;
-            if(root->end<l||root->start>r) return error;
-            if(root->start>=l&&root->end<=r) return {root->high,root->low};
-            int tpmax=-0x3f3f3f3f,tpmin=0x3f3f3f3f;
-            if(root->left) 
-            {
-                pair<int,int> tp1=query(root->left,l,r);
-                tpmax=max(tp1.first,tpmax);
-                tpmin=min(tp1.second,tpmin);
-            }
-            if(root->right)
-            {
-                pair<int,int> tp2=query(root->right,l,r);
-                tpmax=max(tp2.first,tpmax);
-                tpmin=min(tp2.second,tpmin);
-            }
-            return {tpmax,tpmin};
-        }
-        pair<int,int> query(int l,int r) {return query(root,l,r);}
-};
-```
-
-== 线段树(max&min,upd+set),tested,class
-
-```cpp
-#define int long long
-class segtree{
-    public:
-        const int H=-0xfffffffffffffff; 
-        const int L=0xfffffffffffffff;
-        pair<int,int> error={H,L};
-        struct node{
-            int s;int e;
-            int lazyadd;
-            int lazycover;
-            int lazycoveradd;
-            int high,low;
-            node* lt;
-            node* rt;
-            node(int s,int e,int high,int low):
-            s(s),e(e),lazyadd(0),lazycover(0),
-            high(high),low(low),lazycoveradd(-1),
-            lt(nullptr),rt(nullptr){}
-        };
-        node* root;
-        void inf(node* a,node* l,node* r)
-        {
-            if(!a) return ;
-            if(!l&&r) a->low=r->low,a->high=r->high;
-            if(l&&!r) a->low=l->low,a->high=l->high;
-            if(l&&r) a->low=min(l->low,r->low),a->high=max(l->high,r->high);
-        }
-        node* build(vector<int> &nums,int l,int r)
-        {
-            if(l>r) return nullptr;
-            if(l==r) return new node(l,r,nums[l],nums[l]);
-            int mid=(l+r)>>1;
-            node* root=new node(l,r,H,L);
-            node* lc=build(nums,l,mid);
-            node* rc=build(nums,mid+1,r);
-            root->lt=lc,root->rt=rc;
-            inf(root,lc,rc);
-            return root;
-        }
-        void init(vector<int> &nums){root=build(nums,0,nums.size()-1);}
-        void taglazy(node* root,int val,int op)
-        {
-            //op 1 add,2 cover
-            if(!root) return ;
-            if(op==1)
-            {
-                root->lazyadd+=val;
-                root->high+=val;
-                root->low+=val;
-            }
-            if(op==2)
-            {
-                root->lazycover=val;
-                root->lazycoveradd=1;
-                root->high=val;
-                root->low=val;
-                root->lazyadd=0;
-            }
-        }
-        void pushdown(node* root)
-        {
-            if(!root) return ;
-            if(root->lazycoveradd==1)
-            {
-                taglazy(root->lt,root->lazycover,2);
-                taglazy(root->rt,root->lazycover,2);
-                root->lazycover=0;
-                root->lazycoveradd=-1;
-            }
-            if(root->lazyadd)
-            {
-                taglazy(root->lt,root->lazyadd,1);
-                taglazy(root->rt,root->lazyadd,1);
-                root->lazyadd=0;
-            }
-        }
-        pair<int,int> query(node* root,int l,int r)
-        {
-            pushdown(root);
-            if(!root) return error;
-            if(root->s>r||root->e<l) return error;
-            if(l<=root->s&&root->e<=r) 
-            {
-                //cout<<"query:"<<root->s<<' '<<root->e<<' '<<root->high<<' '<<root->low<<endl;
-                return {root->high,root->low};
-            }
-            pair<int,int> tplt=query(root->lt,l,r);
-            pair<int,int> tprt=query(root->rt,l,r);
-            int anshigh=max(tplt.first,tprt.first);
-            int anslow=min(tplt.second,tprt.second);
-            return {anshigh,anslow};
-        }
-        pair<int,int> query(int l,int r) {return query(root,l,r);}
-        void update(node* root,int l,int r,int val,int op)
-        {
-            if(!root) return ;
-            if(root->s>r||root->e<l) return ;
-            if(l<=root->s&&root->e<=r)
-            {
-                //cout<<"taglazy:"<<root->s<<' '<<root->e<<' '<<val<<' '<<op<<endl;
-                taglazy(root,val,op);
-                return;
-            }
-            pushdown(root);
-            update(root->lt,l,r,val,op);
-            update(root->rt,l,r,val,op);
-            inf(root,root->lt,root->rt);
-            return ;
-        }
-        void update(int l,int r,int val,int op){
-            update(root,l,r,val,op);
-        }
-
-};
-int read()
-{
-    int s=0,f=1;
-    char ch=getchar();
-    while(ch<'0'||ch>'9')
-    {
-        if(ch=='-') f=-1;
-        ch=getchar();
-    }
-    while(ch>='0'&&ch<='9')
-    {
-        s=(s<<3)+(s<<1)+ch-'0';
-        ch=getchar();
-    }
-    return s*f;
-}
-inline void write(int x) 
-{
-    static int sta[35]; 
-    int top=0;
-    if(x<0&&x!=-2147483648) {putchar('-');x=-x;}
-    if(x==-2147483648) {printf("-2147483648");return;}
-    do{
-      sta[top++]=x%10, x/=10;
-      }while(x);
-    while(top) putchar(sta[--top]+48);
-}
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-    int n=read(),m=read();
-    vector<int>a(n);
-    for(auto&i:a) i=read();
-    segtree st;st.init(a);
-    while(m--)
-        int op=read(),l=read(),r=read();
-        if(op==1)
-            int x=read();
-            st.update(l-1,r-1,x,2);
-        else if(op==2)
-            int x=read();
-            st.update(l-1,r-1,x,1);
-        else printf("%lld\n",st.query(l-1,r-1).first);
-        // for(int i=0;i<n;i++)
-        // {
-        //     cout<<st.query(i,i).first<<' ';
-        // }
-        // cout<<endl;
-```
-
-== 线段树(sum),tested ,class
-
-```cpp
-class SegTree{
-    public:
-        struct Node
-        {
-            int sum;
-            int s,e;
-            int lazy=0;
-            Node* lt;
-            Node* rt;
-            Node(int sum,int s,int e):s(s),e(e),sum(sum),lt(nullptr),rt(nullptr){}
-        };
-        Node* root;
-        Node* buildtree(vector<int> &nums,int l,int r)
-        {
-            if(l>r) return nullptr;
-            if(l==r) return new Node(nums[l],l,l);
-            int mid=(l+r)>>1;
-            Node* root=new Node(0,l,r);
-            Node* lc=buildtree(nums,l,mid);
-            Node* rc=buildtree(nums,mid+1,r);
-            if(lc) root->lt=lc,root->sum+=lc->sum;
-            if(rc) root->rt=rc,root->sum+=rc->sum;
-            return root;
-        }
-        void init(vector<int>nums)
-        {
-            root=buildtree(nums,0,nums.size()-1);
-            return;
-        }
-        void taglazy(Node* root,int val)
-        {
-            if(root==nullptr) return;
-            root->lazy+=val;
-            root->sum+=(root->e-root->s+1)*val;
-        }
-        void pushdown(Node* root)
-        {
-            if(!root) return ;
-            if(root->lazy)
-            {
-                taglazy(root->lt,root->lazy);
-                taglazy(root->rt,root->lazy);
-                root->lazy=0;
-            }
-        }
-        void update(Node* root,int l,int r,int val)
-        {
-            if(!root) return ;
-            if(root->s>r||root->e<l) return ;
-            if(root->s>=l&&root->e<=r)
-            {
-                taglazy(root,val);
-                return;
-            }
-            pushdown(root);
-            update(root->lt,l,r,val);
-            update(root->rt,l,r,val);
-            root->sum=((root->lt?root->lt->sum:0)+(root->rt?root->rt->sum:0));
-            return ;
-        }
-        void update(int l,int r,int val)
-        {
-            update(root,l,r,val);
-            return ;
-        }
-        int query(Node* root,int l,int r)
-        {
-            pushdown(root);
-            if(!root) return 0;
-            if(root->s>r||root->e<l) return 0;
-            if(root->s>=l&&root->e<=r) return root->sum;
-            return query(root->lt,l,r)+query(root->rt,l,r);
-        }
-        int query(int l,int r)
-        {
-            return query(root,l,r);
-        }
-};
-```
-
-== 线段树(sum,update+set),tested,class
-
-```cpp
-#define int long long
-using namespace std;
-class segtree{
-    public:
-        struct node
-        {
-            int sum;
-            int s;int e;
-            node* lt;
-            node* rt;
-            int lazysum=0;
-            int lazycover=0;
-            node(int sum,int s,int e): 
-            sum(sum),s(s),e(e),lt(nullptr),
-            rt(nullptr),lazycover(0),lazysum(0){}
-        };
-        node* root;
-        node* build(vector<int>& nums,int l,int r)
-        {
-            if(l>r) return nullptr;
-            if(l==r) return new node(nums[l],l,l);
-            int mid=(l+r)>>1;
-            node* root=new node(0,l,r);
-            node* lc=build(nums,l,mid);
-            node* rc=build(nums,mid+1,r);
-            root->lt=lc,root->rt=rc;
-            root->sum=(lc?lc->sum:0)+(rc?rc->sum:0);
-            return root;
-        }
-        void init(vector<int>& nums) {root=build(nums,0,nums.size()-1);}
-        void taglazy(node* root,int val,int op){
-            //1:sum,2:cover
-            if(!root) return;
-            if(op==1)
-            {
-                root->lazysum+=val;
-                root->sum+=(val)*(root->e-root->s+1);
-            }
-            else if(op==2)
-            {
-                root->lazycover=val;
-                root->lazysum=0;
-                root->sum=val*(root->e-root->s+1);
-            }
-        }
-        void pushdown(node* root)
-        {
-            if(root->lazycover){
-                taglazy(root->lt,root->lazycover,2);
-                taglazy(root->rt,root->lazycover,2);
-                root->lazycover=0;
-            }
-            if(root->lazysum){
-                taglazy(root->lt,root->lazysum,1);
-                taglazy(root->rt,root->lazysum,1);
-                root->lazysum=0;
-            }
-        }
-        int query(node* root,int l,int r)
-        {
-            pushdown(root);
-            if(!root) return 0;
-            if(root->s>r||root->e<l) return 0;
-            if(root->s>=l&&root->e<=r) return root->sum;
-            return query(root->lt,l,r)+query(root->rt,l,r);
-        }
-        int query(int l,int r) {return query(root,l,r);}
-        void update(node* root,int l,int r,int val,int op)
-        {
-            
-            if(!root) return ;
-            if(root->s>r||root->e<l) return ;
-            if(root->s>=l&&root->e<=r) 
-            {
-                taglazy(root,val,op);
-                return ;
-            }
-            pushdown(root);
-            update(root->lt,l,r,val,op);
-            update(root->rt,l,r,val,op);
-            root->sum=(root->lt?root->lt->sum:0)+(root->rt?root->rt->sum:0);
-            return ;
-        }
-        void update(int l,int r,int val,int op){
-            update(root,l,r,val,op);
-        }
-
-};
-int read()
-{
-    int s=0,f=1;
-    char ch=getchar();
-    while(ch<'0'||ch>'9')
-    {
-        if(ch=='-') f=-1;
-        ch=getchar();
-    }
-    while(ch>='0'&&ch<='9')
-    {
-        s=(s<<3)+(s<<1)+ch-'0';
-        ch=getchar();
-    }
-    return s*f;
-}
-inline void write(int x) 
-{
-    static int sta[35]; 
-    int top=0;
-    if(x<0&&x!=-2147483648) {putchar('-');x=-x;}
-    if(x==-2147483648) {printf("-2147483648");return;}
-    do{
-      sta[top++]=x%10, x/=10;
-      }while(x);
-    while(top) putchar(sta[--top]+48);
-}
-```
-
 == 线段树二分
 
 // e.g 区间mex->
@@ -2902,6 +2185,8 @@ public:
         tr.resize((n<<2)+5);
         ans.resize(n+5);
     }
+    // p:根节点为1
+    // l,r:线段树值域范围 ql,qr:插入的区间
     void ins(int p,int l,int r,int ql,int qr,array<int,2> d){
         if(ql<=l&&r<=qr){
             tr[p].ed.push_back(d);
@@ -2911,6 +2196,8 @@ public:
         if(ql<=mid) ins(lc(p),l,mid,ql,qr,d);
         if(mid<qr) ins(rc(p),mid+1,r,ql,qr,d);
     }
+    // p:根节点为1
+    // l,r:线段树值域范围,注意一个性质:在[l,r]的时候，所有[l,r]的信息是没有的,如果你挂的信息是排除w的。
     void q(int p,int l,int r,REDSU &dsu){
         int k=0;
         for(const auto &[u,v]:tr[p].ed){
@@ -4728,6 +4015,129 @@ class maxflow{
     cout<<mf.dinic()<<endl;
 ```
 
+== 最大费用可行流
+
+```cpp
+class MC{
+public:
+    struct node{
+        int to;
+        int cap;
+        int cost;
+        int rev;
+    };
+    int n,s,t;
+    int maxf=0,maxc=0;
+    const int INF=1e9;
+    vector<vector<node>> mp;
+    vector<int> dis,cur,inq,vis;
+    MC(int n,int s,int t,vector<array<int,4>>& eds):
+    n(n),s(s),t(t),mp(n+1),dis(n+1),
+    cur(n+1),inq(n+1,0),vis(n+1,0){
+        for(auto [u,v,cap,w]:eds){
+            int uid=mp[u].size();
+            int vid=mp[v].size();
+            mp[u].push_back({v,cap,w,vid});
+            mp[v].push_back({u,0,-w,uid});
+            //反边的费用是负的
+        }
+    }
+
+    bool spfa(){
+        fill(dis.begin(),dis.end(),-INF);
+        fill(inq.begin(),inq.end(),0);
+        deque<int> q;dis[s]=0,inq[s]=1;
+        q.push_back(s);
+        while(!q.empty()){
+            int u=q.front();q.pop_front();
+            inq[u]=0;
+            for(auto [v,cap,w,rev]:mp[u]){
+                if(cap>0&&dis[u]+w>dis[v]){
+                    dis[v]=dis[u]+w;
+                    if(!inq[v]){
+                        if(!q.empty()&&dis[v]>dis[q.front()]){
+                            q.push_front(v);
+                        }else{
+                            q.push_back(v);
+                        }
+                        inq[v]=1;
+                    }
+                }
+            }
+        }
+        return dis[t]>0;
+    }
+
+    int dfs(int u,int f){
+        if(u==t)return f;
+        vis[u]=1;
+        int res=0;
+        for(int &i=cur[u];i<mp[u].size();i++){
+            auto [v,cap,w,rev]=mp[u][i];
+            if(!vis[v]&&cap>0&&dis[u]+w==dis[v]){
+                int tmp=dfs(v,min(f,cap));
+                f-=tmp;
+                res+=tmp;
+                mp[u][i].cap-=tmp;
+                mp[v][rev].cap+=tmp;
+                maxc+=tmp*w;
+                if(!f)break;
+            }
+        }
+        vis[u]=0;
+        return res;
+    }
+
+    void dinic(){
+        while(spfa()){
+            fill(vis.begin(),vis.end(),0);
+            fill(cur.begin(),cur.end(),0);
+            maxf+=dfs(s,INF);
+        }
+    }
+
+};
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m,k;cin>>n>>m>>k;
+    vector<vector<int>> mp(n+1,vector<int>(m+1));
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            cin>>mp[i][j];
+    auto ch=[&](int x,int y){
+        return (x-1)*m+y;
+    };
+    auto chk=[&](int x,int y){
+        return x>=1&&x<=n&&y>=1&&y<=m&&mp[x][y]!=-1;
+    };
+    int dx[]={0,0,1,-1};
+    int dy[]={1,-1,0,0};
+    vector<array<int,4>> eds;
+    //拆点，入点ch(i,j) 出点ch(i,j)+n*m
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            if(mp[i][j]==0) eds.push_back({ch(i,j),ch(i,j)+n*m,1,-1});
+            else if(mp[i][j]==1) eds.push_back({ch(i,j),ch(i,j)+n*m,1,0});
+            if(mp[i][j]!=-1){
+                for(int d=0;d<4;d++){
+                    int nx=i+dx[d],ny=j+dy[d];
+                    if(chk(nx,ny)){
+                        eds.push_back({ch(i,j)+n*m,ch(nx,ny),1,0});
+    int s=2*n*m+1,t=2*n*m+2;
+    for(int i=1;i<=k;i++){
+        int x,y;cin>>x>>y;
+        eds.push_back({s,ch(x,y),1,0});
+    for(int i=1;i<=k;i++){
+        int x,y;cin>>x>>y;
+        eds.push_back({ch(x,y)+n*m,t,1,100});
+    MC mc(2*n*m+2,s,t,eds);
+    mc.dinic();
+    cout<<mc.maxc<<endl;
+```
+
 == 最小斯坦纳树
 
 // 最小斯坦纳树 给定一个图 和k个关键点 求一个包含所有关键点的最小生成树(可以用其他点)
@@ -5532,7 +4942,7 @@ public:
     cout<<mcmf.maxf<<" "<<mcmf.minc<<endl;
 ```
 
-== 最近公共祖先（LCA）(targan,静态)
+== 最近公共祖先（LCA）(tarjan,静态)
 
 ```cpp
 const int MaxN=5e5+5;
@@ -5985,7 +5395,7 @@ class tree{
         }
         return siz[u];
     }
-
+    //求u,v的最近公共祖先
     int lca(int u,int v){
         if(dep[u]<dep[v]) swap(u,v);
         for(int i=k;i>=0;i--){
@@ -6000,15 +5410,14 @@ class tree{
         }
         return fa[u][0];
     }
-    //求u,v的最近公共祖先
+    //求u,v距离
     int dis(int u,int v){
         return dep[u]+dep[v]-2*dep[lca(u,v)];
     }
-    //求u,v距离
+    //判断x是否在s,t的路径上
     bool con(int s,int t,int x){
         return dis(s,x)+dis(t,x)==dis(s,t);
     }
-    //判断x是否在s,t的路径上
 };
 ```
 
@@ -7011,12 +6420,14 @@ class AC{
 
 // 注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
 
+// 注意匹配到一个点其实就是匹配到这个点及其fail链上所有串。
+
 
 ```cpp
 class AC{
     public:
     vector<vector<int>> ch;
-    int n,tot; //节点数>=模式串总长
+    int n,tot; //节点数>=模式串总长 根节点0 节点编号1-tot
     vector<int> cnt,ne;
     AC(int n):n(n),ch(n+1,vector<int>(26,0)),
     cnt(n+1,0),ne(n+1,0),tot(0){}
@@ -7036,6 +6447,7 @@ class AC{
         }
         while(!q.empty()){
             int u=q.front();q.pop();
+            //如果要做一个拓扑序的信息合并（例如根到点的串数，串长前缀和（即匹配到的串的这些信息），可以在这里用u和ne[u]合并信息）
             for(int i=0;i<26;i++){
                 int v=ch[u][i];
                 if(v) ne[v]=ch[ne[u]][i],q.push(v);//构建回跳边
@@ -7286,17 +6698,32 @@ public:
     cout<<fin-2*trie.fin<<endl;
 ```
 
-== 后缀自动机(SAM)
+== 后缀自动机(SAM,低注释)
 
 ```cpp
+//#define int ll //赫赫 要不要龙龙呢
+using ll=long long;
+using namespace std;
 class SAM{
     public:
-    vector<vector<int>> ch,tree;
+    vector<array<int,26>> ch;
+    vector<vector<int>> tree;
+    //DAG转移边,Parent树
+    //parent树是指向根节点(0)的内向树
     int n,tot,last; // 根节点为0, 节点总数tot
     vector<int> len,fa,sz,fpos,is_np,id;
-    SAM(int n):n(n),ch(2*n+5,vector<int>(26,0)),tree(2*n+5),
+    //sam的每个点都代表这一个诸如此类的等价类：endpos(结束位置)集合相同的子串
+    //而且到这个点的所以路径就是这个等价类里面的子串
+    //这个等价类是覆盖[minlen,maxlen]的，而且每个长度有且只有一个子串
+    //一个点的后缀链接指向的点的最长串是这个点的最短串的真后缀
+    //一个比较显然的例子是：1<-2 1:aba,ba,a 2:caba acaba
+    //父节点的endpos集合是子节点的endpos集合的无交集并集
+    //O(sigma*|s|)构建
+    SAM(int n):n(n),ch(2*n+5,array<int,26>{}),tree(2*n+5),
                len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),fpos(2*n+5,0),
-               is_np(2*n+5,0),id(2*n+5,0),tot(0),last(0){fa[0]=-1;}
+               is_np(2*n+5,0),id(2*n+5,0),tot(0),last(0){
+                fa[0]=-1;
+            }
     void extend(int c){
         int p=last,np=last=++tot;
         len[np]=len[p]+1,sz[np]=1,fpos[np]=len[np],is_np[np]=1;
@@ -7315,43 +6742,56 @@ class SAM{
         }
     }
     void insert(string s){for(auto c:s) extend(c-'a');}
+    //按len排序天然满足拓扑序（从根到叶子)
+    //O(|s|)
     void build(){
-        vector<int> cnt(tot+1,0);
+        vector<int> cnt(n+1,0);
         for(int i=0;i<=tot;i++) cnt[len[i]]++;
-        for(int i=1;i<=tot;i++) cnt[i]+=cnt[i-1];
+        for(int i=1;i<=n;i++) cnt[i]+=cnt[i-1];
         for(int i=0;i<=tot;i++) id[cnt[len[i]]--]=i;
         for(int i=tot+1;i>=2;i--) sz[fa[id[i]]]+=sz[id[i]],tree[fa[id[i]]].push_back(id[i]);
+        //id[1]是根节点，id是1-based的，共tot+1个点
+        //父节点的sz恰好是子节点的sz之和
     }
-    // 1.判定子串是否出现
+    //1.判定子串是否出现
+    //O(|t|)
     bool check(string s){
         int p=0;
         for(auto c:s){if(!ch[p][c-'a']) return false;p=ch[p][c-'a'];}
         return true;
     }
-    // 2.不同子串个数
-    long long dist_sub(){
-        long long ans=0;
+    //2.本质不同子串个数（本质不同是与位置不同相对的）
+    //O(|s|)
+    ll dist_sub(){
+        ll ans=0;
         for(int i=1;i<=tot;i++) ans+=len[i]-len[fa[i]];
         return ans;
     }
-    // 3.所有不同子串总长度
-    long long dist_sub_len(){
-        vector<long long> c(tot+1,0),ans(tot+1,0);
+    //3.所有本质不同子串总长度
+    //O(simga*|s|)
+    ll dist_sub_len(){
+        vector<ll> c(tot+1,0),ans(tot+1,0);
         for(int i=tot+1;i>=1;i--){
             int u=id[i];c[u]=1;
-            for(int j=0;j<26;j++) if(ch[u][j]) c[u]+=c[ch[u][j]],ans[u]+=ans[ch[u][j]]+c[ch[u][j]];
+            for(int j=0;j<26;j++) 
+                if(ch[u][j]) 
+                    c[u]+=c[ch[u][j]],ans[u]+=ans[ch[u][j]]+c[ch[u][j]];
         }
         return ans[0];
     }
-    // 4.字典序第K小(T=0本质不同,T=1位置不同)
-    string kth_sub(int T,long long k){
-        vector<long long> s(tot+1,0),w(tot+1,0);
+    //4.字典序第K小的子串(T=0本质不同,T=1位置不同)
+    //预处理：O(sigma*|s|),查询：O(sigma*|t|)
+    string kth_sub(int T,ll k){
+        //w：沿一条路径走到这个点代表的子串个数
+        //本质不同就是1，位置不同就是endpos大小
+        vector<ll> s(tot+1,0),w(tot+1,0);
         for(int i=tot+1;i>=2;i--) w[id[i]]=T?sz[id[i]]:1;
         w[0]=0;
         for(int i=tot+1;i>=1;i--){
             int u=id[i];s[u]=w[u];
             for(int j=0;j<26;j++) if(ch[u][j]) s[u]+=s[ch[u][j]];
         }
+        //跟tire一样的思路，在sam上跑
         if(k>s[0]) return "-1";
         string res="";
         for(int u=0;k>0;){
@@ -7366,45 +6806,55 @@ class SAM{
         }
         return res;
     }
-    // 5.最小循环移位(初始化需insert(S+S),传原串长)
+    //5.最小循环移位(初始化需insert(S+S),传原串长)
+    //O(sigma*m)
     string min_cyclic(int m){
         string res="";
         for(int p=0,i=0;i<m;i++){
-            for(int j=0;j<26;j++) if(ch[p][j]){res+=(char)(j+'a'),p=ch[p][j];break;}
+            for(int j=0;j<26;j++) 
+                if(ch[p][j])
+                {
+                    res+=(char)(j+'a'),p=ch[p][j];
+                    break;
+                }
         }
         return res;
     }
-    // 6.最短未出现子串
+    //6.最短未出现子串(DAG逆拓扑序DP)
+    //O(sigma*|s|)
     string short_unapp(){
-        queue<int> q;q.push(0);
-        vector<int> pre(tot+1,-1),edge(tot+1,0);
-        while(!q.empty()){
-            int u=q.front();q.pop();
-            for(int j=0;j<26;j++){
-                if(!ch[u][j]){
-                    string res="";res+=(char)(j+'a');
-                    for(;u!=0;u=pre[u]) res+=(char)(edge[u]+'a');
-                    reverse(res.begin(),res.end());return res;
-                }else if(pre[ch[u][j]]==-1){
-                    pre[ch[u][j]]=u,edge[ch[u][j]]=j,q.push(ch[u][j]);
-                }
-            }
+        vector<int> d(tot+1,1e9),nxt(tot+1,-1);
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];
+            for(int j=0;j<26;j++) if(!ch[u][j]){d[u]=1,nxt[u]=j;break;}// 优先选字典序最小的断层
+            if(d[u]==1) continue;
+            for(int j=0;j<26;j++) if(d[u]>d[ch[u][j]]+1) d[u]=d[ch[u][j]]+1,nxt[u]=j;
         }
-        return "";
+        string res="";
+        for(int u=0;;u=ch[u][nxt[u]]){
+            res+=(char)(nxt[u]+'a');
+            if(!ch[u][nxt[u]]) break;
+        }
+        return res;
     }
-    // 7.求出现次数
+    //7.求子串出现次数
+    //就是sz[p]
+    //O(|t|)
     int count(string s){
         int p=0;
         for(auto c:s){if(!ch[p][c-'a']) return 0;p=ch[p][c-'a'];}
         return sz[p];
     }
-    // 8.首次出现起始位置(1-indexed)
+    //8.子串首次出现起始位置(1base)
+    //O(|t|)
     int first_pos(string s){
         int p=0;
         for(auto c:s){if(!ch[p][c-'a']) return -1;p=ch[p][c-'a'];}
         return fpos[p]-s.size()+1;
     }
-    // 9.所有出现起始位置(1-indexed)
+    //9.子串所有出现起始位置(1base)
+    //找到以p为节点的子树的所有叶子节点，收集pos即可
+    //O(|t|+ans)
     void _dfs_pos(int u,int len,vector<int>& res){
         if(is_np[u]) res.push_back(fpos[u]-len+1);
         for(auto v:tree[u]) _dfs_pos(v,len,res);
@@ -7415,14 +6865,16 @@ class SAM{
         _dfs_pos(p,s.size(),res);
         return res;
     }
-    // 10.两串LCS
+    // 10.两串LCS(t在s的sam上跑匹配)
+    //O(|t|)
     int lcs(string t){
         int u=0,l=0,ans=0;
         for(auto c:t){
             int x=c-'a';
             for(;u>0&&!ch[u][x];u=fa[u]) l=len[fa[u]];
-            if(ch[u][x]) u=ch[u][x],l++;
-            else u=0,l=0;
+            //失配，砍掉一部分前缀，往fa走
+            if(ch[u][x]) u=ch[u][x],l++; //长度加一
+            else u=0,l=0;//清零
             ans=max(ans,l);
         }
         return ans;
@@ -7430,100 +6882,220 @@ class SAM{
 };
 ```
 
-= 哈希
-
-== hash表
-
-```cpp
-/*hash mod number 53 97 193 389 769 1543 3079 6151 12289 24593 49157 98317 196613 393241 786433 1572869 3145739 6291469 12582917 25165843 50331653 100663319 402653189 805306457 1610612741 (1e9+7,1e9+9)*/ 
-/*prime such as 4k+3 (some)553963 553991 554003 554011 554051 554087 554123 554167 554171 554179 554207 554263 554299 554303 554347 554383 554419 554431 554447 554467 554503 554527 554531 554611 554627 554639 554663 554699 554707 554711 554731 554747 554759 554767 554779 554791 554803 554839 554843 554887 554891 554899 554923 554927 554951 554959 555043 555083 555091 555119 555143 555167 555251 555287 555307 555383 555391 555419 555439 555487 555491 555523 555671 555683 555691 555707 555739 555743 555767 555823 555827 555871 555931 555967 556007 556027 556043 556051 556067 556103 556123 556159 556211 556219 556243 556267 556271 556279 556327 556331 556343 556351 556399 556403 556459 556483 556487 556519 556559 556579 556583 556607 556627 556639 556651 556679 556687 556691 556723 556727 556763 556799 556811 556819 556823 556859 556867 556883 556891 556931 556939 556943 556967 556987 556999 557027 557059 557087 557159 557303 557339 557371 557423 557443 557483 557519 557551 557567 557591 557611 557639 557663 557671 557731 557743 557747 557759 557779 557803 557831 557863 557891 557899 557903 557927 557987 558007 558067 558083 558091 558139 558167 558179 558203 558223 558251 558287 558307 558319 558343 558427 558431 558479 558491 558499 558539 558563 558583 558587 558599 558611 558643 558683 558703 558731 558787 558791 558827 558863 558931 558947 558979 559051 559067 559099 559123 559183 559211 559219 559231 559243 559259 559319 559343 559367 559451 559459 559483 559511 559523 559547 559571 559583 559591 559631 559639 559667 559679 559687 559703 559739 559747 559799 559807 559831 559859 559883 559907 559939 559967 559991 560023 560039 560047 560083 560107 560123 560159 560171 560179 560191 560207 560227 560239 560243 560299 560311 560411 560447 560459 560471 560479 560491 560503 560531 560543 560551 560639 560683 560719 560767 560771 560783 560803 560827 560863 560887 560891 560939 561019 561047 561059 561079 561083 561091 561103 561191 561199 561251 561307 561343 561347 561359 561367 561419 561439 561551 561559 561599 561607 561667 561703 561767 561787 561839 561907 561923 561931 561943 561947 561983 562007 562019 562043 562091 562103 562147 562231 562259 562271 562283 562291 562307 562351 562399 562403 562427 562439 562459 562519 562579 562591 562607 562631 562651 562663 562691 562699 562703 562711 562739 562759 562763 562831 562871 562931 562943 562963 562967 562979 562987 563011 563039 563047 563051 563099 563119 563131 563183 563219 563263 563287 563327 563351 563359 563411 563419 563447 563467 563503 563543 563551 563587 563599 563623 563663 563723 563743 563747 563831 563851 563887 563947 563971 563987 563999 564059 564103 564127 564163 564191 564227 564251 564271 564299 564307 564323 564359 564367 564371 564391 564407 564419 564463 564467 564491 564523 564607 564643 564667 564671 564679 564703 564779 564827 564871 564899 564919 564923 564959 564979 564983 565039 565111 565127 565163 565171 565183 565207 565247 565259 565283 565303 565319 565343 565379 565387 565391 565427 565451 565463 565483 565507 565511 565519 565559 565567 565571 565583 565603 565651 565667 565723 565727 565771 565787 565867 565891 565907 565919 565979 566011 566023 566047 566107 566131 566179 566183 566227 566231 566311 566323 566347 566387 566431 566443 566539 566543 566551 566563 566567 566639 566659 566707 566719 566723 566759 566767 566791 566851 566879 566911 566939 566947 566963 566971 566987 566999 567011 567031 567059 567067 567107 567143 567179 567187 567263 567319 567323 567367 567383 567407 567439 567451 567467 567487 567499 567527 567607 567631 567659 567667 567719 567751 567767 567779 567811 567863 567871 567883 567899 567943 567947 567979 567991 568019 568027 568091 568151 568163 568171 568187 568207 568231 568279 568303 568363 568367 568387 568391 568439 568471 568523 568619 568627 568643 568679 568691 568699 568723 568751 568783 568787 568807 568823 568831 568891 568903 568907 568963 568979 568987 568991 568999 569003 569011 569047 569071 569083 569111 569159 569243 569251 569263 569267 569323 569419 569423 569431 569447 569479 569507 569579 569599 569603 569623 569659 569663 569671 569683 569711 569731 569747 569759 569771 569819 569831 569839 569843 569851 569887 569903 569927 569939 569983 570043 570047 570071 570079 570083 570091 570107 570131 570139 570191 570359 570379 570391 570403 570407 570419 570463 570467 570487 570491 570499 570511 570527 570539 570547 570587 570643 570659 570667 570671 570683 570719 570743 570827 570839 570851 570859 570887 570919 570959 570967 570991 571019 571031 571099 571111 571147 571163 571199 571211 571223 571231 571267 571279 571303 571331 571339 571399 571471 571531 571579 571583 571603 571679 571699 571751 571759 571783 571799 571811 571847 571867 571871 571903 571939 572023 572027 572051 572059 572063 572087 572107 572179 572183 572207 572239 572251 572303 572311 572323 572387 572399 572419 572423 572471 572479 572491 572519 572567 572587 572599 572639 572651 572659 572683 572687 572699 572707 572711 572791 572807 572827 572843 572867 572879 572903 572927 572939 572963 573007 573031 573047 573107 573119 573143 573163 573179 573247 573263 573299 573343 573371 573379 573383 573451 573479 573487 573511 573523 573527 573571 573647 573679 573691 573719 573739 573763 573787 573791 573847 573851 573863 573871 573883 573887 573899 573967 574003 574031 574051 574099 574127 574159 574163 574183 574219 574279 574283 574307 574363 574367 574423 574439 574507 574543 574547 574619 574627 574631 574643 574667 574687 574699 574703 574711 574723 574727 574799 574859 574907 574939 574963 574967 575027 575063 575087 575119 575123 575131 575203 575219 575231 575243 575251 575303 575359 575371 575431 575479 575503 575551 575579 575591 575611 575623 575647 575651 575699 575711 575723 575747 575791 575863 575867 575903 575923 575959 575963 575987 576019 576031 576119 576131 576151 576167 576179 576203 576211 576223 576227 576287 576299 576319 576379 576391 576427 576431 576439 576523 576539 576551 576647 576659 576671 576683 576703 576727 576731 576739 576743 576787 576791 576883 576899 576943 576967 577007 577043 577063 577067 577111 577123 577147 577151 577219 577259 577271 577279 577307 577327 577331 577351 577363 577387 577399 577427 577463 577471 577483 577523 577531 577547 577559 577627 577639 577667 577739 577751 577799 577807 577831 577867 577879 577919 577931 577939 577979 578047 578063 578131 578167 578183 578191 578203 578251 578267 578299 578311 578327 578363 578371 578399 578407 578419 578467 578483 578503 578563 578587 578603 578647 578659 578687 578719 578779 578803 578819 578827 578839 578843 578923 578959 578971 578999 579011 579023 579079 579083 579107 579119 579179 579199 579239 579251 579259 579263 579283 579287 579311 579331 579379 579407 579427 579451 579499 579503 579539 579563 579571 579583 579587 579611 579643 579707 579763 579779 579851 579883 579907 579947 579967 579983 580031 580079 580163 580183 580187 580219 580231 580259 580291 580303 580331 580339 580343 580379 580471 580487 580607 580627 580631 580639 580663 580687 580691 580711 580747 580759 580763 580787 580807 580843 580859 580871 580891 580919 580927 580939 581047 581071 581099 581143 581171 581183 581227 581239 581263 581303 581311 581323 581351 581407 581411 581443 581447 581459 581491 581527 581551 581599 581639 581663 581683 581687 581699 581731 581743 */
-const int MOD1=98317,MOD2=196613;
-vector <int> a[MOD1];
-vector <int> vis;
-bool _find(int x)
-{
-    if(!a[(x%MOD1+MOD1)%MOD1].size()) return false;
-    for(int i=0;i<a[(x%MOD1+MOD1)%MOD1].size();i++)
-    {
-        if(a[(x%MOD1+MOD1)%MOD1][i]==x) return true;
-    }
-    return false;
-}
-void _insert(int x)
-{
-    if(!_find(x)) 
-    {
-        a[(x%MOD1+MOD1)%MOD1].push_back(x);
-        vis.push_back((x%MOD1+MOD1)%MOD1);
-    }
-    return ;
-}
-int read()
-{
-    int s=0,f=1;
-    char ch=getchar();
-    while(ch<'0'||ch>'9')
-    {
-        if(ch=='-') f=-1;
-        ch=getchar();
-    }
-    while(ch>='0'&&ch<='9')
-    {
-        s=(s<<3)+(s<<1)+ch-'0';
-        ch=getchar();
-    }
-    return s*f;
-}
-inline void write(int x) 
-{
-    static int sta[35]; 
-    int top=0;
-    if(x<0) {putchar('-');x=-x;}
-    do{
-      sta[top++]=x%10,x/=10;
-      }while(x);
-    while(top) putchar(sta[--top]+48);
-}
-```
-
 #text(size: 8pt, fill: gray)[用法示例:]
 
 ```cpp
-    int t=read();
-    while(t--)
-        int n=read();
-        for(int i=0;i<n;i++)
-            int x=read();
-            if(!_find(x))
-                _insert(x);
-                write(x),putchar(' ');
-        putchar('\n');
-        for(auto i:vis)
-            a[i].clear();
-        vis.clear();
+    string s;cin>>s;
+    SAM sam(s.size());
+    sam.insert(s);
+    sam.build();
+    ll mx=0;
+    for(int i=1;i<=sam.tot;i++){
+        if(sam.sz[i]>=2){
+            mx=max(mx,1ll*sam.len[i]*sam.sz[i]);
+    cout<<mx<<endl;
 ```
 
-== 字符串双hash
+== 后缀自动机(SAM,高注释)
 
 ```cpp
-#define int long long //赫赫 要不要龙龙呢
-#define ull unsigned long long
+//#define int ll //赫赫 要不要龙龙呢
+using ll=long long;
 using namespace std;
-class SHash{
+class SAM{
     public:
-    const int m1=1e9+7,m2=1e9+9;
-    int b1,b2;
-    SHash(){
-        mt19937_64 rand(time(0));
-        b1=rand()%(int)1e9+1e6,b2=rand()%(int)1e9+1e6;
-    }
-    ull get(string s){
-        int h1=0,h2=0;
-        for(auto c:s){
-            h1=(h1*b1+c)%m1;
-            h2=(h2*b2+c)%m2;
+    vector<array<int,26>> ch;
+    vector<vector<int>> tree;
+    //DAG转移边,Parent树
+    //parent树是指向根节点(0)的内向树
+    int n,tot,last; // 根节点为0, 节点总数tot
+    vector<int> len,fa,sz,fpos,is_np,id;
+    //sam的每个点都代表这一个诸如此类的等价类：endpos(结束位置)集合相同的子串
+    //而且到这个点的所以路径就是这个等价类里面的子串
+    //这个等价类是覆盖[minlen,maxlen]的，而且每个长度有且只有一个子串
+    //一个点的后缀链接指向的点的最长串是这个点的最短串的真后缀
+    //一个比较显然的例子是：1<-2 1:aba,ba,a 2:caba acaba
+    //父节点的endpos集合是子节点的endpos集合的无交集并集
+    //len:节点内部最长子串长度
+    //fa: endpos 集合变大的节点，后缀连接
+    //sz: endpos 集合大小
+    //fpos: 此状态第一次在原串中出现的结束位置
+    //id：拓扑序,即rk为i的点是哪个
+    //is_np:是否是真实节点（非分裂的点）,即如果is_np为真，就代表这个点是代表原串的一个前缀，即parent树的叶子
+    //n：字符数
+    //O(sigma*|s|)构建
+    SAM(int n):n(n),ch(2*n+5,array<int,26>{}),tree(2*n+5),
+               len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),fpos(2*n+5,0),
+               is_np(2*n+5,0),id(2*n+5,0),tot(0),last(0){
+                fa[0]=-1;
+            }
+    void extend(int c){
+        int p=last,np=last=++tot;
+        len[np]=len[p]+1,sz[np]=1,fpos[np]=len[np],is_np[np]=1;
+        //p为上一个整串代表的节点，np是新加入字符后形成的节点
+        //这里的赋值都比较显然。
+        for(;~p&&!ch[p][c];p=fa[p]) ch[p][c]=np;
+        //沿着后缀链接一直向上走，直到找到一个节点，这个节点包含的字符中有c，如果没有就指向np
+        if(!~p) fa[np]=0; //爬到头了
+        else{
+            int q=ch[p][c];
+            if(len[q]==len[p]+1) fa[np]=q; //恰好，直接指向
+            else{
+                int nq=++tot;
+                len[nq]=len[p]+1,fpos[nq]=fpos[q];
+                fa[nq]=fa[q],ch[nq]=ch[q];
+                //克隆节点nq存len[p]+1的串的信息，信息继承原来的q节点的
+                fa[q]=fa[np]=nq;
+                //q和np的后缀连接都是nq
+                for(;~p&&ch[p][c]==q;p=fa[p]) ch[p][c]=nq;
+                //更新以前指向q的转移边
+            }
         }
-        return ((ull)h1)<<32|(ull)(h2);
+    }
+    void insert(string s){for(auto c:s) extend(c-'a');}
+    //insert完调用一下，建树
+    //按len排序天然满足拓扑序（从根到叶子)
+    //O(|s|)
+    void build(){
+        vector<int> cnt(n+1,0);
+        for(int i=0;i<=tot;i++) cnt[len[i]]++;
+        for(int i=1;i<=n;i++) cnt[i]+=cnt[i-1];
+        for(int i=0;i<=tot;i++) id[cnt[len[i]]--]=i;
+        for(int i=tot+1;i>=2;i--) sz[fa[id[i]]]+=sz[id[i]],tree[fa[id[i]]].push_back(id[i]);
+        //id[1]是根节点，id是1-based的，共tot+1个点
+        //父节点的sz恰好是子节点的sz之和
+    }
+    //1.判定子串是否出现
+    //O(|t|)
+    bool check(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return false;p=ch[p][c-'a'];}
+        return true;
+    }
+    //2.本质不同子串个数（本质不同是与位置不同相对的）
+    //O(|s|)
+    ll dist_sub(){
+        ll ans=0;
+        for(int i=1;i<=tot;i++) ans+=len[i]-len[fa[i]];
+        return ans;
+    }
+    //3.所有本质不同子串总长度
+    //在DAG跑反向dp
+    //c[u]表示从u开始的子串个数，c[u]=1+sum(c[v])，v是u的子节点,含义是仅选u和选u的子节点
+    //ans[u]表示从u开始的子串总长度，ans[u]=sum(c[v]+ans[v]),含义就是选和不选u
+    //O(simga*|s|)
+    ll dist_sub_len(){
+        vector<ll> c(tot+1,0),ans(tot+1,0);
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];c[u]=1;
+            for(int j=0;j<26;j++) 
+                if(ch[u][j]) 
+                    c[u]+=c[ch[u][j]],ans[u]+=ans[ch[u][j]]+c[ch[u][j]];
+        }
+        return ans[0];
+    }
+    //4.字典序第K小的子串(T=0本质不同,T=1位置不同)
+    //预处理+查询
+    //预处理：O(sigma*|s|),查询：O(sigma*|t|)
+    string kth_sub(int T,ll k){
+        //w：沿一条路径走到这个点代表的子串个数
+        //本质不同就是1，位置不同就是endpos大小
+        vector<ll> s(tot+1,0),w(tot+1,0);
+        for(int i=tot+1;i>=2;i--) w[id[i]]=T?sz[id[i]]:1;
+        w[0]=0;
+        //像3一致的反向dp s[u]表示从u开始的子串个数
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];s[u]=w[u];
+            for(int j=0;j<26;j++) if(ch[u][j]) s[u]+=s[ch[u][j]];
+        }
+        //跟tire一样的思路，在sam上跑
+        if(k>s[0]) return "-1";
+        string res="";
+        for(int u=0;k>0;){
+            if(k<=w[u]) break;
+            k-=w[u];
+            for(int j=0;j<26;j++){
+                if(int v=ch[u][j]){
+                    if(k>s[v]) k-=s[v];
+                    else{res+=(char)(j+'a'),u=v;break;}
+                }
+            }
+        }
+        return res;
+    }
+    //5.最小循环移位(初始化需insert(S+S),传原串长)
+    //O(sigma*m)
+    string min_cyclic(int m){
+        string res="";
+        for(int p=0,i=0;i<m;i++){
+            for(int j=0;j<26;j++) 
+                if(ch[p][j])
+                {
+                    res+=(char)(j+'a'),p=ch[p][j];
+                    break;
+                }
+        }
+        return res;
+    }
+    //6.最短未出现子串(DAG逆拓扑序DP)
+    //d[u]表示从u出发最短未出现子串的长度, nxt[u]记录第一步走的字符
+    //O(sigma*|s|)
+    string short_unapp(){
+        vector<int> d(tot+1,1e9),nxt(tot+1,-1);
+        for(int i=tot+1;i>=1;i--){
+            int u=id[i];
+            for(int j=0;j<26;j++) if(!ch[u][j]){d[u]=1,nxt[u]=j;break;}// 优先选字典序最小的断层
+            if(d[u]==1) continue;
+            for(int j=0;j<26;j++) if(d[u]>d[ch[u][j]]+1) d[u]=d[ch[u][j]]+1,nxt[u]=j;
+        }
+        string res="";
+        for(int u=0;;u=ch[u][nxt[u]]){
+            res+=(char)(nxt[u]+'a');
+            if(!ch[u][nxt[u]]) break;
+        }
+        return res;
+    }
+    //7.求子串出现次数
+    //就是sz[p]
+    //O(|t|)
+    int count(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return 0;p=ch[p][c-'a'];}
+        return sz[p];
+    }
+    //8.子串首次出现起始位置(1base)
+    //O(|t|)
+    int first_pos(string s){
+        int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return -1;p=ch[p][c-'a'];}
+        return fpos[p]-s.size()+1;
+    }
+    //9.子串所有出现起始位置(1base)
+    //找到以p为节点的子树的所有叶子节点，收集pos即可
+    //O(|t|+ans)
+    void _dfs_pos(int u,int len,vector<int>& res){
+        if(is_np[u]) res.push_back(fpos[u]-len+1);
+        for(auto v:tree[u]) _dfs_pos(v,len,res);
+    }
+    vector<int> all_pos(string s){
+        vector<int> res;int p=0;
+        for(auto c:s){if(!ch[p][c-'a']) return res;p=ch[p][c-'a'];}
+        _dfs_pos(p,s.size(),res);
+        return res;
+    }
+    // 10.两串LCS(t在s的sam上跑匹配)
+    //O(|t|)
+    int lcs(string t){
+        int u=0,l=0,ans=0;
+        for(auto c:t){
+            int x=c-'a';
+            for(;u>0&&!ch[u][x];u=fa[u]) l=len[fa[u]];
+            //失配，砍掉一部分前缀，往fa走
+            if(ch[u][x]) u=ch[u][x],l++; //长度加一
+            else u=0,l=0;//清零
+            ans=max(ans,l);
+        }
+        return ans;
     }
 };
 ```
@@ -7531,34 +7103,347 @@ class SHash{
 #text(size: 8pt, fill: gray)[用法示例:]
 
 ```cpp
-    int t;cin>>t;
-    SHash hs;
-    while(t--)
-        int n;cin>>n;
-        vector<array<ull,2>> a(n+1);
-        for(int i=1;i<=n;i++)
-            string s1,s2;cin>>s1>>s2;
-            a[i]={hs.get(s1),hs.get(s2)};
-        vector<vector<int>> mp(n+1);
-        for(int i=1;i<=n;i++)
-            for(int j=1;j<=n;j++)
-                if(i==j) continue;
-                if(a[i][0]==a[j][0]||a[i][1]==a[j][1]) mp[i].push_back(j);
-        int st=(1<<n);
-        vector<vector<int>> dp(st,vector<int>(n+1,0));
-        for(int i=1;i<=n;i++) dp[1<<(i-1)][i]=1;
-        for(int i=0;i<st;i++)
-            for(int u=1;u<=n;u++)
-                if(!dp[i][u]) continue;
-                for(int v:mp[u])
-                    if((i|(1<<(v-1)))!=i)
-                        dp[i|(1<<(v-1))][v]|=dp[i][u];
-        int ans=0;
-        for(int i=0;i<st;i++)
-            for(int j=1;j<=n;j++)
-                if(dp[i][j])
-                    ans=max(ans,(int)__builtin_popcountll(i));
-        cout<<n-ans<<endl;
+    string s;cin>>s;
+    SAM sam(s.size());
+    sam.insert(s);
+    sam.build();
+    ll mx=0;
+    for(int i=1;i<=sam.tot;i++){
+        if(sam.sz[i]>=2){
+            mx=max(mx,1ll*sam.len[i]*sam.sz[i]);
+    cout<<mx<<endl;
+```
+
+== 广义后缀自动机(GSAM)
+
+// GSAM:描述tire的子串性质。此处的子串不一定从根节点开始，从任意节点开始的子串都满足性质
+
+
+```cpp
+class Trie{
+    public:
+    vector<array<int,26>> ch;
+    int tot;
+    // len:预估最大节点数
+    Trie(int len):ch(len+5,array<int,26>{}),tot(0){}
+    void insert(string s){
+        int p=0;
+        for(auto c:s){
+            if(!ch[p][c-'a']) ch[p][c-'a']=++tot;
+            p=ch[p][c-'a'];
+        }
+    }
+};
+
+class GSAM{
+    public:
+    vector<array<int,26>> ch;
+    vector<vector<int>> tree;
+    int tot;
+    vector<int> len,fa,sz,id;
+    // n为Trie节点数，GSAM最多2n个节点
+    GSAM(int n):ch(2*n+5,array<int,26>{}),tree(2*n+5),
+                len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),id(2*n+5,0),tot(0){
+        fa[0]=-1;
+    }
+    int extend(int c,int last){
+        //如果转移边存在的情况
+        if(ch[last][c]){
+            int q=ch[last][c];
+            if(len[q]==len[last]+1) return q;
+            int nq=++tot;
+            len[nq]=len[last]+1,fa[nq]=fa[q],ch[nq]=ch[q];
+            fa[q]=nq;
+            for(int p=last;~p&&ch[p][c]==q;p=fa[p]) ch[p][c]=nq;
+            return nq;
+        }
+        //如果转移边不存在的情况，与普通sam一致
+        int np=++tot,p=last;
+        len[np]=len[p]+1,sz[np]=1;
+        for(;~p&&!ch[p][c];p=fa[p]) ch[p][c]=np;
+        if(!~p) fa[np]=0;
+        else{
+            int q=ch[p][c];
+            if(len[q]==len[p]+1) fa[np]=q;
+            else{
+                int nq=++tot;
+                len[nq]=len[p]+1,fa[nq]=fa[q],ch[nq]=ch[q];
+                fa[q]=fa[np]=nq;
+                for(;~p&&ch[p][c]==q;p=fa[p]) ch[p][c]=nq;
+            }
+        }
+        return np;
+    }
+    // 传入建好的Trie跑BFS建机，保证len拓扑序严格递增
+    // 如果不想搞tire可以自己建树然后跑bfs,空间复杂度可以少个simga
+    // 当然，dfs也是可行的
+    void insert(const Trie& tr){
+        queue<pair<int,int>> q;
+        q.push({0,0});
+        while(!q.empty()){
+            auto [tu,su]=q.front();q.pop();
+            for(int c=0;c<26;c++)
+                if(tr.ch[tu][c]) q.push({tr.ch[tu][c],extend(c,su)});
+        }
+    }
+    void build(){
+        vector<int> cnt(tot+1,0);
+        for(int i=0;i<=tot;i++) cnt[len[i]]++;
+        for(int i=1;i<=tot;i++) cnt[i]+=cnt[i-1];
+        for(int i=0;i<=tot;i++) id[cnt[len[i]]--]=i;
+        for(int i=tot+1;i>=2;i--) sz[fa[id[i]]]+=sz[id[i]],tree[fa[id[i]]].push_back(id[i]);
+    }
+    ll dist_sub(){
+        ll ans=0;
+        for(int i=1;i<=tot;i++) ans+=len[i]-len[fa[i]];
+        return ans;
+    }
+};
+```
+
+== 防hack的umap,gp_hash_table
+
+```cpp
+using ull=unsigned long long;
+using ll=long long;
+using namespace std;
+using namespace __gnu_pbds;
+struct Xhash64{
+    static ull splitmix64(ull x){
+        x+=0x9e3779b97f4a7c15;
+        x=(x^(x>>30))*0xbf58476d1ce4e5b9;
+        x=(x^(x>>27))*0x94d049bb133111eb;
+        return x^(x>>31);
+    }
+    size_t operator()(ull x) const{
+        static const ull SALT=chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char);
+        return splitmix64(x+SALT);
+    }
+};
+struct Xhash32{
+    static uint32_t splitmix32(uint32_t x){
+        x+=0x9e3779b9;
+        x=(x^(x>>16))*0x85ebca6b;
+        x=(x^(x>>13))*0xc2b2ae35;
+        return x^(x>>16);
+    }
+    size_t operator()(uint32_t x) const{
+        static const uint32_t SALT=std::chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char);
+        return splitmix32(x+SALT);
+    }
+};
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    unordered_map<ull,int,Xhash64> mp; //拉链法
+    gp_hash_table<ull,int,Xhash64> gp; //二次寻址，缓存更友好，速度更快。
+```
+
+== 随机底数固定模数单hash
+
+```cpp
+using ull=unsigned long long;
+using ui128=__uint128_t;
+using namespace std;
+class SHASH{
+    public:
+        ull b;
+        vector<ull> h,p;
+        const ull mod=(1ull<<61)-1;
+        inline ull add(ull a,ull b){ a+=b;return a>=mod?a-mod:a;}
+        inline ull sub(ull a,ull b){ return a>=b?a-b:a+mod-b;}
+        inline ull mul(ull a,ull b){ ui128 c=ui128(a)*b; return (add(c>>61,c&mod));}
+        SHASH(int m):p(m+1,1),h(m+1,0){
+            mt19937_64 rng(chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char));
+            b=rng()%(mod-1313131)+1313131;
+            for(int i=1;i<=m;i++) p[i]=mul(p[i-1],b);
+        }
+        void calc(const string& s,int n){
+            for(int i=1;i<=n;i++) h[i]=add(mul(h[i-1],b),s[i]);
+        }
+        ull get(int l,int r){
+            return sub(h[r],mul(h[l-1],p[r-l+1]));
+        }
+};
+```
+
+== 随机底数固定模数双hash
+
+```cpp
+using ull=unsigned long long;
+using namespace std;
+class SHASH{
+    public:
+        const int m1=1e9+7,m2=1e9+9;
+        int b1,b2,m;
+        vector<int> h1,h2;
+        vector<int> p1,p2;
+        //m 预估的最长字符串长度
+        SHASH(int m):p1(m+1,1),p2(m+1,1),h1(m+1,0),h2(m+1,0){
+            mt19937 rng(chrono::steady_clock::now().time_since_epoch().count()^(ull)(new char));
+            b1=rng()%(m1-1313131)+1313131,b2=rng()%(m2-133331)+133331;
+            //b1=131,b2=13331;
+            for(int i=1;i<=m;i++){
+                p1[i]=(1ll*p1[i-1]*b1)%m1;
+                p2[i]=(1ll*p2[i-1]*b2)%m2;
+            }
+        }
+        //s 1based
+        void calc(const string& s,int n){
+            for(int i=1;i<=n;i++){
+                h1[i]=(1ll*h1[i-1]*b1+s[i])%m1;
+                h2[i]=(1ll*h2[i-1]*b2+s[i])%m2;
+            }
+        }
+        ull get(int l,int r){
+            int len=r-l+1;
+            int r1=h1[r]-1ll*h1[l-1]*p1[len]%m1;
+            int r2=h2[r]-1ll*h2[l-1]*p2[len]%m2;
+            r1<0?r1+=m1:0,r2<0?r2+=m2:0;
+            return ((ull)r1<<32)|r2;
+        }
+};
+```
+
+= 动态规划
+
+== 数位dp(例题1,数位和)
+
+// 数位dp 计算[l,r]内所有数的数位和
+
+// dfs 形参总结
+
+
+```cpp
+#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+const int mod=1e9+7;;
+template <int MOD>
+struct SMC {
+    int64_t val;
+    constexpr SMC(int64_t v=0){
+        val=(v%MOD+MOD)%MOD;
+    }
+    SMC& operator=(int64_t v){
+        val=(v%MOD+MOD)%MOD;
+        return *this;
+    }
+    SMC& operator+=(const SMC &rhs){
+        val+=rhs.val;
+        if(val>=MOD) val-=MOD;
+        return *this;
+    }
+    SMC& operator-=(const SMC &rhs){
+        val-=rhs.val;
+        if(val<0) val+=MOD;
+        return *this;
+    }
+    SMC& operator*=(const SMC &rhs){
+        val=1LL*val*rhs.val%MOD;
+        return *this;
+    }
+    static int64_t qpow(int64_t a,int64_t b){
+        int64_t res=1;
+        while(b){
+            if(b&1) res=res*a%MOD;
+            a=a*a%MOD;
+            b>>=1;
+        }
+        return res;
+    }
+    SMC pow(int64_t k) const{
+        return SMC(qpow(val,k));
+    }
+    SMC inv() const{
+        return pow(MOD-2);
+    }
+    SMC& operator/=(const SMC &rhs){
+        return *this*=rhs.inv();
+    }
+    friend SMC operator+(SMC a,const SMC &b){ return a+=b;}
+    friend SMC operator-(SMC a,const SMC &b){ return a-=b;}
+    friend SMC operator*(SMC a,const SMC &b){ return a*=b;}
+    friend SMC operator/(SMC a,const SMC &b){ return a/=b;}
+    SMC& operator++() { return *this += 1; }
+	SMC& operator--() { return *this -= 1; }
+	SMC operator++(int32_t dummy) { SMC t=*this; ++*this; return t; }
+	SMC operator--(int32_t dummy) { SMC t=*this; --*this; return t; }
+    friend bool operator==(const SMC &a,const SMC &b){ return a.val==b.val;}
+	friend bool operator<(const SMC &a,const SMC &b){ return a.val<b.val;}
+    friend bool operator>(const SMC &a,const SMC &b){ return a.val>b.val;}
+    friend bool operator<=(const SMC &a,const SMC &b){ return a.val<=b.val;}
+    friend bool operator>=(const SMC &a,const SMC &b){ return a.val>=b.val;}
+    friend bool operator!=(const SMC &a,const SMC &b){ return a.val!=b.val;}
+
+    friend std::istream& operator>>(std::istream &in,SMC &a){
+        int64_t v;
+        in>>v,a=SMC(v);
+        return in;
+    }
+
+    friend std::ostream& operator<<(std::ostream &out,const SMC &a){
+        out<<a.val;
+        return out;
+    }
+    explicit operator long long() const{
+        return val;
+    }
+    SMC operator-() const{
+        return SMC(-val);
+    }
+	SMC& operator+=(int64_t x) { return *this+=SMC(x); }
+	SMC& operator-=(int64_t x) { return *this-=SMC(x); }
+	SMC& operator*=(int64_t x) { return *this*=SMC(x); }
+	SMC& operator/=(int64_t x) { return *this/=SMC(x); }
+
+	friend SMC operator+(SMC a, int64_t b) { return a+=b; }
+	friend SMC operator-(SMC a, int64_t b) { return a-=b; }
+	friend SMC operator*(SMC a, int64_t b) { return a*=b; }
+	friend SMC operator/(SMC a, int64_t b) { return a/=b; }
+
+	friend SMC operator+(int64_t a, SMC b) { return b+a; }
+	friend SMC operator-(int64_t a, SMC b) { return SMC(a)-b; }
+	friend SMC operator*(int64_t a, SMC b) { return b*a; }
+	friend SMC operator/(int64_t a, SMC b) { return SMC(a)/b; }
+};
+using Z=SMC<mod>;
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+	int t;cin>>t;
+	vector<vector<Z>> dp(20,vector<Z>(18*9+5,-1));
+	//dp[i][j]表示[i+1,len](除低i位的高位)数位和=j时,[1,i]任选的所有方案的数位和
+	while(t--)
+	    int l,r;cin>>l>>r;
+		vector<int> bit;
+		auto work=[&](int x)->int{
+			bit.clear();
+			bit.push_back(0);//1-based
+			while(x) bit.push_back(x%10),x/=10;
+			return bit.size()-1;
+		};
+		auto dfs=[&](this auto&& dfs,int pos,bool lim,int sum)->Z{
+			//从len位填到pos+1位,lim表示是否受上界限制,sum表示当前数位和
+			//现在填pos位 也就是说dfs的含义是[pos+1,len]数位和=sum时,pos位受lim限制的方案数
+			if(pos==0) return sum;//第0位,直接返回sum
+			if(!lim&&dp[pos][sum]!=-1) return dp[pos][sum];
+			int up=lim?bit[pos]:9;
+			Z res=0;
+			for(int i=0;i<=up;i++)
+				res+=dfs(pos-1,lim&&i==up,sum+i);
+				//传递受上界限制的状态
+			if(!lim) dp[pos][sum]=res;
+			return res;
+		};
+		auto solve=[&](int x)->Z{
+			int len=work(x);
+			return dfs(len,1,0);
+		};
+		cout<<solve(r)-solve(l-1)<<endl;
 ```
 
 = 数论
@@ -8621,7 +8506,7 @@ class MatQpow{
         e=vector<vector<Z>>(n,vector<Z>(n,0));
         for(int i=0;i<n;i++) e[i][i]=1;
     }
-   static vector<vector<Z>> mul(
+    static vector<vector<Z>> mul(
         const vector<vector<Z>>& A,
         const vector<vector<Z>>& B,
         int n
@@ -9817,6 +9702,99 @@ void psort(vector<pit>& a)
 
 = 其他
 
+== SWAG(滑动窗口聚合)
+
+```cpp
+constexpr ll INF=1e18;
+struct Matrix{
+    ll m[2][2]={{INF,INF},{INF,INF}};
+    Matrix():m{{0,INF},{INF,0}}{}
+    Matrix(ll a,ll b,ll c,ll d):m{{a,b},{c,d}}{}
+    Matrix operator*(const Matrix& o) const{
+        Matrix r(INF,INF,INF,INF);
+        for(int i:{0,1})
+            for(int k:{0,1})
+                for (int j:{0,1})
+                    r.m[i][j]=min(r.m[i][j],m[i][k]+o.m[k][j]);
+        return r;
+    }
+};
+template<typename T,class Op>
+struct SWAG{
+    struct Node{
+        T val;
+        T agg;
+    };
+    vector<Node> front,back;
+    Op op; //满足结合律的运算
+    T id;  //单位元
+    SWAG(Op op,T id):op(op),id(id){}
+    void push(const T& x){
+        if(back.empty()) back.push_back({x,x});
+        else back.push_back({x,op(back.back().agg,x)});
+    }
+    void pop(){
+        if(front.empty()){
+            while(!back.empty()){
+                T x=back.back().val;
+                back.pop_back();
+                if(front.empty()) front.push_back({x,x});
+                else front.push_back({x,op(x,front.back().agg)});
+            }
+        }
+        if(!front.empty()) front.pop_back();
+    }
+    T qry(){
+        if(back.empty()&&front.empty()) return id;
+        if(back.empty()) return front.back().agg;
+        if(front.empty()) return back.back().agg;
+        return op(front.back().agg,back.back().agg);
+    }
+};
+//一个比较经典的例子是 front从顶到底是{{B,BCD},{C,CD},{D,D}} back从顶到底是{{G,EFG},{F,EF},{E,E}}
+//可以发现front是左乘，back是右乘，这样就可以用SWAG维护有结合律的玩意了
+//不知道单元元的时候可以传个异常元进去
+//使用例：
+// auto mul=[](const Matrix& a,const Matrix& b){
+//     return b*a;
+// };
+// SWAG<Matrix,decltype(mul)> q(mul,Matrix());
+// 注意矩阵乘法的顺序QAQ
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int t;cin>>t;
+    while(t--){
+        int n,k;cin>>n>>k;
+        vector<int> a(n+1);
+        for(int i=1;i<=n;i++) cin>>a[i];
+        if(k==1){
+            cout<<*min_element(a.begin()+1,a.end())<<'\n';
+            continue;
+        vector<Matrix> m(n+1);
+        for(int i=1;i<=n;i++){
+            m[i]=Matrix(a[i],a[i],0,INF);
+        auto mul=[](const Matrix& a,const Matrix& b){
+            return b*a;
+        };
+        auto slove=[&](int w){
+            if(w<1) return INF;
+            SWAG<Matrix,decltype(mul)> q(mul,Matrix());
+            ll res=INF;
+            for(int i=1;i<=n;i++){
+                q.push(m[i]);
+                if(i>w) q.pop();
+                if(i>=w){
+                    int l=i-w;
+                    if(l>=1){
+                        res=min(res,q.qry().m[0][0]+a[l]);
+            return res;
+        };
+        cout<<min(slove(k),slove(k-1))<<'\n';
+```
+
 == 动态bitset
 
 ```cpp
@@ -10024,19 +10002,6 @@ public:
 ```
 
 == 离散化
-
-```cpp
-unordered_map<int,int> dis(vector<int> a)
-{
-    sort(a.begin(),a.end());
-    unordered_map<int,int> mp;
-    for(int i=0;i<a.size();i++)
-    {
-        mp[a[i]]=i+1;
-    }
-    return mp;
-}
-```
 
 #text(size: 8pt, fill: gray)[用法示例:]
 

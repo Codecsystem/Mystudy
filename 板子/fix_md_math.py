@@ -162,6 +162,7 @@ def main():
         '博弈论',
         '其他',
         os.path.join('其他', 'Trick'),
+        os.path.join('字符串', '笔记'),
     ]
     md_files = []
     for d in dirs:
