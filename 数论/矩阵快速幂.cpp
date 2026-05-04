@@ -53,7 +53,7 @@ class MatQpow{
         e=vector<vector<Z>>(n,vector<Z>(n,0));
         for(int i=0;i<n;i++) e[i][i]=1;
     }
-   static vector<vector<Z>> mul(
+    static vector<vector<Z>> mul(
         const vector<vector<Z>>& A,
         const vector<vector<Z>>& B,
         int n

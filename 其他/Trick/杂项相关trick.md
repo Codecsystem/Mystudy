@@ -43,7 +43,7 @@ xorhash
 
 有些题有奇偶不变量/其他的不变量
 
-压维转化 0-base x*m+y  1base (x-1)*m+(y-1)+1 (有错)
+压维转化 0-base x*m+y  1base (x-1)*m+(y-1)+1
 
 曼哈顿距离 dis(x1,y1,x2,y2)=abs(x1-x2)+abs(y1-y2)
 切比雪夫距离 dis(x1,y1,x2,y2)=max(abs(x1-x2),abs(y1-y2))
@@ -114,3 +114,7 @@ long long ceil_div(long long a,long long b){
 正数ceil a+b-1/b
 
 一个经典转化是 一个升序列表x1,x2,x3...xn y1=x1-1,y2=x2-2注意到yi也是单增的。
+
+SWAG 用来解决这样的问题 维护一个满足结合律的元素的窗口。即 窗口内是结合的元素
+例如 on来做这样一个问题 固定k的窗口 查询所有窗口的max的xor
+或者 查询最长的满足某个矩阵乘法有某类特征的子序列
