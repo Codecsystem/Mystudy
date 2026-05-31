@@ -33,7 +33,7 @@ class TreeEinf{
     }
     TreeEinf(int n,vector<vector<array<int,2>>> &g,int op):
         tr(g),n(n),k(__lg(n)+1),dep(n+1,0),op(op),
-        fa(k+1,vector<int>(n+1,0)){
+        fa(__lg(n)+2,vector<int>(n+1,0)){
             //inf j点向上2^i步的最值
             if(op==1) INF=-1e9;
             else INF=1e9;
@@ -89,7 +89,7 @@ class TreeDinf{
     TreeDinf(int n,vector<vector<int>> &g,
         int op,vector<int> &val):
         tr(g),n(n),k(__lg(n)+1),dep(n+1,0),op(op),
-        fa(k+1,vector<int>(n+1,0)),val(val){
+        fa(__lg(n)+2,vector<int>(n+1,0)),val(val){
             //inf j点向上2^i步的最值
             if(op==1) INF=-1e9;
             else INF=1e9;

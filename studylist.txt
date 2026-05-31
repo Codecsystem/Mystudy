@@ -11,7 +11,8 @@ https://www.luogu.com.cn/problem/P9549
 待补：
 atc typical dp 进度 0/last4
 fan's problems list 进度0
-ARC58-ARC90的后两题 进度59/90
+ARC58-ARC90的后两题 进度62/90
+25江苏省赛
 
 
 马上想学的知识点：
@@ -36,6 +37,7 @@ ARC58-ARC90的后两题 进度59/90
 --动态开点线段树
 --线段树二分/**合并**/分裂          https://www.luogu.com.cn/problem/P2824
 --吉司机线段树                 https://atcoder.jp/contests/abc430/tasks/abc430_g
+--线段树历史和
 --可持久化平衡树/tire/
 --kd树
 --二维线段树

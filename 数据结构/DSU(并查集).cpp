@@ -18,6 +18,7 @@ using namespace std;
 class DSU{
     public:
         int n;vector<int> fa,sz;
+        vector<vector<int>> ans;
         DSU(int n):n(n)
         {
             srand(time(NULL));
@@ -47,7 +48,8 @@ class DSU{
             return sz[find(u)];
         }
         vector<vector<int>> get(){
-            vector<vector<int>> ans(n+1);
+            ans.resize(n+1);
+            for(auto &i:ans) i.clear();
             for(int i=1;i<=n;i++)
             {
                 ans[find(i)].push_back(i);
