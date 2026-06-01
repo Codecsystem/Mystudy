@@ -1,4 +1,4 @@
-### sosdp(高维前缀和)
+#### sosdp(高维前缀和)
 
 我们要求 $dp[i]$ 的所有子集 $j \subseteq i$ 的 $A[j]$ 之和。
 
@@ -9,8 +9,7 @@
 
 再只处理列（y轴）： 基于第一步的结果，对每一列单独做 1D 前缀和。
 
-
-#### 推广到 $N$ 维（比特位）
+##### 推广到 $N$ 维（比特位）
 
 在 SOS DP 中，我们把一个数字的二进制表示看作维度。
 比如数字 $5 (101_2)$，可以看作是一个 3 维坐标 $(1, 0, 1)$。
@@ -23,7 +22,7 @@
 3.  ...
 4.  直到处理完第 $N-1$ 位。
 
->如果泥玩过2048的话，应该能理解这个方法
+> 如果泥玩过2048的话，应该能理解这个方法
 
 ```cpp
 // dp[mask] 初始存的是单点的值 A[mask]
@@ -38,7 +37,8 @@ for (int j = 0; j < n; ++j) { // 枚举每一个维度（每一位）
     }
 }
 ```
->我们追踪一下dp[7(111)]
+
+> 我们追踪一下dp[7(111)]
 
 假设 $N=3$，我们要算 $dp[111_2]$ (即 $dp[7]$)。
 
@@ -58,22 +58,24 @@ for (int j = 0; j < n; ++j) { // 枚举每一个维度（每一位）
     *注意：* $dp[011]$ 在前两轮已经包含了 $\{011, 010, 001, 000\}$。
     *意义：现在 $dp[111]$ 包含了所有 8 个子集。*
 
-#### 超集和
+##### 超集和
+
 换个符号即可
+
 ```cpp
 for (int j = 0; j < n; ++j) {
     for (int i = 0; i < (1 << n); ++i) {
         if (!((i >> j) & 1)) { // 如果第 j 位是 0
             // 它的超集包括第 j 位是 1 的那个状态
-            dp[i] += dp[i ^ (1 << j)]; 
+            dp[i] += dp[i ^ (1 << j)];
         }
     }
 }
 ```
->如果做高维差分 反着做前缀和即可
 
+> 如果做高维差分 反着做前缀和即可
 
-#### 例题：luogu P5495 【模板】Dirichlet 前缀和
+##### 例题：luogu P5495 【模板】Dirichlet 前缀和
 
 唯一分解定理：$N = \prod p_i^{c_i}$，其中 $p_i$ 是质数，$c_i$ 是次数。
 
@@ -82,7 +84,7 @@ $e.g.$ $12 = 2^2 \times 3^1$，那么 $12$ 可以看作是 $(2, 1, 0...)$。
 
 考虑先枚举 $p_i$， 再在每个维度上做偏序关系转移即可
 
-#### 例题：CF449D
+##### 例题：CF449D
 
 考虑答案是st的超集的方案数是好求的：
 
@@ -93,39 +95,45 @@ $e.g.$ $12 = 2^2 \times 3^1$，那么 $12$ 可以看作是 $(2, 1, 0...)$。
 现在我们有至少 考虑恰好的关系
 
 用一下超集反演：
+
 $$
 f(S) = \sum_{S \subseteq T} g(T) \iff g(S) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert - \lvert S \rvert} f(T)
 $$
 
 我们知道
+
 $$
 f(0) = \sum_{S \subseteq T} g(T)
 $$
->这里的f函数含义是 答案是0的超集的方案数
->右边是 对所有0的超集 恰好为t的方案数
+
+> 这里的f函数含义是 答案是0的超集的方案数
+> 右边是 对所有0的超集 恰好为t的方案数
 
 所以
+
 $$
 g(0) = \sum_{S \subseteq T} (-1)^{\lvert T \rvert} f(T)
 $$
 
->其实这是简单容斥
+> 其实这是简单容斥
 
 容斥求解即可
 
-### FMT(快速莫比乌斯变换)
+#### FMT(快速莫比乌斯变换)
 
 回忆多项式乘法
+
 $$
 C_k = \sum_{i + j = k} A_i \times B_j
 $$
 
 考虑把下标 换成按位或
+
 $$
 C_k = \sum_{i \lor j = k} A_i \times B_j
 $$
 
->你如果把下标看成集合意义下的状压的话 可能比较好理解一点
+> 你如果把下标看成集合意义下的状压的话 可能比较好理解一点
 > e.g. $i \lor j = k$ 就是说 $i$ 和 $j$ 的并集是 $k$
 
 这就是所谓的“按位或卷积”
@@ -135,39 +143,45 @@ $$
 or卷积也能这样加速
 
 定义：
+
 $$
 FMT(A)[k] = \sum_{i \subseteq k} A[i]
 $$
 
->注意这是子集和的形式
+> 注意这是子集和的形式
 
 考虑：
+
 $$
 FMT(A)[k] \times FMT(B)[k] = (\sum_{i \subseteq k} A[i]) \times (\sum_{j \subseteq k} B[j])
 $$
+
 $$
 = \sum_{i \subseteq k} \sum_{j \subseteq k} A[i] B[j]
 $$
 
 注意条件：如果 $i$ 是 $k$ 的子集，且 $j$ 也是 $k$ 的子集，那么 $i \lor j$ 一定也是 $k$ 的子集。
 所以上面那坨式子其实等于：
-    $$
-    \sum_{(i \lor j) \subseteq k} A[i] B[j]
-    $$
+
+$$
+\sum_{(i \lor j) \subseteq k} A[i] B[j]
+$$
 
 按定义，我们知道：
+
 $$
 FMT(C)[k] = \sum_{i \subseteq k} C[i] = \sum_{(i \lor j) \subseteq k} A[i] B[j]
 $$
 
 所以：
+
 $$
 FMT(A)[k] \times FMT(B)[k] = FMT(C)[k]
 $$
 
 所以我们可以把多项式乘法变成 $FMT$ 乘法，然后再 $IFMT$ 回去。
 
->这里的or卷积的FMT就是高维前缀和，IMFT就是高维前缀差分
+> 这里的or卷积的FMT就是高维前缀和，IMFT就是高维前缀差分
 
 同样的我们有and卷积
 
@@ -175,11 +189,12 @@ $C_k = \sum_{i \land j = k} A_i \times B_j$
 
 推导基本从上，恕我从略，只要把高维前缀和变成高维后缀和，高维前缀差分变成高维后缀差分即可
 
-### FWT(快速沃尔什变换)
+#### FWT(快速沃尔什变换)
 
 FWT除了可以处理and/or卷积，还可以处理异或卷积
 
 异或卷积：
+
 $$
 C_k = \sum_{i \oplus j = k} A_i \times B_j
 $$
@@ -187,6 +202,7 @@ $$
 下面详细推导一下xor卷积的FWT
 
 构造：
+
 $$
 FWT(A)_k = \sum_{i=0}^{2^n-1} (-1)^{|i \cap k|} A_i
 $$
@@ -197,29 +213,45 @@ $(-1)^{|i \cap k|}$ 实际上是在检测 $i$ 和 $k$ 的“相关性”奇偶�
 
 我们要证明：$FWT(C)_k = FWT(A)_k \cdot FWT(B)_k$。
 推导左边 (LHS)：根据定义，把 $C_p = \sum_{i \oplus j = p} A_i B_j$ 代入：
-$$\begin{aligned}
+
+$$
+\begin{aligned}
 FWT(C)_k &= \sum_{p} (-1)^{|p \cap k|} C_p \\
 &= \sum_{p} (-1)^{|p \cap k|} \left( \sum_{i \oplus j = p} A_i B_j \right)
-\end{aligned}$$
+\end{aligned}
+$$
+
 由于 $p = i \oplus j$，我们可以把求和号展开，直接枚举 $i$ 和 $j$：
+
 $$
 FWT(C)_k = \sum_{i} \sum_{j} (-1)^{|(i \oplus j) \cap k|} A_i B_j
 $$
-关键性质：$$| (i \oplus j) \cap k | \equiv |i \cap k| + |j \cap k| \pmod 2$$
+
+关键性质：
+
+$$
+| (i \oplus j) \cap k | \equiv |i \cap k| + |j \cap k| \pmod 2
+$$
+
 解释：$i$ 和 $j$ 在第 $m$ 位异或为 1，当且仅当它们在该位上一个为 0 一个为 1。与 $k$ 做 AND 后，只有当 $k$ 在该位也是 1 时才会产生贡献。这一位的贡献要么是 $1+0=1$，要么是 $0+1=1$，奇偶性都和加法一致。因为 $(-1)^x$ 只关心 $x$ 的奇偶性，所以：
+
 $$
 (-1)^{|(i \oplus j) \cap k|} = (-1)^{|i \cap k| + |j \cap k|} = (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|}
 $$
+
 代回原式：
-$$\begin{aligned}
+
+$$
+\begin{aligned}
 FWT(C)_k &= \sum_{i} \sum_{j} \left( (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|} \right) A_i B_j \\
 &= \left( \sum_{i} (-1)^{|i \cap k|} A_i \right) \cdot \left( \sum_{j} (-1)^{|j \cap k|} B_j \right) \\
 &= FWT(A)_k \cdot FWT(B)_k
-\end{aligned}$$
+\end{aligned}
+$$
+
 得证。
 
 现在我们推导FWT的分治算法
-
 
 假设数组 $A$ 的长度为 $2^n$。我们将 $A$ 分成前半部分 $A_0$（下标最高位为 0）和后半部分 $A_1$（下标最高位为 1）。
 即：
@@ -229,51 +261,67 @@ FWT(C)_k &= \sum_{i} \sum_{j} \left( (-1)^{|i \cap k|} \cdot (-1)^{|j \cap k|} \
 现在我们要计算 $FWT(A)$。
 对于任意结果下标 $k$，我们把它写成 $(0, k')$ 或者 $(1, k')$ 的形式，其中 $k'$ 是去掉最高位剩下的部分。
 
-#### 情况 1：结果下标最高位为 0 ($k < 2^{n-1}$)
+##### 情况 1：结果下标最高位为 0 ($k < 2^{n-1}$)
+
 $$
 \begin{aligned}
 FWT(A)_k &= \sum_{i=0}^{2^n-1} (-1)^{|i \cap k|} A_i \\
 &= \sum_{i=0}^{2^{n-1}-1} (-1)^{|i \cap k|} A_i + \sum_{i=2^{n-1}}^{2^n-1} (-1)^{|i \cap k|} A_i
 \end{aligned}
 $$
+
 * **左半边和 ($A_0$)**：$i$ 的最高位是 0，$k$ 的最高位是 0。$i \cap k$ 不涉及最高位。这部分就是 $FWT(A_0)_k$。
 * **右半边和 ($A_1$)**：$i$ 的最高位是 1，$k$ 的最高位是 0。$i \cap k$ **依然不涉及最高位**（因为 $1 \ \& \ 0 = 0$）。这部分就是 $FWT(A_1)_k$。
 
 **结论 1：**
+
 $$
 FWT(A)_{left} = FWT(A_0) + FWT(A_1)
 $$
 
-#### 情况 2：结果下标最高位为 1 ($k \ge 2^{n-1}$)
+##### 情况 2：结果下标最高位为 1 ($k \ge 2^{n-1}$)
+
 令实际计算的下标为 $k + 2^{n-1}$（其中 $k < 2^{n-1}$）。
+
 $$
 \begin{aligned}
 FWT(A)_{k+2^{n-1}} &= \sum_{i=0}^{2^{n-1}-1} (-1)^{|i \cap (k+2^{n-1})|} A_i + \sum_{i=2^{n-1}}^{2^n-1} (-1)^{|i \cap (k+2^{n-1})|} A_i
 \end{aligned}
 $$
+
 * **左半边和 ($A_0$)**：$i$ 最高位 0。$i \cap (k+2^{n-1})$ 的最高位是 $0 \ \& \ 1 = 0$。最高位无贡献。这部分依然是 $FWT(A_0)_k$。
 * **右半边和 ($A_1$)**：$i$ 最高位 1。$i \cap (k+2^{n-1})$ 的最高位是 $1 \ \& \ 1 = 1$。**最高位贡献了 1 个 1**。
     所以 $(-1)^{|...|}$ 会多乘一个 $(-1)^1 = -1$。
     这部分变成了 $-FWT(A_1)_k$。
 
 **结论 2：**
+
 $$
 FWT(A)_{right} = FWT(A_0) - FWT(A_1)
 $$
 
-综合上面的推导，我们得到了递归式：$$FWT(A) = \text{merge}(FWT(A_0), FWT(A_1))$$其中 merge 操作为：
-$$\begin{cases}
+综合上面的推导，我们得到了递归式：
+
+$$
+FWT(A) = \text{merge}(FWT(A_0), FWT(A_1))
+$$
+
+其中 merge 操作为：
+
+$$
+\begin{cases}
 A'_{left} = A_0' + A_1' \\
 A'_{right} = A_0' - A_1'
-\end{cases}$$
+\end{cases}
+$$
 
 这正是FWT的分治算法。
 
->IFWT对反解上述过程即可
+> IFWT对反解上述过程即可
 
 同理 我们可以推导
 
-#### and卷积的FWT
+##### and卷积的FWT
 
 $$
 FWT(A)_k = \sum_{i \subseteq k} A_i
@@ -281,33 +329,48 @@ $$
 
 假设数组 $A$ 长度为 $2^n$。我们将 $A$ 一分为二，同样可以推导
 正变换:
-$$\begin{cases}
+
+$$
+\begin{cases}
 A'_{left} = A'_0 \\
 A'_{right} = A'_0 + A'_1
-\end{cases}$$
+\end{cases}
+$$
 
 逆变换:解上面的方程组求 $A'_0, A'_1$：
-$$\begin{cases}
+
+$$
+\begin{cases}
 A'_0 = A'_{left} \\
 A'_1 = A'_{right} - A'_{left}
-\end{cases}$$
+\end{cases}
+$$
 
-#### or卷积的FWT
+##### or卷积的FWT
 
 $$
 FWT(A)_k = \sum_{k \subseteq i} A_i
 $$
 
-正变换:$$\begin{cases}
+正变换:
+
+$$
+\begin{cases}
 A'_{left} = A'_0 + A'_1 \\
 A'_{right} = A'_1
-\end{cases}$$
-逆变换:解方程组：$$\begin{cases}
+\end{cases}
+$$
+
+逆变换:解方程组：
+
+$$
+\begin{cases}
 A'_1 = A'_{right} \\
 A'_0 = A'_{left} - A'_{right}
-\end{cases}$$
+\end{cases}
+$$
 
-#### 例题： luogu P5387 [Cnoi2019] 人形演舞
+##### 例题： luogu P5387 [Cnoi2019] 人形演舞
 
 观察到游戏是独立的，打表出sg函数 sg(x)=x-highbit(x)+1
 
@@ -319,11 +382,16 @@ A'_0 = A'_{left} - A'_{right}
 
 答案就是这个数组自卷v次的cnt[0]
 
->为啥？
+> 为啥？
 假设只有两轮游戏，或者只选了两个数。
 第一个数选出的 SG 值为 $i$ 的方案数是 $cnt[i]$。
 第二个数选出的 SG 值为 $j$ 的方案数是 $cnt[j]$。
-现在我想知道：这两个数的异或和 $i \oplus j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $cnt[i] \times cnt[j]$。我们要找所有满足 $i \oplus j = k$ 的情况，把它们加起来：$$\text{Total}[k] = \sum_{i \oplus j = k} cnt[i] \times cnt[j]$$
+现在我想知道：这两个数的异或和 $i \oplus j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $cnt[i] \times cnt[j]$。我们要找所有满足 $i \oplus j = k$ 的情况，把它们加起来：
+
+$$
+\text{Total}[k] = \sum_{i \oplus j = k} cnt[i] \times cnt[j]
+$$
+
 这就是xor卷积
 
 先fwt一下 然后对点值求v次方 最后ifwt回去即可

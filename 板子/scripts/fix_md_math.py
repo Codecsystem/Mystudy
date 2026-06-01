@@ -15,21 +15,34 @@ import json, re, os, sys
 CJK_RE = re.compile(r'[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]')
 
 
-def load_md_files(root: str) -> list[str]:
-    config_path = os.path.join(root, '板子', 'board_config.json')
+def is_note_style_blacklisted(path: str, config: dict) -> bool:
+    name = os.path.basename(path)
+    style = config.get('note_style', {})
+    contains = [s.lower() for s in style.get('blacklist_name_contains', [])]
+    if any(s in name.lower() for s in contains):
+        return True
+    return name in set(style.get('blacklist_names', []))
+
+
+def load_md_files(root: str, include_blacklisted: bool = False) -> list[str]:
+    config_path = os.path.join(root, '板子', 'config', 'board_config.json')
     with open(config_path, 'r', encoding='utf-8') as f:
         config = json.load(f)
     md_files = []
     for board_name in ('board2', 'board3'):
         for group in config[board_name]['groups']:
             for fname in group['files']:
-                md_files.append(os.path.join(root, fname))
+                if include_blacklisted or not is_note_style_blacklisted(fname, config):
+                    md_files.append(os.path.join(root, fname))
     return sorted(set(md_files))
 
 
 def fix_spaced_inline_math(line: str) -> str:
     r"""修复 $ content $ → $content$（Pandoc 要求 $ 紧贴内容）
     只处理 content 不含中文的情况（避免误匹配跨 inline math 的中文文本）"""
+    if '|' in line:
+        return line
+
     def repl(m):
         inner = m.group(1)
         if CJK_RE.search(inner):
@@ -159,10 +172,14 @@ def process_file(fpath: str, dry_run: bool = False) -> int:
 
 
 def main():
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
     dry_run = '--dry-run' in sys.argv
+    include_blacklisted = (
+        '--include-blacklisted' in sys.argv or
+        '--include-deferred' in sys.argv
+    )
 
-    md_files = load_md_files(root)
+    md_files = load_md_files(root, include_blacklisted=include_blacklisted)
 
     print(f"扫描到 {len(md_files)} 个 .md 文件")
     changed = 0

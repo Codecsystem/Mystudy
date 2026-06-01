@@ -1,187 +1,112 @@
-# 板子生成系统 — 维护指南
+# 板子生成系统维护指南
 
-> 本文件供 Claude 或其他 AI Agent 在后续维护时参考。
+> 本文件是后续 Agent 维护 `板子/` 的入口文档。做影响生成结果的修改时，代码、配置、文档和产物要一起保持同步。
 
-## 项目概述
+## 日常命令
 
-本目录将仓库中的算法模板（`.cpp`）和笔记（`.md`）自动转换为三份可打印的 Typst PDF 板子，用于算法竞赛。
-
-### 产物
-
-| 板子 | 内容 | 入口文件 | PDF |
-|------|------|----------|-----|
-| Board 1 算法模板 | `数据结构/`、`图论/`、`字符串/`、`动态规划/`、`数论/`、`计算几何/`、`博弈论/`、`其他/` 下的 `.cpp` 模板 | `typst/board1-algorithms.typ` | `output/board1-algorithms.pdf` |
-| Board 2 数论 | `数论/数论笔记部分/` 与 `数论/Trick/` 下的数论笔记 `.md` | `typst/board2-number-theory.typ` | `output/board2-number-theory.pdf` |
-| Board 3 杂项 | `数据结构/数据结构笔记/`、`动态规划/`、`动态规划/dp笔记/`、`图论/Trick/`、`图论/图论笔记/`、`博弈论/`、`其他/Trick/`、`字符串/笔记/` 下的杂项笔记 `.md` | `typst/board3-misc.typ` | `output/board3-misc.pdf` |
-
-### 一键重建
+优先使用统一入口：
 
 ```bash
-# 1. 先修复 .md 格式（幂等，可反复运行）
-python 板子/fix_md_math.py
-
-# 2. 校验收录配置（检查缺失文件、未收录 .md 等）
-python 板子/generate_typst.py --check
-
-# 3. 生成 Typst 并编译 PDF
-python 板子/generate_typst.py
+python 板子/scripts/build_board.py
 ```
 
----
-
-## Agent 自动操作
-
-以下操作应在每次维护会话开始或结束时由 Agent 自动执行，无需用户指示。
-
-### 1. 自动重新生成板子
-
-**触发时机**：每次维护会话结束前；以及任何影响板子内容、收录范围、转换规则、版式或资源文件的修改完成后。
-
-**执行顺序**：
+只做检查、不重新生成 PDF：
 
 ```bash
-# 1. 先修复 .md 格式（幂等，可反复运行）
-python 板子/fix_md_math.py
-
-# 2. 校验收录配置
-python 板子/generate_typst.py --check
-
-# 3. 生成 Typst 并编译 PDF
-python 板子/generate_typst.py
+python 板子/scripts/build_board.py --check-only
 ```
 
-**要求**：
-- 默认应重新生成三份正式 PDF，不要只改脚本不验证产物
-- 若生成失败，应优先修复构建问题，再更新本文件中的「编译失败排查」
-- 生成完成后执行垃圾文件清理
+排错时再拆开跑：
 
-### 2. 自动清理垃圾文件
-
-**触发时机**：每次维护会话结束前、或重新生成 PDF 后。
-
-**清理范围**：
-
-| 位置 | 清理规则 |
-|------|----------|
-| `板子/generated/` | 删除所有 `_` 开头的临时文件（`_test*.typ`、`_test*.pdf`、`_validate.typ`、`_check.py` 等） |
-| `板子/` | 删除根目录下的临时脚本（如 `_check.py`、`_debug*.py` 等调试用文件） |
-| `板子/output/` | 仅保留三份正式 PDF，删除其他文件 |
-
-**保留文件（不可删除）**：
-- `AGENTS.md`、`generate_typst.py`、`fix_md_math.py`、`cpp模板.cpp`
-- `board_config.json`
-- `generated/board*.typ`、`generated/manifest.json`
-- `output/board*.pdf`
-- `typst/*.typ`
-
-**执行方式**：
 ```bash
-# 清理 generated/ 下的临时文件
-find 板子/generated/ -name '_*' -delete
-
-# 清理板子/根目录下的临时脚本
-find 板子/ -maxdepth 1 -name '_*' -delete
+python 板子/scripts/fix_md_math.py --dry-run
+python 板子/scripts/check_note_style.py
+python 板子/scripts/generate_typst.py --check
+python 板子/scripts/generate_typst.py
 ```
-
-### 3. 当前仓库目录名映射
-
-仓库当前一级目录已使用中文名，维护脚本里的旧英文目录名需要视为历史遗留别名：
-
-| 旧硬编码 | 当前目录 |
-|----------|----------|
-| `DataStruct` | `数据结构` |
-| `Graph` | `图论` |
-| `string` | `字符串` |
-| `hash` | `哈希` |
-| `Other` | `其他` |
-
-如果脚本仍引用旧英文目录名，会导致模板或笔记漏收录，维护时应优先检查并同步修正。
-
-### 4. 自动更新 AGENTS.md
-
-**触发时机**：当以下任一情况发生时，Agent 应自动更新本文件：
-
-| 变更类型 | 更新内容 |
-|----------|----------|
-| `fix_md_math.py` 新增/修改规则 | 更新「fix_md_math.py 修复规则」表格 |
-| `generate_typst.py` 新增后处理 | 更新「generate_typst.py 后处理规则」表格 |
-| `board_config.json` 新增/删除笔记分组 | 更新「数据源与收录规则」中的分组表格 |
-| `board_config.json` 新增/删除源目录 | 更新 Board 1 目录列表 |
-| 发现新的 .md 格式要求 | 更新「.md 源文件格式要求」 |
-| 新增依赖或工具 | 更新「依赖」表格 |
-| 发现新的已知限制 | 更新「已知限制」列表 |
-| 修复了编译错误 | 在「编译失败排查」中补充对应条目 |
-
-**原则**：本文件是后续 Agent 的唯一入口文档，必须保持与代码同步。任何影响构建流程的变更都应反映在此。
-
-### 5. 自动扫描文件夹结构
-
-**触发时机**：每次维护会话开始时。
-
-**原因**：用户可能在两次会话之间重命名文件夹、新增/删除目录或移动文件，本文件中记录的目录结构和 `board_config.json` 中的收录路径可能已过时。
-
-**操作步骤**：
-
-1. **扫描仓库根目录**：`ls` 列出所有一级子目录，与本文件「Board 1 数据源」中的目录列表对比
-2. **递归扫描各目录下的所有文件**：对每个算法目录（`数据结构/`、`图论/` 等）递归列出所有 `.cpp` 和 `.md` 文件（包括所有子目录层级），检查是否有新增/删除/重命名。仅扫描一级目录会漏掉子目录中的文件。
-3. **比对外部配置**：`板子/board_config.json`
-   - `board1.folders`：Board 1 算法模板目录顺序
-   - `board2.groups`：Board 2 数论笔记分组，文件路径使用仓库根目录相对路径
-   - `board3.groups`：Board 3 杂项笔记分组，文件路径使用仓库根目录相对路径
-4. **发现差异时**：
-   - 直接修补 `板子/board_config.json`，必要时同步更新本文件
-   - `generate_typst.py` 和 `fix_md_math.py` 不应再为收录目录/分组新增硬编码
-   - **如果仓库已统一改为中文目录名，应同步更新 `board_config.json` 中的旧英文目录**
-   - 不要静默忽略新文件或已删除的文件
-
-**示例差异**：
-```
-⚠ 目录变更:
-  + 新增目录: 线段树/          → 建议加入 board_config.json 的 board1.folders
-  - 目录已删除: hash/          → 需从 board1.folders 移除
-  ~ 重命名: string/ → 字符串/  → 需更新 board1.folders
-
-⚠ 文件变更:
-  + 数论/数论笔记部分/数论笔记(新主题).md   → 建议加入 board2.groups
-  - 图论/Trick/图相关trick.md 已删除       → 需从 board3.groups 移除
-```
-
----
 
 ## 目录结构
 
-```
+```text
 板子/
-├── AGENTS.md                 # 本文件（维护指南）
-├── generate_typst.py         # 主生成脚本
-├── fix_md_math.py            # .md 格式修复脚本（预处理）
-├── board_config.json         # 板子收录范围与分组配置
-├── cpp模板.cpp               # C++ 通用模板（Board 1 首页）
+├── AGENTS.md                  # 本文件
+├── cpp模板.cpp                # Board 1 首页通用模板
+├── config/
+│   └── board_config.json      # 收录范围、分组、笔记规范化状态
+├── docs/
+│   └── NOTE_STYLE.md          # 正式笔记整理规范
+├── scripts/
+│   ├── build_board.py         # 标准维护入口
+│   ├── generate_typst.py      # 生成 generated/*.typ 并编译 PDF
+│   ├── fix_md_math.py         # Markdown 数学格式预处理
+│   └── check_note_style.py    # 正式笔记硬性格式检查
 ├── typst/
-│   ├── common.typ            # 公共样式（页面、字体、目录、代码块）
-│   ├── board1-algorithms.typ # Board 1 入口
-│   ├── board2-number-theory.typ
-│   └── board3-misc.typ
-├── generated/                # 自动生成，勿手改
+│   ├── common.typ             # 页面、字体、目录、代码块等公共样式
 │   ├── board1-algorithms.typ
 │   ├── board2-number-theory.typ
-│   ├── board3-misc.typ
-│   └── manifest.json         # 收录清单
-└── output/                   # 最终 PDF
-    ├── board1-algorithms.pdf
-    ├── board2-number-theory.pdf
-    └── board3-misc.pdf
+│   └── board3-misc.typ
+├── generated/                 # 自动生成，勿手改
+└── output/                    # 三份正式 PDF
 ```
 
----
+根目录只保留维护入口和通用模板；脚本、配置、规范文档分别收在 `scripts/`、`config/`、`docs/`。不要再把调试脚本或临时配置放回 `板子/` 根目录。
 
-## 数据源与收录规则
+## 自动维护流程
+
+每次维护会话开始时：
+
+1. 递归扫描源目录中的 `.cpp` 和 `.md`，不要只看一级目录。
+2. 对比 `板子/config/board_config.json`：
+   - `board1.folders`
+   - `board2.groups`
+   - `board3.groups`
+   - `note_style.normalized_files`
+3. 若发现新增、删除、重命名文件，先修配置，再运行检查。
+
+每次维护会话结束前：
+
+1. 运行 `python 板子/scripts/build_board.py`。
+2. 确认三份 PDF 成功生成：
+   - `板子/output/board1-algorithms.pdf`
+   - `板子/output/board2-number-theory.pdf`
+   - `板子/output/board3-misc.pdf`
+3. 清理临时文件：`build_board.py` 会删除 `generated/_*`、`板子/_*`、以及 `output/` 中非正式 PDF。
+
+如果只做了纯讨论或明确不许修改，可以不生成；一旦改了脚本、配置、笔记、模板、Typst 样式或图片资源，就要完整跑构建。
+
+## 新增笔记处理
+
+发现新增 `.md` 时，不要直接塞进配置然后生成。先派 subagent 审视内容，再整理。
+
+推荐流程：
+
+1. 主 Agent 递归扫描并列出新增 `.md`。
+2. 对每个新增笔记分配一个 worker subagent；若内容较长或需要审美判断，使用 `gpt-5.5` + `reasoning_effort: xhigh`。
+3. subagent 只处理自己分配的文件，不能修改脚本、配置、生成物，也不能回滚他人的改动。
+4. subagent 输出：
+   - 应归入 Board 2 还是 Board 3，建议分组名
+   - 是否属于黑名单或应暂缓整理
+   - 内容是否适合正式板子，是否有明显公式/代码/图片风险
+   - 若非黑名单，按 `板子/docs/NOTE_STYLE.md` 直接整理该 `.md`
+5. 主 Agent 审核 subagent 修改，再更新：
+   - `板子/config/board_config.json` 的 `board2.groups` / `board3.groups`
+   - 非黑名单正式笔记还要加入 `note_style.normalized_files`
+   - 必要时更新本文件的数据源说明
+6. 运行完整构建和样式检查。
+
+黑名单规则：
+
+- 文件名包含 `trick` 的笔记暂不强制整理。
+- `note_style.blacklist_names` 中的随笔或暂缓文件不强制整理。
+- 黑名单文件可以收录进板子，但默认不加入 `normalized_files`，也不让 `fix_md_math.py` 自动改，除非用户明确要求。
+
+## 数据源
 
 ### Board 1：算法模板
 
-**配置位置**：`板子/board_config.json` → `board1.folders`
+配置：`板子/config/board_config.json` → `board1.folders`
 
-**数据源**：以下目录中的 `.cpp` 文件（按配置顺序排列）：
+当前目录顺序：
 
 1. `数据结构/`
 2. `图论/`
@@ -192,150 +117,164 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 7. `博弈论/`
 8. `其他/`
 
-**特殊条目**：
-- `板子/cpp模板.cpp` 放在最前面（"通用模板" 分组）
+生成规则：
 
-**转换规则**（自写，不依赖 Pandoc）：
-- 剔除公共 boilerplate：连续 `#include`、`using namespace std`、注释掉的 `freopen`/`ios`、计时变量、空壳 `main()`
-- 保留：核心类/函数/宏、算法说明注释、尾部复杂度注释
-- `main()` 处理：空壳删除；含调用示例的提取为"用法示例"代码块
-- 目录结构：文件夹名 = 一级标题，文件名（去 `.cpp`）= 二级标题
+- `板子/cpp模板.cpp` 固定放在最前面。
+- 每个配置目录递归收集 `.cpp`。
+- 生成器会剔除公共 boilerplate、空壳 `main()`，保留核心代码和有价值的用法示例。
 
 ### Board 2：数论笔记
 
-**配置位置**：`板子/board_config.json` → `board2.reference_images`、`board2.groups`
+配置：`板子/config/board_config.json` → `board2.reference_images`、`board2.groups`
 
-**数据源**：`数论/` 下的 `.md` 文件，当前实际分布在以下位置，并按主题分组：
+当前分组：
 
 | 分组 | 文件 |
 |------|------|
-| 基础与工具 | `数论/数论笔记部分/数论笔记(筛法).md`、`数论/数论笔记部分/数论笔记(线性逆元).md`、`数论/数论笔记部分/数论笔记(不定方程与同余方程组).md`、`数论/数论笔记部分/数论小结论.md` |
-| 卷积与反演 | `数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md`、`数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md`、`数论/数论笔记部分/数论笔记(炫酷反演魔术).md`、`数论/数论笔记部分/数论笔记(和式变换).md` |
-| 组合与生成函数 | `数论/数论笔记部分/数论笔记(排列组合).md`、`数论/数论笔记部分/数论笔记(排列组合进阶).md`、`数论/数论笔记部分/数论笔记(生成函数).md` |
-| 变换与多项式 | `数论/数论笔记部分/FFT笔记.md`、`数论/数论笔记部分/数论笔记(sosdp&fmt&fwt).md`、`数论/数论笔记部分/数论笔记(阶,原根与ntt).md` |
-| Trick 与杂项 | `数论/Trick/数学相关trick.md`、`数论/数论笔记部分/数论笔记(杂项).md`、`数论/数论笔记部分/数学笔记(矩阵半环).md` |
+| 基础与工具 | `数论笔记(筛法)`、`数论笔记(线性逆元)`、`数论笔记(不定方程与同余方程组)`、`数论小结论` |
+| 卷积与反演 | `狄利克雷卷积与莫比乌斯反演 1/2`、`炫酷反演魔术`、`和式变换` |
+| 组合与生成函数 | `排列组合`、`排列组合进阶`、`生成函数` |
+| 变换与多项式 | `FFT笔记`、`sosdp&fmt&fwt`、`阶,原根与ntt` |
+| Trick 与杂项 | `数学相关trick`、`数论笔记(杂项)`、`数学笔记(矩阵半环)` |
 
-**特殊条目**：
-- `表.jpg` 和 `图.png`（注意：原 `图.jpg` 实际是 PNG 格式，已复制为 `图.png`）放在最前面（"参考图表" 分组）
-
-**转换规则**：使用 Pandoc `markdown → typst`，标题层级 +2。图片路径必须以各自 `.md` 文件所在目录为基准解析，而不是以上层主题目录为基准。
+`表.jpg` 和 `图.png` 作为参考图表放在 Board 2 开头。
 
 ### Board 3：杂项笔记
 
-**配置位置**：`板子/board_config.json` → `board3.groups`
+配置：`板子/config/board_config.json` → `board3.groups`
 
-**数据源**：非数论的笔记 `.md`，当前实际分布在以下位置，并按主题分组：
+当前分组：
 
 | 分组 | 文件 |
 |------|------|
-| 动态规划 | `动态规划/对dp的一些思考.md`、`动态规划/dp笔记/数位dp笔记.md`、`动态规划/dp笔记/普通dp常见状态.md`、`动态规划/dp笔记/状压dp常见状态.md` |
-| 数据结构 | `数据结构/数据结构笔记/数据结构trick.md` |
-| 图论 | `图论/Trick/图相关trick.md`、`图论/图论笔记/图论笔记(几类特殊图).md` |
-| 博弈论 | `博弈论/nim游戏 SG函数.md` |
-| 通用 Trick 与杂项 | `其他/Trick/杂项相关trick.md` |
-| 字符串 | `字符串/笔记/一些比较神秘的hash手法.md`、`字符串/笔记/字符串trick.md` |
+| 动态规划 | `对dp的一些思考`、`数位dp笔记`、`普通dp常见状态`、`状压dp常见状态` |
+| 数据结构 | `数据结构trick` |
+| 图论 | `图相关trick`、`图论笔记(几类特殊图)` |
+| 博弈论 | `nim游戏 SG函数` |
+| 通用 Trick 与杂项 | `杂项相关trick` |
+| 字符串 | `一些比较神秘的hash手法`、`字符串trick` |
 
-**转换规则**：同 Board 2（Pandoc + 标题层级 +2）。图片路径必须以各自 `.md` 文件所在目录为基准解析。
+## 笔记规范
 
----
+正式笔记按 `板子/docs/NOTE_STYLE.md` 整理。核心原则：
 
-## fix_md_math.py 修复规则
+- 保留作者原本的信息密度、口吻和竞赛笔记风格。
+- 不扩写成教材，不强行套“定义/定理/证明/推论”模板。
+- 源 Markdown 优先使用 `####/#####`，照顾本地阅读器字号。
+- 生成器会把每个文件中最浅标题映射到板子正文层级。
+- 分隔线使用 `<!-- board:hr -->`，不要直接写独占 `---`。
+- 代码块写语言标记，公式块使用多行 `$$`。
 
-此脚本在生成前预处理 `.md` 文件，使其对 Pandoc 友好。**幂等**，可反复运行。
+`check_note_style.py` 默认只检查 `note_style.normalized_files`，避免历史随笔一次性全量变红。需要扫描所有非黑名单笔记时使用：
 
-| 规则 | 说明 | 示例 |
-|------|------|------|
-| ````math` → `$$` | 非标准数学代码块转标准格式 | ` ```math\nx^2\n``` ` → `$$\nx^2\n$$` |
-| `\[...\]` → `$$...$$` | LaTeX display math 转 Markdown 标准 | `\[ x^2 \]` → `$$\nx^2\n$$` |
-| 单行 `$$...$$` → 多行 | Pandoc 要求 `$$` 独占一行 | `$$x^2$$` → `$$\nx^2\n$$` |
-| `$$$` → 拆分 | 三连美元符号拆为 `$$` + `$$` | |
-| `\(...\)` → `$...$` | LaTeX inline math 转标准 | `\(x\)` → `$x$` |
-| `$ content $` → `$content$` | 去除 `$` 与内容间的空格 | `$ m $` → `$m$`（Pandoc 要求紧贴） |
-| `\dbinom` → `\binom` | Pandoc 不支持的命令替换 | |
-| `\bmod` → `\mod` | 同上 | |
-| `(mod \ X)` → `\pmod{X}` | 修复 mod 记号避免 Pandoc 把 `\(` 当成 inline math | `(mod \ m)` → `\pmod{m}` |
+```bash
+python 板子/scripts/check_note_style.py --all
+```
 
-**扫描文件来源**：`板子/board_config.json` → `board2.groups` 与 `board3.groups` 中列出的所有 `.md` 文件。不要再单独维护扫描目录列表。
+## 脚本职责
 
-### generate_typst.py 后处理规则（Pandoc 输出修复）
+### `scripts/build_board.py`
+
+标准入口。顺序执行：
+
+1. `fix_md_math.py`
+2. `check_note_style.py`
+3. `generate_typst.py --check`
+4. `generate_typst.py`
+5. 清理临时文件
+
+`--check-only` 会把第 1 步改成 `fix_md_math.py --dry-run`，并跳过 PDF 生成与清理。
+
+### `scripts/fix_md_math.py`
+
+幂等预处理，默认只扫描 `board2.groups` 和 `board3.groups` 中的非黑名单 `.md`。
+
+主要规则：
 
 | 规则 | 说明 |
 |------|------|
-| `\( mod ... \)` → `(mod ...)` | 修复 Pandoc 将 `\pmod{}` 输出为 Typst 中无效的 `\(` 分隔符 |
-| `\$\$...\$\$` → 重新转换 | 修复 Pandoc 未能转换的 display math 块 |
-| 数学内 `\(` `\)` → `(` `)` | 修复 `$...$` 内部残留的转义括号 |
-| `,)` → `)` | 修复 Pandoc 生成的尾随逗号，避免 Typst `unexpected comma` |
-| 缺失图片注释 → 红字占位文本 | 避免在 `figure(...)` 参数位置插入注释导致语法错误 |
-| 图片相对路径按当前 `.md` 所在目录解析 | 修复 `md.img/...` 这类资源在子目录笔记中的引用失效 |
-| Pandoc 使用 `markdown-yaml_metadata_block` | 禁用 YAML metadata block，避免正文中的 `---` 被误判为 metadata 边界 |
-| 独占行 `---` → raw Typst `#horizontalrule` | 送入 Pandoc 前转换，避免 `---` 与后续正文被误解析为窄表格 |
+| ````math` → `$$` | 非标准数学代码块转标准公式块 |
+| `\[...\]` → `$$...$$` | LaTeX display math 转 Markdown 标准 |
+| 单行 `$$...$$` → 多行 | 避免 Pandoc 误解析 |
+| `\(...\)` → `$...$` | LaTeX inline math 转标准 |
+| `$ content $` → `$content$` | 仅处理不含中文的简单情况；表格行跳过 |
+| `\dbinom` → `\binom` | 替换 Pandoc 不支持命令 |
+| `\bmod` → `\mod` | 替换 Pandoc 不支持命令 |
+| `(mod \ X)` → `\pmod{X}` | 修复同余记号 |
 
-### .md 源文件格式要求
+如需手动处理黑名单文件：
 
-- **heading 前必须有空行**：Pandoc 要求 `#` 标题前有空行，否则不识别
-- **`$$` 块内不要以 `=` 开头**：会被 Pandoc 误识别为 Typst heading。使用 `\begin{aligned}` + `&=` 代替
-- **`(mod m)` 写法**：使用 `\pmod{m}` 而非 `(mod \ m)`，后者会导致 Pandoc 产生无效的 `\(` 分隔符
+```bash
+python 板子/scripts/fix_md_math.py --include-blacklisted
+```
 
----
+### `scripts/generate_typst.py`
 
-## 常见维护场景
+生成三份 `generated/*.typ`、`generated/manifest.json`，并编译 PDF。
 
-> 以下场景中，若 Agent 已进入维护流程，则应按本文件「Agent 自动操作」自动执行重建与清理，无需用户额外指示。用户手动维护时，可按下面步骤执行。
+Board 2/3 使用 Pandoc `markdown-yaml_metadata_block → typst`，然后做少量后处理：
 
-### 新增算法模板
+| 后处理 | 说明 |
+|------|------|
+| `<!-- board:hr -->` / 独占 `---` → Typst 横线 | 兼容旧笔记 |
+| 标题层级重映射 | 文件内最浅标题映射为正文层级，并封顶到 6 级 |
+| `\( mod ... \)` → `(mod ...)` | 修复 `\pmod{}` 转换残留 |
+| `\$\$...\$\$` 重转 | 尝试修复 Pandoc 未转换的 display math |
+| 数学内 `\(` `\)` → `(` `)` | 修复残留转义括号 |
+| `,)` → `)` | 修复部分 Pandoc 尾随逗号 |
+| 图片路径按当前 `.md` 所在目录解析 | 缺失图片用红字占位 |
 
-1. 将 `.cpp` 文件放入对应目录（如 `数据结构/新算法.cpp`）
-2. 如新增目录，先同步更新 `板子/board_config.json` 的 `board1.folders` 与本文件
-3. 运行 `python 板子/generate_typst.py`
-4. 新模板会自动出现在 Board 1 对应分组中
+`--check` 只校验配置，不生成。
 
-### 新增/修改笔记
+### `scripts/check_note_style.py`
 
-1. 编辑或新增 `.md` 文件
-2. 如果是新文件或新分组，先同步更新 `板子/board_config.json` 的 `board2.groups` / `board3.groups` 以及本文件。文件路径统一写成仓库根目录相对路径。
-3. 运行 `python 板子/fix_md_math.py` 修复格式
-4. 运行 `python 板子/generate_typst.py --check` 校验配置
-5. 运行 `python 板子/generate_typst.py` 重新生成
+检查标题空行、代码块语言、公式块、分隔线、图片块、行尾空格等硬性规则。输出格式：
 
-### 新增笔记目录/分组
+```text
+path:line: RULE message
+```
 
-1. 更新 `板子/board_config.json` 中对应的 `board2.groups` 或 `board3.groups`
-2. 更新本文件中的数据源说明
-3. 运行 `python 板子/generate_typst.py --check`
-4. 重新生成并验证 PDF
+## 配置维护
 
-### 编译失败排查
+`板子/config/board_config.json` 是收录范围唯一来源。不要在脚本里新增目录或分组硬编码。
 
-1. **Pandoc WARNING/ERROR**：通常是 `.md` 中有 Pandoc 不支持的 LaTeX 命令，或 Markdown 语法被误判。在 `fix_md_math.py` 中添加替换。排查时优先运行 `pandoc -f markdown-yaml_metadata_block -t typst 问题文件.md`，保持与生成脚本一致。
-2. **Typst 编译错误**：
-   - `unknown variable: horizontalrule` → `common.typ` 中已定义，检查 `#import` 是否正确
-   - `failed to decode image` → 检查图片实际格式是否与扩展名匹配（如 `.jpg` 实际是 PNG）
-   - `failed to load file (access denied)` → Typst root 目录设置问题，`generate_typst.py` 中 `typst.compile(src, root=ROOT)` 的 `ROOT` 应为仓库根目录
-   - `unexpected comma` → 先检查是否是图片缺失占位写坏了 `figure(...)` 参数结构，或 Pandoc 在 `table(...)`、`align(...)` 等结构后生成了尾随逗号 `,)`
-   - `unclosed delimiter` → `.md` 中有未正确格式化的数学公式，运行 `fix_md_math.py`
+配置变更规则：
 
-### 修改版式
+- 新增/删除算法目录：改 `board1.folders`，同步更新本文件。
+- 新增/删除笔记：改 `board2.groups` 或 `board3.groups`。
+- 正式整理过的非黑名单笔记：加入 `note_style.normalized_files`。
+- 暂缓整理文件：加入 `note_style.blacklist_names`，或确保文件名命中 `blacklist_name_contains`。
 
-编辑 `typst/common.typ`：
-- 页边距、字号、字体：`set page` / `set text`
-- 代码块样式：`show raw.where(block: true)`
-- 标题样式：`show heading.where(level: N)`
-- 页码格式：`footer` 中的 `counter(page).display`
+旧英文目录名只作为历史别名，不应再写入配置：
 
----
+| 历史名 | 当前名 |
+|------|------|
+| `DataStruct` | `数据结构` |
+| `Graph` | `图论` |
+| `string` | `字符串` |
+| `hash` | `哈希` |
+| `Other` | `其他` |
+
+## 编译失败排查
+
+- Pandoc 报错：先对问题文件运行同参数转换：`pandoc -f markdown-yaml_metadata_block -t typst --wrap=none 问题文件.md`。
+- Typst `unknown variable: horizontalrule`：检查 `typst/common.typ` 是否被正确 import。
+- Typst `failed to decode image`：检查图片扩展名和真实格式是否一致。
+- Typst `failed to load file (access denied)`：检查 `typst.compile(src, root=ROOT)`，`ROOT` 应为仓库根目录。
+- Typst `unexpected comma`：检查 Pandoc 输出里的 `,)` 或图片缺失占位。
+- Typst `unclosed delimiter`：优先检查未规范化的数学公式。
+- `git diff --check` 提示 `=======`：确认不是生成出的七级 Typst 标题；生成器已将标题封顶到 6 级。
 
 ## 依赖
 
-| 工具 | 用途 | 安装 |
-|------|------|------|
-| Python 3.10+ | 运行生成脚本 | 已安装 |
-| Pandoc 3.x | `.md` → Typst 转换（Board 2/3） | `winget install pandoc` |
-| typst (Python) | PDF 编译 | `pip install typst` |
-
----
+| 工具 | 用途 |
+|------|------|
+| Python 3.10+ | 运行维护脚本 |
+| Pandoc 3.x | Markdown 转 Typst |
+| `typst` Python 包 | 编译 PDF |
 
 ## 已知限制
 
-1. Board 2/3 的 Pandoc 转换中，多字母数学变量名（如 `FWT`）会被 Typst 拆成单个字母显示（`F W T`），这是 Typst 数学模式的设计。如需保持连写，在源 `.md` 中用 `\text{FWT}` 或 `\mathrm{FWT}`。
-2. `generated/` 目录下的文件是自动生成的，不要手动编辑。
-3. 图片路径在生成时会转为相对于 `generated/` 目录的相对路径。新增图片需确保放在对应笔记目录下。
+1. `generated/` 是自动生成目录，不要手改。
+2. 图片路径会在生成时改成相对 `generated/` 的路径；新增图片应放在对应笔记附近。
+3. Typst 数学模式会把多字母变量拆开显示；需要连写时在源 Markdown 中用 `\text{FWT}` 或 `\mathrm{FWT}`。

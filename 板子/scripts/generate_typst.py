@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 generate_typst.py — 从原始 .cpp / .md 生成三份 Typst 板子正文
-用法: python generate_typst.py [--check]
+用法: python 板子/scripts/generate_typst.py [--check]
 输出: 板子/generated/board1-algorithms.typ
       板子/generated/board2-number-theory.typ
       板子/generated/board3-misc.typ
@@ -10,10 +10,10 @@ generate_typst.py — 从原始 .cpp / .md 生成三份 Typst 板子正文
 
 import glob, json, os, re, subprocess, sys
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # ROOT = Mystudy 根目录
 GEN_DIR = os.path.join(ROOT, "板子", "generated")
-CONFIG_PATH = os.path.join(ROOT, "板子", "board_config.json")
+CONFIG_PATH = os.path.join(ROOT, "板子", "config", "board_config.json")
 os.makedirs(GEN_DIR, exist_ok=True)
 
 
@@ -229,7 +229,10 @@ def validate_config() -> list[str]:
     }
     configured_md = all_config_md_paths()
     for path in sorted(actual_md - configured_md):
-        errors.append(f'发现未收录 .md: {path}')
+        errors.append(
+            f'发现未收录 .md: {path}；'
+            '新增笔记需先由 subagent 审视内容并按 NOTE_STYLE 整理，再写入 board_config.json'
+        )
     for path in sorted(configured_md - actual_md):
         errors.append(f'配置中的 .md 不在源码目录扫描结果中: {path}')
 
@@ -330,6 +333,11 @@ def generate_board1() -> tuple[str, list]:
 def pandoc_md_to_typst(md_text: str, source_path: str, heading_offset: int = 2, img_base: str = '') -> str:
     """用 Pandoc 将 Markdown 转为 Typst，并调整标题层级"""
     md_text = re.sub(
+        r'(?m)^<!--\s*board:hr\s*-->\s*$',
+        '```{=typst}\n#horizontalrule\n```',
+        md_text,
+    )
+    md_text = re.sub(
         r'(?m)^---\s*$',
         '```{=typst}\n#horizontalrule\n```',
         md_text,
@@ -342,12 +350,20 @@ def pandoc_md_to_typst(md_text: str, source_path: str, heading_offset: int = 2, 
         raise RuntimeError(f'Pandoc 转换失败: {source_path}\n{result.stderr.strip()}')
 
     typst_text = result.stdout
-    # 调整标题层级：Pandoc 输出的 = 是一级，我们需要降级
+    # 调整标题层级：以当前文件内最浅标题作为正文一级标题。
+    # 这样源 .md 可以为了本地阅读从 ###/#### 开始，生成板子时仍保持正常层级。
+    heading_re = re.compile(r'^(=+)\s+(?![&=])(.*)$', flags=re.MULTILINE)
+    heading_levels = [
+        len(m.group(1))
+        for m in heading_re.finditer(typst_text)
+    ]
+    min_heading_level = min(heading_levels) if heading_levels else 1
+
     def adjust_heading(m):
         level = len(m.group(1))
-        new_level = level + heading_offset
+        new_level = min(level - min_heading_level + 1 + heading_offset, 6)
         return '=' * new_level + ' ' + m.group(2)
-    typst_text = re.sub(r'^(=+)\s+(.*)', adjust_heading, typst_text, flags=re.MULTILINE)
+    typst_text = heading_re.sub(adjust_heading, typst_text)
     # Pandoc 兼容：替换 #horizontalrule
     typst_text = typst_text.replace('#horizontalrule', '#line(length: 100%, stroke: 0.5pt + luma(180))')
     # 修复 Pandoc 生成的尾随逗号（如 table/tuple 参数中的 `,)`），否则 Typst 会报 unexpected comma

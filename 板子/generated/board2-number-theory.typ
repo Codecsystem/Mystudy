@@ -12,50 +12,59 @@
 
 == 数论/数论笔记部分/数论笔记(筛法)
 
-===== 欧拉函数的定义
+=== 欧拉函数的定义
 <欧拉函数的定义>
-$1 tilde.op n$ 中与 $n$ 互质的数的个数称为欧拉函数，记为 $phi ( n )$ \
+$1 tilde.op n$ 中与 $n$ 互质的数的个数称为欧拉函数，记为 $phi ( n )$
+
 #strong[例];：$phi ( 1 ) = 1 \, med phi ( 2 ) = 1 \, med phi ( 3 ) = 2 \, med phi ( 4 ) = 2 \, med phi ( 5 ) = 4$
 
-===== 欧拉函数的性质
+=== 欧拉函数的性质
 <欧拉函数的性质>
-+ 若 $p$ 是质数，则 $phi ( p ) = p - 1$ \
-+ 若 $p$ 是质数，则 $phi ( p^k ) = ( p - 1 ) p^(k - 1)$ \
++ 若 $p$ 是质数，则 $phi ( p ) = p - 1$
++ 若 $p$ 是质数，则 $phi ( p^k ) = ( p - 1 ) p^(k - 1)$
 + #strong[积性函数];：若 $gcd ( m \, n ) = 1$，则 $phi ( m n ) = phi ( m ) phi ( n )$
 
-===== 欧拉函数的计算公式
+=== 欧拉函数的计算公式
 <欧拉函数的计算公式>
-由唯一分解定理 $n = product_(i = 1)^s p_i^(alpha_i) = p_1^(alpha_1) p_2^(alpha_2) dots.h.c p_s^(alpha_s)$， \
+由唯一分解定理 $n = product_(i = 1)^s p_i^(alpha_i) = p_1^(alpha_1) p_2^(alpha_2) dots.h.c p_s^(alpha_s)$，
+
 $ phi ( n ) & = product_(i = 1)^s phi ( p_i^(alpha_i) )\
  & = product_(i = 1)^s p_i^(alpha_i - 1) ( p_i - 1 )\
  & = product_(i = 1)^s p_i^(alpha_i) (1 - 1 / p_i)\
  & = (product_(i = 1)^s p_i^(alpha_i)) times (product_(i = 1)^s (1 - 1 / p_i))\
  & = n times product_(i = 1)^s frac(p_i - 1, p_i)\
- & = n times frac(p_1 - 1, p_1) times frac(p_2 - 1, p_2) times dots.h.c times frac(p_s - 1, p_s) $ \
-\> 欧拉函数仅由 $n$ 和质因子决定，与次数无关。 \
+ & = n times frac(p_1 - 1, p_1) times frac(p_2 - 1, p_2) times dots.h.c times frac(p_s - 1, p_s) $
+
+#quote(block: true)[
+欧拉函数仅由 $n$ 和质因子决定，与次数无关。
+]
+
 #strong[例];：$phi ( 12 ) = 12 times frac(2 - 1, 2) times frac(3 - 1, 3) = 4$
 
-==== 筛法求欧拉函数
+=== 筛法求欧拉函数
 <筛法求欧拉函数>
 #quote(block: true)[
 若 $i$ 是质数，$phi \[ i \] = i - 1$。
 ]
 
-#strong[在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的];。 \
-设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = p_j times i$ 筛掉。
+#strong[在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的];。 设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = p_j times i$ 筛掉。
 
-===== 分两种情况计算：
+==== 分两种情况计算
 <分两种情况计算>
-+ #strong[若 $i$ 能被 $p_j$ 整除];（即 $i equiv 0 med (mod p_j)$），则 $i$ 包含了 $m$ 的所有质因子： \
++ #strong[若 $i$ 能被 $p_j$ 整除];（即 $i equiv 0 med (mod p_j)$），则 $i$ 包含了 $m$ 的所有质因子：
+
   $ phi ( m ) & = m times product_(k = 1)^s frac(p_k - 1, p_k)\
    & = p_j times i times product_(k = 1)^s frac(p_k - 1, p_k)\
-   & = p_j times phi ( i ) $ \
+   & = p_j times phi ( i ) $
+
   #strong[例];：$phi ( 12 ) = phi ( 2 times 6 ) = 2 times phi ( 6 )$
 
-+ #strong[若 $i$ 不能被 $p_j$ 整除];（即 $gcd ( i \, p_j ) = 1$），则 $i$ 和 $p_j$ 互质： \
++ #strong[若 $i$ 不能被 $p_j$ 整除];（即 $gcd ( i \, p_j ) = 1$），则 $i$ 和 $p_j$ 互质：
+
   $ phi ( m ) & = phi ( p_j times i )\
    & = phi ( p_j ) times phi ( i )\
-   & = ( p_j - 1 ) times phi ( i ) $ \
+   & = ( p_j - 1 ) times phi ( i ) $
+
   #strong[例];：$phi ( 75 ) = phi ( 3 times 25 ) = ( 3 - 1 ) times phi ( 25 )$
 
 ```cpp
@@ -91,25 +100,45 @@ vector<int> euler()
 
 ==== 约数个数定理
 <约数个数定理>
-若正整数 $n$ 有质因数分解 $n = product_(i = 1)^s p_i^(alpha_i)$，则约数个数为： $ d ( n ) = product_(i = 1)^s ( alpha_i + 1 ) $
+若正整数 $n$ 有质因数分解 $n = product_(i = 1)^s p_i^(alpha_i)$，则约数个数为：
 
-===== 证明
+$ d ( n ) = product_(i = 1)^s ( alpha_i + 1 ) $
+
+==== 证明
 <证明>
 - 对每个质因子 $p_i^(alpha_i)$，其约数可取 $p_i^0 \, p_i^1 \, dots.h.c \, p_i^(alpha_i)$ 共 $( alpha_i + 1 )$ 种选择
-- 根据乘法原理，总约数个数为各质因子选择数的乘积： $ d ( n ) = ( alpha_1 + 1 ) times ( alpha_2 + 1 ) times dots.h.c times ( alpha_s + 1 ) $
+- 根据乘法原理，总约数个数为各质因子选择数的乘积：
 
-#strong[筛法求约数个数] \
-记a\[i\]为i的最小质因子的次数，d\[i\]为i的约数个数。 若 $i$ 是质数， \
-$ a \[ i \] = 1 \, quad d \[ i \] = 2 $ 在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。 \
-设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = p_j times i$ 筛掉。
+$ d ( n ) = ( alpha_1 + 1 ) times ( alpha_2 + 1 ) times dots.h.c times ( alpha_s + 1 ) $
+
+==== 筛法求约数个数
+<筛法求约数个数-1>
+记a\[i\]为i的最小质因子的次数，d\[i\]为i的约数个数。
+
+若 $i$ 是质数，
+
+$ a \[ i \] = 1 \, quad d \[ i \] = 2 $
+
+在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。 设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = p_j times i$ 筛掉。
 
 #block[
 #set enum(numbering: "(1)", start: 1)
-+ 若 $i$ 能被 $p_j$ 整除，则 $p_j$ 一定是 $i$ 的最小质因子。 \
-  $ a \[ m \] = a \[ i \] + 1 ; $ $ d \[ i \] = ( a \[ i \] + 1 ) times dots.h.c \, quad d \[ m \] = ( a \[ m \] + 1 ) times dots.h.c $
++ 若 $i$ 能被 $p_j$ 整除，则 $p_j$ 一定是 $i$ 的最小质因子。
 ]
 
-于是 $ d \[ m \] = d \[ i \] times frac(a \[ m \] + 1, a \[ i \] + 1) $ (2) 若 $i$ 不能被 $p_j$ 整除，则 $i$ 不包含质因子 $p_j$。 \
+$ a \[ m \] = a \[ i \] + 1 ; $
+
+$ d \[ i \] = ( a \[ i \] + 1 ) times dots.h.c \, quad d \[ m \] = ( a \[ m \] + 1 ) times dots.h.c $
+
+于是
+
+$ d \[ m \] = d \[ i \] times frac(a \[ m \] + 1, a \[ i \] + 1) $
+
+#block[
+#set enum(numbering: "(1)", start: 2)
++ 若 $i$ 不能被 $p_j$ 整除，则 $i$ 不包含质因子 $p_j$。
+]
+
 $ a \[ m \] = 1 \, quad d \[ m \] = d \[ i \] times ( 1 + 1 ) $
 
 ```cpp
@@ -150,31 +179,52 @@ vector<int> d()
 <约数和定理>
 若 $n = product_(i = 1)^s p_i^(alpha_i)$，则 $f ( n ) = product_(i = 1)^s sum_(j = 0)^(alpha_i) p_i^j$
 
-#strong[证明：] \
+#strong[证明：]
+
 $p_i^(alpha_i)$ 的约数有 $p_i^0 \, p_i^1 \, dots.h.c \, p_i^(alpha_i)$ 共 $( alpha_i + 1 )$ 个，其约数和为 $sum_(j = 0)^(alpha_i) p_i^j$。
 
-根据乘法原理， \
+根据乘法原理，
+
 $ f ( n ) = product_(i = 1)^s sum_(j = 0)^(alpha_i) p_i^j $
 
-#strong[例：] \
-$ 12 = 2^2 times 3^1 \, $ $ f ( 12 ) = ( 1 + 2 + 4 ) times ( 1 + 3 ) = 7 times 4 = 28 $
+#strong[例：]
+
+$ 12 = 2^2 times 3^1 \, $
+
+$ f ( 12 ) = ( 1 + 2 + 4 ) times ( 1 + 3 ) = 7 times 4 = 28 $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 === 筛法求约数和
 <筛法求约数和>
-记g\[i\]为i的最小质因子的幂和 1 + p^1 +p^2 + … + p^k，f\[i\]为i的约数和。 若 $i$ 是质数， \
+记g\[i\]为i的最小质因子的幂和 1 + p^1 +p^2 + … + p^k，f\[i\]为i的约数和。
+
+若 $i$ 是质数，
+
 $ g \[ i \] = f \[ i \] = i + 1 $
 
 在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = i times p_j$ 筛掉。
 
 #block[
 #set enum(numbering: "(1)", start: 1)
-+ 若 $i$ 能被 $p_j$ 整除，则 $p_j$ 一定也是 $i$ 的最小质因子 \
-  $ g \[ i \] = p_j^0 + p_j^1 + dots.h.c + p_j^(alpha_j) \, quad g \[ m \] = p_j^0 + p_j^1 + dots.h.c + p_j^(alpha_j + 1) $ $ f \[ i \] = g \[ i \] times dots.h.c \, quad f \[ m \] = g \[ m \] times dots.h.c $ 于是 $ f \[ m \] = f \[ i \] times frac(g \[ m \], g \[ i \]) $
-
-+ 若 $i$ 不能被 $p_j$ 整除，则 $i$ 不包含质因子 $p_j$。 \
-  $ g \[ m \] = 1 + p_j $ $ f \[ m \] = g \[ m \] times f \[ i \] $
++ 若 $i$ 能被 $p_j$ 整除，则 $p_j$ 一定也是 $i$ 的最小质因子
 ]
+
+$ g \[ i \] = p_j^0 + p_j^1 + dots.h.c + p_j^(alpha_j) \, quad g \[ m \] = p_j^0 + p_j^1 + dots.h.c + p_j^(alpha_j + 1) $
+
+$ f \[ i \] = g \[ i \] times dots.h.c \, quad f \[ m \] = g \[ m \] times dots.h.c $
+
+于是
+
+$ f \[ m \] = f \[ i \] times frac(g \[ m \], g \[ i \]) $
+
+#block[
+#set enum(numbering: "(1)", start: 2)
++ 若 $i$ 不能被 $p_j$ 整除，则 $i$ 不包含质因子 $p_j$。
+]
+
+$ g \[ m \] = 1 + p_j $
+
+$ f \[ m \] = g \[ m \] times f \[ i \] $
 
 ```cpp
 //O(n)求1-n的约数和
@@ -216,7 +266,7 @@ vector<int> sumd()
 $ n = product_(i = 1)^s p_i^(alpha_i) = p_1^(alpha_1) p_2^(alpha_2) dots.h.c p_s^(alpha_s) $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-==== 莫比乌斯函数定义
+=== 莫比乌斯函数定义
 <莫比乌斯函数定义>
 莫比乌斯函数记作 $mu ( n )$，它是一个经典的数论函数，定义如下：
 
@@ -231,42 +281,49 @@ $ mu ( n ) = ( - 1 )^k $
 #line(length: 100%, stroke: 0.5pt + luma(180))
 === 筛法求莫比乌斯函数
 <筛法求莫比乌斯函数>
-若 $i$ 是质数，$mu \[ i \] = - 1$。 \
-在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。 \
-设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = i times p_j$ 筛掉。
+若 $i$ 是质数，$mu \[ i \] = - 1$。 在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。 设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = i times p_j$ 筛掉。
 
 #block[
 #set enum(numbering: "(1)", start: 1)
-+ 若 $i$ 能被 $p_j$ 整除，则 $i$ 也包含质因子 $p_j$。 \
-  $ mu \[ m \] = 0 $
-
-+ 若 $i$ 不能被 $p_j$ 整除，则 $m$ 比 $i$ 多一个不同的质因子 $p_j$ \
++ 若 $i$ 能被 $p_j$ 整除，则 $i$ 也包含质因子 $p_j$。
 ]
 
-- 若 $mu \[ i \] = - 1$, 则 $mu \[ m \] = 1$ \
-- 若 $mu \[ i \] = 1$, 则 $mu \[ m \] = - 1$ \
-- 若 $mu \[ i \] = 0$, 则 $mu \[ m \] = 0$ \
-  综上，$mu \[ m \] = - mu \[ i \]$。
+$ mu \[ m \] = 0 $
+
+#block[
+#set enum(numbering: "(1)", start: 2)
++ 若 $i$ 不能被 $p_j$ 整除，则 $m$ 比 $i$ 多一个不同的质因子 $p_j$
+]
+
+- 若 $mu \[ i \] = - 1$, 则 $mu \[ m \] = 1$
+- 若 $mu \[ i \] = 1$, 则 $mu \[ m \] = - 1$
+- 若 $mu \[ i \] = 0$, 则 $mu \[ m \] = 0$
+
+综上，$mu \[ m \] = - mu \[ i \]$。
 
 
 == 数论/数论笔记部分/数论笔记(线性逆元)
 
-#strong[O(n)求阶乘和阶乘逆元]
-
-==== 📘 推导目标
+=== O(n) 求阶乘和阶乘逆元
+<on-求阶乘和阶乘逆元>
+==== 推导目标
 <推导目标>
-给定质数 $p$，我们希望在线性时间内计算 $1$ 到 $n$ 的所有数在模 $p$ 意义下的乘法逆元，即： \
+给定质数 $p$，我们希望在线性时间内计算 $1$ 到 $n$ 的所有数在模 $p$ 意义下的乘法逆元，即：
+
 $ upright("求 ") forall 1 lt.eq i lt.eq n \, quad upright("使得 ") r_i dot.op i equiv 1 med (mod p) upright(" 的 ") r_i $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-==== 🧮 推导公式
+==== 推导公式
 <推导公式>
-我们设 $r_i = i^(- 1) #h(0em) mod med p$，有： - $r_1 = 1$ - 对于 $i > 1$，我们可以利用如下递推式求出 $r_i$：
+我们设 $r_i = i^(- 1) #h(0em) mod med p$，有：
+
+- $r_1 = 1$
+- 对于 $i > 1$，我们可以利用如下递推式求出 $r_i$：
 
 $ r_i = ( p - ⌊p / i⌋ ) dot.op r_(p #h(0em) mod med i) #h(0em) mod med p $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-==== ✏️ 证明过程
+==== 证明过程
 <证明过程>
 考虑：
 
@@ -274,7 +331,8 @@ $ p = i dot.op ⌊p / i⌋ + ( p #h(0em) mod med i ) arrow.r.double p #h(0em) mo
 
 两边模p:
 
-$ i dot.op (⌊p / i⌋) equiv - ( p #h(0em) mod med i ) med (mod p) arrow.r.double i dot.op (⌊p / i⌋) dot.op ( p #h(0em) mod med i )^(- 1) equiv - 1 med (mod p) $
+$ i dot.op (⌊p / i⌋) & equiv - ( p #h(0em) mod med i ) med (mod p)\
+i dot.op (⌊p / i⌋) dot.op ( p #h(0em) mod med i )^(- 1) & equiv - 1 med (mod p) $
 
 两边都乘上 $- 1$：
 
@@ -291,7 +349,7 @@ $ #box(stroke: black, inset: 3pt, [$ upright("inv") \[ i \] = \( p - p \/ i \) d
 这就是我们要用的递推式！
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-==== 🧪 C++ 实现示例
+==== C++ 实现示例
 <c-实现示例>
 ```cpp
 void preC()
@@ -311,7 +369,7 @@ void preC()
 ```
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-==== 🧠 时间复杂度
+==== 时间复杂度
 <时间复杂度>
 - 时间：$cal(O) ( n )$
 - 空间：$cal(O) ( n )$
@@ -320,21 +378,41 @@ void preC()
 
 == 数论/数论笔记部分/数论笔记(不定方程与同余方程组)
 
-#strong[前置芝士] exgcd求解不定方程 ax+by=gcd(a,b) /线性同余方程 ax≡b(mod m) 的解 #strong[exgcd求解不定方程 ax+by=gcd(a,b)] 设 $ a x_1 + b y_1 = g c d ( a \, b ) $
+=== 前置芝士
+<前置芝士>
+exgcd求解不定方程 ax+by=gcd(a,b) /线性同余方程 ax≡b(mod m) 的解
+
+=== exgcd求解不定方程 ax+by=gcd(a,b)
+<exgcd求解不定方程-axbygcdab>
+设
+
+$ a x_1 + b y_1 = g c d ( a \, b ) $
 
 $ b x_2 + ( a % b ) y_2 = g c d ( b \, a % b ) $
 
-由欧几里得定理可得 $ g c d ( a \, b ) = g c d ( b \, a % b ) $
+由欧几里得定理可得
 
-于是 $ a x_1 + b y_1 = b x_2 + ( a % b ) y_2 $
+$ g c d ( a \, b ) = g c d ( b \, a % b ) $
+
+于是
+
+$ a x_1 + b y_1 = b x_2 + ( a % b ) y_2 $
 
 $ a x_1 + b y_1 = b x_2 + ( a - floor.l a \/ b floor.r \* b ) y_2 $
 
-整理 $ a x_1 + b y_1 = a y_2 + b ( x_2 - floor.l a \/ b floor.r \* y_2 ) $
+整理
 
-于是 $ x_1 = y_2 $
+$ a x_1 + b y_1 = a y_2 + b ( x_2 - floor.l a \/ b floor.r \* y_2 ) $
 
-$ y_1 = x_2 - floor.l a \/ b floor.r \* y_2 $ ax+by=gcd(a,b)即可通过最初的x,y求解 于是我们可以通过递归求解
+于是
+
+$ x_1 = y_2 $
+
+$ y_1 = x_2 - floor.l a \/ b floor.r \* y_2 $
+
+ax+by=gcd(a,b)即可通过最初的x,y求解
+
+于是我们可以通过递归求解
 
 ```cpp
 int exgcd(int a,int b,int &x,int &y)//扩展欧几里得
@@ -353,34 +431,100 @@ int exgcd(int a,int b,int &x,int &y)//扩展欧几里得
 }
 ```
 
-#strong[exgcd求解线性同余方程 ax≡b(mod m) 的解] $ a x equiv b med (mod m) $
+=== exgcd求解线性同余方程 ax≡b(mod m) 的解
+<exgcd求解线性同余方程-axbmod-m-的解>
+$ a x equiv b med (mod m) $
 
-可写成 $ a x + m k = b $
+可写成
 
-于是我们先求解不定方程 $ a x + m k = g c d ( a \, m ) $
+$ a x + m k = b $
 
-若gcd(a,m)!=1则无解，否则得到解 $ x = x_0 $
+于是我们先求解不定方程
 
-$ k = k_0 $ 于是我们得到原方程的解为 $ x_1 = x_0 \* b \/ g c d ( a \, m ) $
+$ a x + m k = g c d ( a \, m ) $
 
-$ k_1 = k_0 \* b \/ g c d ( a \, m ) $ 方程的任意解(对任意整数t成立)为 $ x = x_1 + m t $
+若gcd(a,m)!=1则无解，否则得到解
 
-$ k = k_1 - a t $ 求最小的正整数解 $ x = ( x_1 #h(0em) mod med t + t ) #h(0em) mod med t $ 其中 $ t = m \/ g c d ( a \, m ) $ 为何？ 因为上述操作等价于 $ a \/ d \* x equiv b \/ d med (mod m \/ d) $ 把a/d 放到右边 会发现x是 模m/d的等价类
+$ x = x_0 $
 
-要用exgcd求解逆元的话，需要保证gcd(a,m)=1 代入exgcd(a,m,x,y)中,对x值域变换即可 其实就是 $ a x equiv 1 med (mod m) $
+$ k = k_0 $
 
-可写成 $ a x + m k = g c d ( a \, m ) = 1 $ 罢了
+于是我们得到原方程的解为
 
-#strong[中国剩余定理] 求解同余方程组 $ {x equiv a_1 med (mod m_1)\
+$ x_1 = x_0 \* b \/ g c d ( a \, m ) $
+
+$ k_1 = k_0 \* b \/ g c d ( a \, m ) $
+
+方程的任意解(对任意整数t成立)为
+
+$ x = x_1 + m t $
+
+$ k = k_1 - a t $
+
+求最小的正整数解
+
+$ x = ( x_1 #h(0em) mod med t + t ) #h(0em) mod med t $
+
+其中
+
+$ t = m \/ g c d ( a \, m ) $
+
+为何？
+
+因为上述操作等价于
+
+$ a \/ d \* x equiv b \/ d med (mod m \/ d) $
+
+把a/d 放到右边 会发现x是 模m/d的等价类
+
+要用exgcd求解逆元的话，需要保证gcd(a,m)=1
+
+代入exgcd(a,m,x,y)中,对x值域变换即可
+
+其实就是
+
+$ a x equiv 1 med (mod m) $
+
+可写成
+
+$ a x + m k = g c d ( a \, m ) = 1 $
+
+罢了
+
+=== 中国剩余定理
+<中国剩余定理>
+求解同余方程组
+
+$ {x equiv a_1 med (mod m_1)\
 x equiv a_2 med (mod m_2)\
 . . .\
-x equiv a_k med (mod m_k) $ 其中 $ m_1 \, m_2 \, . . . \, m_k 两 两 互 质 $ 过程: 求 $ M = m_1 \* m_2 \* . . . \* m_k $ 对每个m\_i求 $ M_i = M \/ m_i $
+x equiv a_k med (mod m_k) $
+
+其中
+
+$ m_1 \, m_2 \, . . . \, m_k 两 两 互 质 $
+
+过程:
+
+求
+
+$ M = m_1 \* m_2 \* . . . \* m_k $
+
+对每个m\_i求
+
+$ M_i = M \/ m_i $
 
 $ M_i^(- 1) equiv 1 med (mod m_i) $
 
-$ c_i = M_i^(- 1) \* M_i $ 于是 $ x = sum_(i = 1)^k a_i \* c_i med (mod M) $
+$ c_i = M_i^(- 1) \* M_i $
 
-很显然的证明，对任意一个方程组： $ x equiv sum_(i = 1)^k a_i \* c_i med (mod m_i) $
+于是
+
+$ x = sum_(i = 1)^k a_i \* c_i med (mod M) $
+
+很显然的证明，对任意一个方程组：
+
+$ x equiv sum_(i = 1)^k a_i \* c_i med (mod m_i) $
 
 $ x equiv a_i \* M_i \* M_i^(- 1) med (mod m_i) $
 
@@ -388,7 +532,9 @@ $ x equiv a_i med (mod m_i) \* ( M_i \* M_i^(- 1) med (mod m_i) ) $
 
 按定义
 
-$ x equiv a_i med (mod m_i) $ 代码：
+$ x equiv a_i med (mod m_i) $
+
+代码：
 
 ```cpp
 int CRT()
@@ -405,14 +551,62 @@ int CRT()
 }
 ```
 
-#strong[扩展中国剩余定理] 求解同余方程组 $ {x equiv a_1 med (mod m_1)\
+=== 扩展中国剩余定理
+<扩展中国剩余定理>
+求解同余方程组
+
+$ {x equiv a_1 med (mod m_1)\
 x equiv a_2 med (mod m_2)\
 . . .\
-x equiv a_k med (mod m_k) $ 其中 $ m_1 \, m_2 \, . . . \, m_k 不 两 两 互 质 $ 过程: 考虑合并两个同余方程 $ {x equiv a_1 med (mod m_1)\
-x equiv a_2 med (mod m_2) $ 可写成不定方程 $ {x = a_1 + k_1 \* m_1\
-x = a_2 + k_2 \* m_2 $ 消去x $ a_1 + k_1 \* m_1 = a_2 + k_2 \* m_2 $ 于是我们得到了一个不定方程 $ k_1 \* m_1 + - k_2 \* m_2 = a_2 - a_1 $ 可通过exgcd求解 $ K_1 \* m_1 + - K_2 \* m_2 = g c d ( m_1 \, m_2 ) $ 于是 $ k_1 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 $
+x equiv a_k med (mod m_k) $
 
-$ k_2 = frac(a_1 - a_2, g c d ( m_1 \, m_2 )) \* K_2 $ 得到x的一个解 $ x_0 = a_1 + k_1 \* m_1 = a_1 + frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 \* m_1 $ 窝们很显然可以构造x的通解 $ x = x_0 + t \* l c m ( m_1 \, m_2 ) $ 于是进行形式转化 $ x equiv x_0 med (mod l c m ( m_1 \, m_2) ) $ 于是我们得到了两个同余方程的合并
+其中
+
+$ m_1 \, m_2 \, . . . \, m_k 不 两 两 互 质 $
+
+过程:
+
+考虑合并两个同余方程
+
+$ {x equiv a_1 med (mod m_1)\
+x equiv a_2 med (mod m_2) $
+
+可写成不定方程
+
+$ {x = a_1 + k_1 \* m_1\
+x = a_2 + k_2 \* m_2 $
+
+消去x
+
+$ a_1 + k_1 \* m_1 = a_2 + k_2 \* m_2 $
+
+于是我们得到了一个不定方程
+
+$ k_1 \* m_1 + - k_2 \* m_2 = a_2 - a_1 $
+
+可通过exgcd求解
+
+$ K_1 \* m_1 + - K_2 \* m_2 = g c d ( m_1 \, m_2 ) $
+
+于是
+
+$ k_1 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 $
+
+$ k_2 = frac(a_1 - a_2, g c d ( m_1 \, m_2 )) \* K_2 $
+
+得到x的一个解
+
+$ x_0 = a_1 + k_1 \* m_1 = a_1 + frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 \* m_1 $
+
+窝们很显然可以构造x的通解
+
+$ x = x_0 + t \* l c m ( m_1 \, m_2 ) $
+
+于是进行形式转化
+
+$ x equiv x_0 med (mod l c m ( m_1 \, m_2) ) $
+
+于是我们得到了两个同余方程的合并
 
 ```cpp
 int _exCRT()
@@ -461,51 +655,65 @@ c|ab 当仅当 (c/gcd(a,c))|b 考虑 ab=k#emph[c 令g=gcd(a,c),有 (a/g) ] b=k \
 
 == 数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1)
 
-===== 狄利克雷生成函数
+=== 狄利克雷生成函数
 <狄利克雷生成函数>
-数列 $angle.l a_1 \, a_2 \, a_3 \, dots.h.c angle.r$ 的狄利克雷生成函数定义为： $ F ( x ) = a_1 / 1^x + a_2 / 2^x + a_3 / 3^x + dots.h.c = sum_(n = 1)^oo a_n / n^x $
+数列 $angle.l a_1 \, a_2 \, a_3 \, dots.h.c angle.r$ 的狄利克雷生成函数定义为：
+
+$ F ( x ) = a_1 / 1^x + a_2 / 2^x + a_3 / 3^x + dots.h.c = sum_(n = 1)^oo a_n / n^x $
+
+==== 乘法运算（Dirichlet 卷积）
+<乘法运算dirichlet-卷积>
+两个狄利克雷生成函数相乘：
+
+$ (sum_(i = 1)^oo a_i / i^x) (sum_(j = 1)^oo b_j / j^x) & = sum_(i = 1)^oo sum_(j = 1)^oo frac(a_i b_j, ( i j )^x)\
+ & = sum_(n = 1)^oo 1 / n^x sum_(d \| n) a_d b_(n \/ d) $
+
+所以 $1 / n^x$ 项的系数就是：
+
+$ sum_(d \| n) a_d b_(n \/ d) $
+
+也就是枚举 $n$ 的约数 $d$，把 $a_d$ 和 $b_(n \/ d)$ 配起来。
+
+例如：
+
+#figure(
+  align(center)[#table(
+    columns: 2,
+    align: (auto,auto),
+    table.header([项], [系数]),
+    table.hline(),
+    [$1 / 4^x$], [$a_1 b_4 + a_2 b_2 + a_4 b_1$],
+    [$1 / 6^x$], [$a_1 b_6 + a_2 b_3 + a_3 b_2 + a_6 b_1$])]
+  , kind: table
+  )
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-====== 乘法运算（Dirichlet 卷积）
-<乘法运算dirichlet-卷积>
-$ sum_(i = 1)^oo a_i / i^x sum_(j = 1)^oo b_j / j^x & = (a_1 / 1^x + a_2 / 2^x + a_3 / 3^x + a_4 / 4^x + dots.h.c) (b_1 / 1^x + b_2 / 2^x + b_3 / 3^x + b_4 / 4^x + dots.h.c)\
- & = frac(a_1 b_1, 1^x) + frac(a_1 b_2, 2^x) + frac(a_2 b_1, 3^x) + frac(a_1 b_3, 4^x) + dots.h.c\
- & = sum_(n = 1)^oo 1 / n^x sum_(d \| n) a_d b_(n / d) $
-
-====== 系数计算规则
-<系数计算规则>
-$1 / n^x$ 项的系数等于所有满足 $d \| n$（$d$ 整除 $n$）的项 $a_d b_(n \/ d)$ 之和： - #strong[$4^x$ 的系数];：$a_1 b_4 + a_2 b_2 + a_4 b_1$ \
-（枚举 4 的约数 $d = 1 \, 2 \, 4$） - #strong[$6^x$ 的系数];：$a_1 b_6 + a_2 b_3 + a_3 b_2 + a_6 b_1$ \
-（枚举 6 的约数 $d = 1 \, 2 \, 3 \, 6$）
-
-===== 一点和式的小结论
+=== 一点和式的小结论
 <一点和式的小结论>
-=== 欧拉函数
+==== 欧拉函数
 <欧拉函数>
-==== 1. 定义
-<定义>
-欧拉函数 $phi ( n )$ 表示小于等于 $n$ 且与 $n$ 互质的正整数个数： $ phi ( n ) = sum_(i = 1)^n \[ gcd ( i \, n ) = 1 \] $
+欧拉函数 $phi ( n )$ 表示小于等于 $n$ 且与 $n$ 互质的正整数个数：
 
-===== 欧拉函数值表
-<欧拉函数值表>
+$ phi ( n ) = sum_(i = 1)^n \[ gcd ( i \, n ) = 1 \] $
+
+欧拉函数值表：
+
 #figure(
   align(center)[#table(
     columns: 13,
-    align: (auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto),
+    align: (auto,right,right,right,right,right,right,right,right,right,right,right,right),
     table.header([$n$], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]),
     table.hline(),
     [$phi ( n )$], [1], [1], [2], [2], [4], [2], [6], [4], [6], [4], [10], [4])]
   , kind: table
   )
 
-==== 2. 性质
-<性质>
-===== 欧拉函数求和定理
-<欧拉函数求和定理>
-对于任意正整数 $n$，其所有因子的欧拉函数值之和等于 $n$： $ sum_(d \| n) phi ( d ) = n $
+一个很常用的式子：
 
-===== 验证示例
-<验证示例>
+$ sum_(d \| n) phi ( d ) = n $
+
+验证一下：
+
 $ phi ( 1 ) & = 1\
 phi ( 1 ) + phi ( 2 ) & = 1 + 1 = 2\
 phi ( 1 ) + phi ( 3 ) & = 1 + 2 = 3\
@@ -513,22 +721,23 @@ phi ( 1 ) + phi ( 2 ) + phi ( 4 ) & = 1 + 1 + 2 = 4\
 phi ( 1 ) + phi ( 5 ) & = 1 + 4 = 5\
 phi ( 1 ) + phi ( 2 ) + phi ( 3 ) + phi ( 6 ) & = 1 + 1 + 2 + 2 = 6 $
 
-==== 证明思路
-<证明思路>
-考虑以 $n$ 为分母的真分数 $lr([0 \, 1))$ 区间： $ 0 / n \, 1 / n \, 2 / n \, dots.h.c \, frac(n - 1, n) $ 将这些分数化简为最简形式后，根据分母分组，可证明结论。
+证明思路：考虑以 $n$ 为分母的真分数，也就是 $\[ 0 \, 1 )$ 里的这些数：
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+$ 0 / n \, 1 / n \, 2 / n \, dots.h.c \, frac(n - 1, n) $
+
+把它们都化成最简分数，再按化简后的分母分组。
+
 ==== 示例演示（$n = 12$）
 <示例演示n12>
-===== 所有真分数
-<所有真分数>
+所有真分数：
+
 $ 0 / 12 \, 1 / 12 \, 2 / 12 \, 3 / 12 \, 4 / 12 \, 5 / 12 \, 6 / 12 \, 7 / 12 \, 8 / 12 \, 9 / 12 \, 10 / 12 \, 11 / 12 $
 
-===== 化简后分组
-<化简后分组>
+化简后分组：
+
 #figure(
   align(center)[#table(
-    columns: (8.91%, 73.27%, 17.82%),
+    columns: (33.33%, 33.33%, 33.33%),
     align: (auto,auto,auto),
     table.header([分母 $d$], [最简分数], [个数 $phi ( d )$]),
     table.hline(),
@@ -541,76 +750,94 @@ $ 0 / 12 \, 1 / 12 \, 2 / 12 \, 3 / 12 \, 4 / 12 \, 5 / 12 \, 6 / 12 \, 7 / 12 \
   , kind: table
   )
 
-===== 验证等式
-<验证等式>
+验证等式：
+
 $ sum_(d \| 12) phi ( d ) = phi ( 1 ) + phi ( 2 ) + phi ( 3 ) + phi ( 4 ) + phi ( 6 ) + phi ( 12 ) = 1 + 1 + 2 + 2 + 2 + 4 = 12 $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
-注意到窝们的证明思路天然满足定义
+注意到窝们的证明思路天然满足定义。
 
-==== 一般性证明
-<一般性证明>
-+ 考虑所有分母为 $n$ 的真分数： $ k / n quad ( 0 lt.eq k < n ) $ 共有 $n$ 个分数。
+一般性证明：
+
++ 考虑所有分母为 $n$ 的真分数：
+
+  $ k / n quad ( 0 lt.eq k < n ) $
+
+  共有 $n$ 个分数。
 
 + 将每个分数化简为最简形式 $a / d$，其中 $d divides n$ 且 $gcd ( a \, d ) = 1$。
 
 + 对 $n$ 的每个约数 $d$ 分组：
 
-  - 分母为 $d$ 的分数个数 = $phi ( d )$
-  - 因为分子 $a$ 需满足 $1 lt.eq a lt.eq d$ 且 $gcd ( a \, d ) = 1$
+  - 分母为 $d$ 的分数个数为 $phi ( d )$。
+  - 分子 $a$ 满足 $1 lt.eq a lt.eq d$ 且 $gcd ( a \, d ) = 1$。
 
-+ 总和为： $ sum_(d \| n) phi ( d ) = n $ 即得证。
++ 总和为：
 
+  $ sum_(d \| n) phi ( d ) = n $
+
+  即得证。
+
+#line(length: 100%, stroke: 0.5pt + luma(180))
 === 莫比乌斯函数
 <莫比乌斯函数>
-==== 1. 定义
-<定义-1>
-莫比乌斯函数 $mu ( n )$ 定义如下： $ mu ( n ) = cases(delim: "{", 1 & upright("若 ") n = 1, ( - 1 )^s & upright("若 ") n = p_1 p_2 dots.h.c p_s upright("（无平方因子的整数）"), 0 & upright("若 ") n upright(" 包含平方因子")) $
+莫比乌斯函数 $mu ( n )$ 定义如下：
 
-===== 莫比乌斯函数值表
-<莫比乌斯函数值表>
+$ mu ( n ) = cases(delim: "{", 1 & upright("若 ") n = 1, ( - 1 )^s & upright("若 ") n = p_1 p_2 dots.h.c p_s upright("（无平方因子的整数）"), 0 & upright("若 ") n upright(" 包含平方因子")) $
+
+莫比乌斯函数值表：
+
 #figure(
   align(center)[#table(
     columns: 13,
-    align: (auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto,auto),
+    align: (auto,right,right,right,right,right,right,right,right,right,right,right,right),
     table.header([$n$], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12]),
     table.hline(),
     [$mu ( n )$], [1], [-1], [-1], [0], [-1], [1], [-1], [0], [0], [1], [-1], [0])]
   , kind: table
   )
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
-==== 2. 核心性质
-<核心性质>
+核心性质：
+
 $ sum_(d \| n) mu ( d ) = \[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1) $
 
-===== 验证示例
-<验证示例-1>
+验证一下：
+
 $ n = 1 : & quad mu ( 1 ) = 1\
 n = 2 : & quad mu ( 1 ) + mu ( 2 ) = 1 + ( - 1 ) = 0\
 n = 3 : & quad mu ( 1 ) + mu ( 3 ) = 1 + ( - 1 ) = 0\
 n = 4 : & quad mu ( 1 ) + mu ( 2 ) + mu ( 4 ) = 1 + ( - 1 ) + 0 = 0\
 n = 6 : & quad mu ( 1 ) + mu ( 2 ) + mu ( 3 ) + mu ( 6 ) = 1 + ( - 1 ) + ( - 1 ) + 1 = 0 $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
-==== 3. 证明（$n > 1$ 时和为 0）
+==== 证明（$n > 1$ 时和为 $0$）
 <证明n1-时和为-0>
-===== 证明思路
-<证明思路-1>
-设 $n = p_1^(a_1) p_2^(a_2) dots.h.c p_s^(a_s)$，定义 $n'$ 为 $n$ 的平方自由部分： $ n' = p_1 p_2 dots.h.c p_s $ 则： $ sum_(d \| n) mu ( d ) = sum_(d \| n') mu ( d ) $
+设：
 
-===== 组合证明
-<组合证明>
-考虑 $n$ 的质因子集合 $S$，其大小为 $s$： - $mu ( d ) eq.not 0$ 的 $d$ 对应 $S$ 的子集 - $d$ 的质因子个数为 $k$ 时，$mu ( d ) = ( - 1 )^k$ - 由二项式定理
+$ n = p_1^(a_1) p_2^(a_2) dots.h.c p_s^(a_s) $
+
+定义 $n'$ 为 $n$ 的平方自由部分：
+
+$ n' = p_1 p_2 dots.h.c p_s $
+
+含平方因子的约数对 $mu$ 的贡献为 $0$，所以：
+
+$ sum_(d \| n) mu ( d ) = sum_(d \| n') mu ( d ) $
+
+考虑 $n$ 的质因子集合 $S$，其大小为 $s$：
+
+- $mu ( d ) eq.not 0$ 的 $d$ 对应 $S$ 的子集。
+- $d$ 的质因子个数为 $k$ 时，$mu ( d ) = ( - 1 )^k$。
+- 由二项式定理：
 
 $ sum_(d \| n') mu ( d ) = sum_(k = 0)^s ( - 1 )^k binom(s, k) = ( 1 + ( - 1 ) )^s = 0 $
 
-===== 示例说明（$n = 6$）
-<示例说明n6>
-$6 = 2^1 times 3^1$，$S = { 2 \, 3 }$： $ mu ( 1 ) & = ( - 1 )^0 = 1 quad & ( upright("取 0 个质因子") )\
+例如 $n = 6$，$6 = 2^1 times 3^1$，$S = { 2 \, 3 }$：
+
+$ mu ( 1 ) & = ( - 1 )^0 = 1 quad & ( upright("取 0 个质因子") )\
 mu ( 2 ) & = ( - 1 )^1 = - 1 quad & ( upright("取质因子 ") 2 )\
 mu ( 3 ) & = ( - 1 )^1 = - 1 quad & ( upright("取质因子 ") 3 )\
-mu ( 6 ) & = ( - 1 )^2 = 1 quad & ( upright("取质因子 ") 2 \, 3 ) $ 和为 $1 + ( - 1 ) + ( - 1 ) + 1 = 0$。
+mu ( 6 ) & = ( - 1 )^2 = 1 quad & ( upright("取质因子 ") 2 \, 3 ) $
+
+和为 $1 + ( - 1 ) + ( - 1 ) + 1 = 0$。
 
 
 == 数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2)
@@ -619,21 +846,23 @@ mu ( 6 ) & = ( - 1 )^2 = 1 quad & ( upright("取质因子 ") 2 \, 3 ) $ 和为 $
 <狄利克雷卷积>
 ==== 定义
 <定义>
-设 $f ( n )$, $g ( n )$ 是两个积性函数，其狄利克雷卷积定义为： $ ( f \* g ) ( n ) = sum_(d \| n) f ( d ) g (n / d) = sum_(d \| n) f (n / d) g ( d ) $
+设 $f ( n )$, $g ( n )$ 是两个积性函数，其狄利克雷卷积定义为：
+
+$ ( f \* g ) ( n ) = sum_(d \| n) f ( d ) g (n / d) = sum_(d \| n) f (n / d) g ( d ) $
 
 #quote(block: true)[
 注意跟狄利克雷生成函数形式上的相似性 读作：$f$ 卷 $g$
 ]
 
-===== 示例
+==== 示例
 <示例>
 $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 ==== 运算规律
 <运算规律>
-+ #strong[交换律];：$f \* g = g \* f$ \
-+ #strong[结合律];：$( f \* g ) \* h = f \* ( g \* h )$ \
++ #strong[交换律];：$f \* g = g \* f$
++ #strong[结合律];：$( f \* g ) \* h = f \* ( g \* h )$
 + #strong[分配律];：$( f + g ) \* h = f \* h + g \* h$
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
@@ -641,14 +870,14 @@ $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 <常用函数>
 #figure(
   align(center)[#table(
-    columns: (36%, 40%, 24%),
+    columns: (33.33%, 33.33%, 33.33%),
     align: (auto,auto,auto),
     table.header([函数名称], [符号表示], [定义]),
     table.hline(),
     [元函数], [$epsilon.alt ( n )$], [$\[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1)$],
     [常数函数], [$1 ( n )$], [$1$],
     [恒等函数], [$i d ( n )$], [$n$],
-    [欧拉函数], [$phi ( n )$], [\<n且与n互质的数的个数],
+    [欧拉函数], [$phi ( n )$], [$< n$ 且与 $n$ 互质的数的个数],
     [莫比乌斯函数], [$mu ( n )$], [$cases(delim: "{", 1 & n = 1, ( - 1 )^k & n = p_1 p_2 . . . p_k, 0 & n 含 平 方 因 子)$])]
   , kind: table
   )
@@ -660,11 +889,13 @@ $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 
 ==== 常用卷积关系
 <常用卷积关系>
-简记形式 1. $sum_(d \| n) mu ( d ) = \[ n = 1 \] quad arrow.l.r.double quad mu \* 1 = epsilon.alt$ \
-\2. $sum_(d \| n) phi ( d ) = n quad arrow.l.r.double quad phi \* 1 = i d$ \
-\3. $sum_(d \| n) mu ( d ) n / d = phi ( n ) quad arrow.l.r.double quad mu \* i d = phi$ \
-\4. $f \* epsilon.alt = f$ \
-\5. $f \* 1 eq.not f$
+简记形式
+
++ $sum_(d \| n) mu ( d ) = \[ n = 1 \] quad arrow.l.r.double quad mu \* 1 = epsilon.alt$
++ $sum_(d \| n) phi ( d ) = n quad arrow.l.r.double quad phi \* 1 = i d$
++ $sum_(d \| n) mu ( d ) n / d = phi ( n ) quad arrow.l.r.double quad mu \* i d = phi$
++ $f \* epsilon.alt = f$
++ $f \* 1 eq.not f$
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 #quote(block: true)[
@@ -673,35 +904,37 @@ $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 
 ==== 证明
 <证明>
-===== 1. $mu \* 1 = epsilon.alt$
+==== 1. $mu \* 1 = epsilon.alt$
 <mu-1-epsilon>
 $ ( mu \* 1 ) ( n ) = sum_(d \| n) mu ( d ) dot.op 1 (n / d) = sum_(d \| n) mu ( d ) = \[ n = 1 \] = epsilon.alt ( n ) $
 
-===== 2. $phi \* 1 = i d$
+==== 2. $phi \* 1 = i d$
 <varphi-1-id>
 $ ( phi \* 1 ) ( n ) = sum_(d \| n) phi ( d ) dot.op 1 (n / d) = sum_(d \| n) phi ( d ) = n = i d ( n ) $
 
-===== 3. $mu \* i d = phi$
+==== 3. $mu \* i d = phi$
 <mu-id-varphi>
 $ ( mu \* i d ) ( n ) = sum_(d \| n) mu ( d ) dot.op i d (n / d) = sum_(d \| n) mu ( d ) dot.op n / d = phi ( n ) $
 
 $ mu \* i d = mu \* phi \* 1 = ( phi \* 1 \* mu ) = epsilon.alt \* mu = phi $
 
-===== 4. $f \* epsilon.alt = f$
+==== 4. $f \* epsilon.alt = f$
 <f-epsilon-f>
 $ ( f \* epsilon.alt ) ( n ) = sum_(d \| n) f ( d ) dot.op epsilon.alt (n / d) = sum_(d \| n) f ( d ) dot.op [n / d = 1] = f ( n ) $
 
-===== 5. $f \* 1 eq.not f$
+==== 5. $f \* 1 eq.not f$
 <f-1-neq-f>
 $ ( f \* 1 ) ( n ) = sum_(d \| n) f ( d ) dot.op 1 (n / d) = sum_(d \| n) f ( d ) eq.not f ( n ) $
 
 === 莫比乌斯反演
 <莫比乌斯反演>
-其实就是一下几个式子(条件式变成和式) $ sum_(d \| n) phi ( d ) = n $
+其实就是一下几个式子(条件式变成和式)
+
+$ sum_(d \| n) phi ( d ) = n $
 
 $ sum_(d \| n) mu ( d ) = \[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1) $
 
-把$n$换成$g c d ( a \, b )$
+把 $n$ 换成 $gcd ( a \, b )$
 
 $ sum_(d \| g c d ( a \, b )) mu ( d ) = \[ g c d ( a \, b ) = 1 \] cases(delim: "{", 1 & g c d ( a \, b ) = 1, 0 & g c d ( a \, b ) > 1) $
 
@@ -709,21 +942,25 @@ $ sum_(d \| g c d ( a \, b )) mu ( d ) = \[ g c d ( a \, b ) = 1 \] cases(delim:
 <莫比乌斯变换>
 ==== 基本公式
 <基本公式>
-设 $f ( n )$, $g ( n )$ 均为积性函数，则： $ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d ) f (n / d) $
+设 $f ( n )$, $g ( n )$ 均为积性函数，则：
 
-即 $ f = g \* 1 arrow.l.r.double g = mu \* f $
+$ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d ) f (n / d) $
+
+即
+
+$ f = g \* 1 arrow.l.r.double g = mu \* f $
 
 - $f ( n )$ 称为 $g ( n )$ 的莫比乌斯变换
 - $g ( n )$ 称为 $f ( n )$ 的莫比乌斯逆变换
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 #quote(block: true)[
-注意对于一些函数 f(n)，如果很难直接求出它的值，而容易求出其倍数和或约数和 g(n)，那么可以通过莫比乌斯反演简化运算，求得 f(n) 的值。
+注意对于一些函数 $f ( n )$，如果很难直接求出它的值，而容易求出其倍数和或约数和 $g ( n )$，那么可以通过莫比乌斯反演简化运算，求得 $f ( n )$ 的值。
 ]
 
 ==== 证明方法一（卷积形式）
 <证明方法一卷积形式>
-===== 正向推导
+==== 正向推导
 <正向推导>
 $ f & = g \* 1\
 mu \* f & = mu \* ( g \* 1 )\
@@ -731,7 +968,7 @@ mu \* f & = mu \* ( g \* 1 )\
  & = g \* epsilon.alt\
  & = g $
 
-===== 逆向推导
+==== 逆向推导
 <逆向推导>
 $ g & = mu \* f\
 g \* 1 & = ( mu \* f ) \* 1\
@@ -758,11 +995,11 @@ $ sum_(d \| n) mu ( d ) f (n / d) & = sum_(d \| n) mu ( d ) sum_(k \| n / d) g (
 
 此笔记主要总结之前的二项式反演/莫比乌斯反演 然后补充斯特林反演/mix-max容斥/容斥的相关技术
 
-===== 一切的基石：广义莫比乌斯反演
+=== 一切的基石：广义莫比乌斯反演
 <一切的基石广义莫比乌斯反演>
 我们在数论中熟悉的 $sum_(d \| n) mu ( d ) = \[ n = 1 \]$ 其实只是冰山一角。所有的反演公式本质上都是在一个特定的偏序集( $D A G$ )上求解线性方程组。
 
-====== 1.1 定义
+==== 1.1 定义
 <定义>
 设 $P$ 是一个局部有限的偏序集。
 
@@ -808,44 +1045,118 @@ $ ( A \* B ) ( x \, y ) = sum_(x lt.eq z lt.eq y) A ( x \, z ) B ( z \, y ) $
 
 我们想要求解 $f ( y )$，这需要逆运算。在做逆运算之前，必须先知道在这个乘法规则下，什么东西相当于数字 $1$（保持原值不变）。
 
-设单位元函数为 $delta ( x \, y )$。 对于任意函数 $A$，必须满足 $A \* delta = A$。 即： $ sum_(x lt.eq z lt.eq y) A ( x \, z ) delta ( z \, y ) = A ( x \, y ) $
+设单位元函数为 $delta ( x \, y )$。 对于任意函数 $A$，必须满足 $A \* delta = A$。 即：
+
+$ sum_(x lt.eq z lt.eq y) A ( x \, z ) delta ( z \, y ) = A ( x \, y ) $
 
 观察这个等式： 1. #strong[当 $x = y$ 时];： 式子变为 $A ( x \, x ) delta ( x \, x ) = A ( x \, x )$。 为了对任意 $A$ 成立，必须有 #strong[$delta ( x \, x ) = 1$];。
 
 #block[
 #set enum(numbering: "1.", start: 2)
-+ #strong[当 $x < y$ 时];： 式子展开为 $A ( x \, x ) delta ( x \, y ) + dots.h + A ( x \, y ) delta ( y \, y ) = A ( x \, y )$。 我们在上一步已经确定了 $delta ( y \, y ) = 1$，所以式子最后那一项 $A ( x \, y ) delta ( y \, y )$ 已经等于等号右边的 $A ( x \, y )$ 了。 这意味着，前面所有的项加起来必须等于 0： $ A ( x \, x ) delta ( x \, y ) + A ( x \, x' ) delta ( x' \, y ) + dots.h = 0 $ 为了让它对任意 $A$ 都恒成立（无论 $A$ 取什么值），必须要求所有系数 #strong[$delta ( z \, y ) = 0$];（其中 $z < y$）。
++ #strong[当 $x < y$ 时];： 式子展开为 $A ( x \, x ) delta ( x \, y ) + dots.h + A ( x \, y ) delta ( y \, y ) = A ( x \, y )$。 我们在上一步已经确定了 $delta ( y \, y ) = 1$，所以式子最后那一项 $A ( x \, y ) delta ( y \, y )$ 已经等于等号右边的 $A ( x \, y )$ 了。 这意味着，前面所有的项加起来必须等于 0：
+
+  $ A ( x \, x ) delta ( x \, y ) + A ( x \, x' ) delta ( x' \, y ) + dots.h = 0 $
+
+  为了让它对任意 $A$ 都恒成立（无论 $A$ 取什么值），必须要求所有系数 #strong[$delta ( z \, y ) = 0$];（其中 $z < y$）。
 ]
 
-#strong[结论 1];：要在这种卷积下保持不变，必须使用函数： $ delta ( x \, y ) = \[ x = y \] = cases(delim: "{", 1 & x = y, 0 & x eq.not y) $
+#strong[结论 1];：要在这种卷积下保持不变，必须使用函数：
+
+$ delta ( x \, y ) = \[ x = y \] = cases(delim: "{", 1 & x = y, 0 & x eq.not y) $
 
 #strong[形式化已知条件]
 
-已知条件是 $g ( y ) = sum_(x lt.eq y) f ( x )$。 引入常函数 $zeta ( x \, y ) = 1$ （当 $x lt.eq y$ 时）。 原式可以写成卷积形式（视 $f \, g$ 为向量，$A \, B$ 为矩阵）： $ g ( y ) = sum_(x lt.eq y) f ( x ) zeta ( x \, y ) $ 在代数层面上，这等价于： $ g = f \* zeta $
+已知条件是 $g ( y ) = sum_(x lt.eq y) f ( x )$。 引入常函数 $zeta ( x \, y ) = 1$ （当 $x lt.eq y$ 时）。 原式可以写成卷积形式（视 $f \, g$ 为向量，$A \, B$ 为矩阵）：
+
+$ g ( y ) = sum_(x lt.eq y) f ( x ) zeta ( x \, y ) $
+
+在代数层面上，这等价于：
+
+$ g = f \* zeta $
 
 #strong[推导 $mu$]
 
-我们的目标是求 $f$。 既然 $g = f \* zeta$，我们在两边同乘一个 $zeta$ 的逆元（记作 $mu$）： $ g \* mu = ( f \* zeta ) \* mu $ 利用结合律： $ g \* mu = f \* ( zeta \* mu ) $ 为了消掉 $zeta$，我们要求 $mu$ 满足： $ zeta \* mu = delta $ 这样就有： $ g \* mu = f \* delta = f $ 即 #strong[$f ( y ) = sum_(x lt.eq y) g ( x ) mu ( x \, y )$];。
+我们的目标是求 $f$。 既然 $g = f \* zeta$，我们在两边同乘一个 $zeta$ 的逆元（记作 $mu$）：
+
+$ g \* mu = ( f \* zeta ) \* mu $
+
+利用结合律：
+
+$ g \* mu = f \* ( zeta \* mu ) $
+
+为了消掉 $zeta$，我们要求 $mu$ 满足：
+
+$ zeta \* mu = delta $
+
+这样就有：
+
+$ g \* mu = f \* delta = f $
+
+即 #strong[$f ( y ) = sum_(x lt.eq y) g ( x ) mu ( x \, y )$];。
 
 现在的问题核心变成了：#strong[如何找到这个 $mu$，使得 $zeta \* mu = delta$？]
 
-根据 $zeta \* mu = delta$ 的定义，展开卷积公式： $ sum_(x lt.eq z lt.eq y) zeta ( x \, z ) mu ( z \, y ) = delta ( x \, y ) $
+根据 $zeta \* mu = delta$ 的定义，展开卷积公式：
 
-因为对于 $x lt.eq z$，$zeta ( x \, z )$ 恒等于 1，所以式子简化为： $ sum_(x lt.eq z lt.eq y) mu ( z \, y ) = delta ( x \, y ) $
+$ sum_(x lt.eq z lt.eq y) zeta ( x \, z ) mu ( z \, y ) = delta ( x \, y ) $
 
-这也是 $mu$ 定义里是 $mu ( x \, z )$ 还是 $mu ( z \, y )$ 的区别。由于左逆元等于右逆元（因为我们定义的卷积的形式），我们通常习惯计算 $mu \* zeta = delta$，即： $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) zeta ( z \, y ) = delta ( x \, y ) $ 简化后（因为 $zeta ( z \, y ) = 1$）： $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = delta ( x \, y ) $
+因为对于 $x lt.eq z$，$zeta ( x \, z )$ 恒等于 1，所以式子简化为：
+
+$ sum_(x lt.eq z lt.eq y) mu ( z \, y ) = delta ( x \, y ) $
+
+这也是 $mu$ 定义里是 $mu ( x \, z )$ 还是 $mu ( z \, y )$ 的区别。由于左逆元等于右逆元（因为我们定义的卷积的形式），我们通常习惯计算 $mu \* zeta = delta$，即：
+
+$ sum_(x lt.eq z lt.eq y) mu ( x \, z ) zeta ( z \, y ) = delta ( x \, y ) $
+
+简化后（因为 $zeta ( z \, y ) = 1$）：
+
+$ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = delta ( x \, y ) $
 
 我们对区间 $\[ x \, y \]$ 的大小进行分类讨论：
 
-+ #strong[当 $x = y$ 时（区间长度为1）：] $ mu ( x \, x ) = delta ( x \, x ) $ #strong[$mu ( x \, x ) = 1$]
++ #strong[当 $x = y$ 时（区间长度为1）：]
 
-+ #strong[当 $x < y$ 时（区间长度大于1）：] $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = delta ( x \, y ) $ 因为 $x eq.not y$，所以 $delta ( x \, y ) = 0$。 $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = 0 $ 我们将末项（$z = y$ 的项）分离出来： $ (sum_(x lt.eq z < y) mu ( x \, z )) + mu ( x \, y ) = 0 $ 移项得到 $mu ( x \, y )$ 的递推式： #strong[$ mu ( x \, y ) = - sum_(x lt.eq z < y) mu ( x \, z ) $] $Q . E . D$
+  $ mu ( x \, x ) = delta ( x \, x ) $
 
-====== 1.2 从矩阵视角看待这个反演
+  #strong[$mu ( x \, x ) = 1$]
+
++ #strong[当 $x < y$ 时（区间长度大于1）：]
+
+  $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = delta ( x \, y ) $
+
+  因为 $x eq.not y$，所以 $delta ( x \, y ) = 0$。
+
+  $ sum_(x lt.eq z lt.eq y) mu ( x \, z ) = 0 $
+
+  我们将末项（$z = y$ 的项）分离出来：
+
+  $ (sum_(x lt.eq z < y) mu ( x \, z )) + mu ( x \, y ) = 0 $
+
+  移项得到 $mu ( x \, y )$ 的递推式：
+
+  $ mu ( x \, y ) = - sum_(x lt.eq z < y) mu ( x \, z ) $
+
+$Q . E . D$
+
+==== 1.2 从矩阵视角看待这个反演
 <从矩阵视角看待这个反演>
-所有的反演公式，都可以抽象为两个数列（或函数） $f$ 和 $g$ 之间的线性关系： $ g ( y ) = sum_(x prec.curly.eq y) zeta ( x \, y ) f ( x ) $ 这写成矩阵形式就是： $ upright(bold(g)) = upright(bold(Z)) times upright(bold(f)) $其中 $upright(bold(Z))$ 是一个变换矩阵。 所谓的“反演”，就是求逆矩阵 $upright(bold(M)) = upright(bold(Z))^(- 1)$：$ upright(bold(f)) = upright(bold(Z))^(- 1) times upright(bold(g)) = upright(bold(M)) times upright(bold(g)) $ 对应的形式就是 $ f ( x ) = sum_(y prec.curly.eq x) mu ( y \, x ) g ( y ) $
+所有的反演公式，都可以抽象为两个数列（或函数） $f$ 和 $g$ 之间的线性关系：
 
-====== 1.3. 通用反演定理
+$ g ( y ) = sum_(x prec.curly.eq y) zeta ( x \, y ) f ( x ) $
+
+这写成矩阵形式就是：
+
+$ upright(bold(g)) = upright(bold(Z)) times upright(bold(f)) $
+
+其中 $upright(bold(Z))$ 是一个变换矩阵。 所谓的“反演”，就是求逆矩阵 $upright(bold(M)) = upright(bold(Z))^(- 1)$：
+
+$ upright(bold(f)) = upright(bold(Z))^(- 1) times upright(bold(g)) = upright(bold(M)) times upright(bold(g)) $
+
+对应的形式就是
+
+$ f ( x ) = sum_(y prec.curly.eq x) mu ( y \, x ) g ( y ) $
+
+==== 1.3. 通用反演定理
 <通用反演定理>
 于是我们得到了这个很好看的式子
 
@@ -857,15 +1168,15 @@ $ g ( x ) = sum_(y lt.eq x) zeta ( y \, x ) f ( y ) $
 
 $ f ( x ) = sum_(y lt.eq x) mu ( y \, x ) g ( y ) $
 
-====== 1.4. 这暗示我们啥东西？
+==== 1.4. 这暗示我们啥东西？
 <这暗示我们啥东西>
 我们通过定义一个矩阵乘法状物的卷积，把所有在偏序集上的反演公式都统一了起来。
 
 其中 $zeta \* mu = delta$ 是一个核心方程，$mu$ 是 $zeta$ 的逆元。
 
-===== 容斥原理与子集/超集反演
+=== 容斥原理与子集/超集反演
 <容斥原理与子集超集反演>
-====== 2.1 容斥原理及其补集形式
+==== 2.1 容斥原理及其补集形式
 <容斥原理及其补集形式>
 有一个集合的集合 $A = { S_i }$ ，那么：
 
@@ -883,43 +1194,59 @@ $ lr(|sect.big_(i = 1)^n S_i|) = \| U \| - lr(|union.big_(i = 1)^n overline(S_i)
 其实画个venn图就能看出来
 ]
 
-====== 2.2 子集/超集反演
+==== 2.2 子集/超集反演
 <子集超集反演>
 $ f ( S ) = sum_(T subset.eq S) g ( T ) arrow.l.r.double g ( S ) = sum_(T subset.eq S) ( - 1 )^(\| S \| - \| T \|) f ( T ) $
 
 $ f ( S ) = sum_(S subset.eq T) g ( T ) arrow.l.r.double g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $
 
-证明： #strong[引理] $mu$ 具有积性，具体来说，若偏序集 $P = P_1 times P_2$，则 $mu_P ( ( x_1 \, x_2 ) \, ( y_1 \, y_2 ) ) = mu_(P_1) ( x_1 \, y_1 ) dot.op mu_(P_2) ( x_2 \, y_2 )$。
+证明：
+
+#strong[引理] $mu$ 具有积性，具体来说，若偏序集 $P = P_1 times P_2$，则 $mu_P ( ( x_1 \, x_2 ) \, ( y_1 \, y_2 ) ) = mu_(P_1) ( x_1 \, y_1 ) dot.op mu_(P_2) ( x_2 \, y_2 )$。
 
 证：$mu$ 函数的唯一定义特征是： 对于任意区间 $\[ S t a r t \, E n d \]$，所有子元素的 $mu$ 值之和必须等于1 （当 $S t a r t = E n d$ 时） 值之和必须等于 0 （当 $S t a r t < E n d$ 时） 只要能证明 $mu_P ( x ) dot.op mu_Q ( y )$ 满足这个特征，那它就是 $mu_(P times Q)$。
 
-设 $S = ( x_1 \, y_1 )$ 是起点，$E = ( x_2 \, y_2 )$ 是终点。我们需要计算区间 $\[ S \, E \]$ 里所有元素的“分量 $mu$ 乘积”之和：$ upright("Sum") = sum_(S lt.eq ( u \, v ) lt.eq E) mu_P ( x_1 \, u ) dot.op mu_Q ( y_1 \, v ) $
+设 $S = ( x_1 \, y_1 )$ 是起点，$E = ( x_2 \, y_2 )$ 是终点。我们需要计算区间 $\[ S \, E \]$ 里所有元素的“分量 $mu$ 乘积”之和：
 
-因为积偏序集中，$u$ 和 $v$ 的选取是独立的（$x_1 lt.eq u lt.eq x_2$ 且 $y_1 lt.eq v lt.eq y_2$），我们可以把双重求和拆成两个括号相乘：$ upright("Sum") = (sum_(x_1 lt.eq u lt.eq x_2) mu_P ( x_1 \, u )) times (sum_(y_1 lt.eq v lt.eq y_2) mu_Q ( y_1 \, v )) $
+$ upright("Sum") = sum_(S lt.eq ( u \, v ) lt.eq E) mu_P ( x_1 \, u ) dot.op mu_Q ( y_1 \, v ) $
+
+因为积偏序集中，$u$ 和 $v$ 的选取是独立的（$x_1 lt.eq u lt.eq x_2$ 且 $y_1 lt.eq v lt.eq y_2$），我们可以把双重求和拆成两个括号相乘：
+
+$ upright("Sum") = (sum_(x_1 lt.eq u lt.eq x_2) mu_P ( x_1 \, u )) times (sum_(y_1 lt.eq v lt.eq y_2) mu_Q ( y_1 \, v )) $
 
 根据 $mu$ 的定义，括号里的求和结果只能是 $1$ 或 $0$： 左括号 $= delta ( x_1 \, x_2 )$ （只有 $x_1 = x_2$ 时是 1，否则是 0） 右括号 $= delta ( y_1 \, y_2 )$ （只有 $y_1 = y_2$ 时是 1，否则是 0）
 
-情况 A：起点 = 终点即 $x_1 = x_2$ 且 $y_1 = y_2$。此时 $upright("Sum") = 1 times 1 = 1$。 $arrow.r.double.long$ 满足定义！ 情况 B：起点 \< 终点这意味着 $x$ 和 $y$ 中至少有一个不等（例如 $x_1 < x_2$）。那么对应的那个括号求和就是 $0$。$ upright("Sum") = 0 times ( dots.h ) = 0 quad upright("或") quad ( dots.h ) times 0 = 0 $ \$$arrow.r.double.long$ 满足定义！
+情况 A：起点 = 终点即 $x_1 = x_2$ 且 $y_1 = y_2$。此时 $upright("Sum") = 1 times 1 = 1$。 $arrow.r.double.long$ 满足定义！
+
+情况 B：起点 \< 终点这意味着 $x$ 和 $y$ 中至少有一个不等（例如 $x_1 < x_2$）。那么对应的那个括号求和就是 $0$。
+
+$ upright("Sum") = 0 times ( dots.h ) = 0 quad upright("或") quad ( dots.h ) times 0 = 0 $
+
+$arrow.r.double.long$ 满足定义！
 
 $Q . E . D$
 
-布尔格（所有子集构成的格）同构于 $k$ 个 链（Chain） $L_2 = { 0 \, 1 }$ 的直积。 即：$cal(P) ( { 1 \, dots.h \, k } ) tilde.equiv L_2 times L_2 times dots.h times L_2$。（每个元素选或不选对应 0 或 1）。 Möbius 函数具有积性：若偏序集 $P = P_1 times P_2$，则 $mu_P ( ( x_1 \, x_2 ) \, ( y_1 \, y_2 ) ) = mu_(P_1) ( x_1 \, y_1 ) dot.op mu_(P_2) ( x_2 \, y_2 )$。 对于单个链 $0 lt.eq 1$：$mu ( 0 \, 0 ) = 1$ $mu ( 0 \, 1 ) = - 1$ （因为 $mu ( 0 \, 0 ) + mu ( 0 \, 1 ) = 0$） 对于集合 $A subset.eq B$，设 $\| B \| - \| A \| = k$。这相当于在 $k$ 个维度上从 $0$ 变到了 $1$，而在其他维度上保持不变。因此：$ mu ( A \, B ) = underbrace(( - 1 ) times ( - 1 ) times dots.h times ( - 1 ), k upright(" 次")) = ( - 1 )^k $
+布尔格（所有子集构成的格）同构于 $k$ 个 链（Chain） $L_2 = { 0 \, 1 }$ 的直积。 即：$cal(P) ( { 1 \, dots.h \, k } ) tilde.equiv L_2 times L_2 times dots.h times L_2$。（每个元素选或不选对应 0 或 1）。 Möbius 函数具有积性：若偏序集 $P = P_1 times P_2$，则 $mu_P ( ( x_1 \, x_2 ) \, ( y_1 \, y_2 ) ) = mu_(P_1) ( x_1 \, y_1 ) dot.op mu_(P_2) ( x_2 \, y_2 )$。 对于单个链 $0 lt.eq 1$：$mu ( 0 \, 0 ) = 1$ $mu ( 0 \, 1 ) = - 1$ （因为 $mu ( 0 \, 0 ) + mu ( 0 \, 1 ) = 0$）
+
+对于集合 $A subset.eq B$，设 $\| B \| - \| A \| = k$。这相当于在 $k$ 个维度上从 $0$ 变到了 $1$，而在其他维度上保持不变。因此：
+
+$ mu ( A \, B ) = underbrace(( - 1 ) times ( - 1 ) times dots.h times ( - 1 ), k upright(" 次")) = ( - 1 )^k $
 
 #quote(block: true)[
 超集反演同理，证明留作作业
 ]
 
-===== 二项式反演 (Binomial Inversion)
+=== 二项式反演 (Binomial Inversion)
 <二项式反演-binomial-inversion>
 二项式反演是集合包含偏序集（即布尔格）上的反演在计数问题中的投影。它处理的是“恰好满足 $k$ 个性质”与“至少满足 $k$ 个性质”之间的转换。
 
-====== 3.1 形式一（对称形式）
+==== 3.1 形式一（对称形式）
 <形式一对称形式>
 这是最对称的一种形式，常用于证明其他等式。
 
 $ f ( n ) = sum_(i = 0)^n ( - 1 )^i binom(n, i) g ( i ) arrow.l.r.double g ( n ) = sum_(i = 0)^n ( - 1 )^i binom(n, i) f ( i ) $
 
-====== 3.2 形式二（常用形式/多退少补）
+==== 3.2 形式二（常用形式/多退少补）
 <形式二常用形式多退少补>
 通常 $f ( i )$ 表示“钦定选 $i$ 个满足性质，其余随意的方案数”，$g ( i )$ 表示“恰好 $i$ 个满足性质的方案数”。
 
@@ -927,8 +1254,7 @@ $ f ( n ) = sum_(i = 0)^n binom(n, i) g ( i ) arrow.l.r.double g ( n ) = sum_(i 
 
 + 恰好 → 至多型
 
-设 g(m) 代表 #strong[恰好] 满足条件 (= m) 的方案数（即答案） \
-设 f(m) 代表 #strong[至多] 满足条件 (≤ m) 的方案数
+设 g(m) 代表 #strong[恰好] 满足条件 (= m) 的方案数（即答案） 设 f(m) 代表 #strong[至多] 满足条件 (≤ m) 的方案数
 
 先求出 f(m)，再反演求 g(m)
 
@@ -939,16 +1265,25 @@ $ f ( m ) = sum_(i = 0)^m binom(m, i) g ( i ) quad arrow.r.double quad g ( m ) =
 + 恰好 → 至少型
 ]
 
-设 g(m) 代表 #strong[恰好] 满足条件 (= m) 的方案数（即答案） \
-设 f(m) 代表 #strong[至少] 满足条件 (≥ m) 的方案数
+设 g(m) 代表 #strong[恰好] 满足条件 (= m) 的方案数（即答案） 设 f(m) 代表 #strong[至少] 满足条件 (≥ m) 的方案数
 
-先求出 f(m)，再反演求 g(m) $ f ( m ) = sum_(i = m)^n binom(i, m) g ( i ) quad arrow.r.double quad g ( m ) = sum_(i = m)^n ( - 1 )^(i - m) binom(i, m) f ( i ) $
+先求出 f(m)，再反演求 g(m)
+
+$ f ( m ) = sum_(i = m)^n binom(i, m) g ( i ) quad arrow.r.double quad g ( m ) = sum_(i = m)^n ( - 1 )^(i - m) binom(i, m) f ( i ) $
 
 我们证明一下形式二：
 
-直接套用子集反演公式： $ f ( n ) = sum_(i = 0)^n binom(n, i) g ( i ) arrow.l.r.double f ( S ) = sum_(T subset.eq S) g ( T ) $ $ g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $ 我们只关心大小，所以把大小为i的集合合并 $ g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) binom(n, i) f ( i ) $
+直接套用子集反演公式：
 
-===== 莫比乌斯反演
+$ f ( n ) = sum_(i = 0)^n binom(n, i) g ( i ) arrow.l.r.double f ( S ) = sum_(T subset.eq S) g ( T ) $
+
+$ g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $
+
+我们只关心大小，所以把大小为i的集合合并
+
+$ g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) binom(n, i) f ( i ) $
+
+=== 莫比乌斯反演
 <莫比乌斯反演>
 $ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d ) f (n / d) $
 
@@ -958,7 +1293,7 @@ $ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d 
 
 此时，我们需要证明：#strong[关联代数 $I ( D )$ 可以退化为狄利克雷代数。]
 
-====== 核心引理：区间的结构同构
+==== 核心引理：区间的结构同构
 <核心引理区间的结构同构>
 #strong[命题];：对于任意 $d divides n$，偏序区间 $\[ d \, n \]$ 与区间 $\[ 1 \, n \/ d \]$ 是#strong[序同构];的。
 
@@ -970,7 +1305,16 @@ $ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d 
 其实就是两个偏序集的dag相同
 ]
 
-#strong[证明];： 1. 定义映射 $phi.alt : \[ d \, n \] arrow.r \[ 1 \, n \/ d \]$，法则为 $phi.alt ( z ) = z \/ d$。 2. #strong[双射性];： \* 若 $z in \[ d \, n \]$，则 $d divides z divides n$，故 $1 divides ( z \/ d ) divides ( n \/ d )$，即 $phi.alt ( z ) in \[ 1 \, n \/ d \]$。显然这是可逆的。 3. #strong[保序性];： \* 对于任意 $a \, b in \[ d \, n \]$，我们需要证明 $a divides b arrow.l.r.double phi.alt ( a ) divides phi.alt ( b )$。 \* 根据整除定义：$a divides b arrow.l.r.double exists k in bb(Z) \, b = a k$。 \* 等式两边同除以 $d$：$b \/ d = ( a \/ d ) k arrow.l.r.double phi.alt ( b ) = phi.alt ( a ) k$。 \* 这等价于 $phi.alt ( a ) divides phi.alt ( b )$。
+#strong[证明];：
+
++ 定义映射 $phi.alt : \[ d \, n \] arrow.r \[ 1 \, n \/ d \]$，法则为 $phi.alt ( z ) = z \/ d$。
++ #strong[双射性];：
+  - 若 $z in \[ d \, n \]$，则 $d divides z divides n$，故 $1 divides ( z \/ d ) divides ( n \/ d )$，即 $phi.alt ( z ) in \[ 1 \, n \/ d \]$。显然这是可逆的。
++ #strong[保序性];：
+  - 对于任意 $a \, b in \[ d \, n \]$，我们需要证明 $a divides b arrow.l.r.double phi.alt ( a ) divides phi.alt ( b )$。
+  - 根据整除定义：$a divides b arrow.l.r.double exists k in bb(Z) \, b = a k$。
+  - 等式两边同除以 $d$：$b \/ d = ( a \/ d ) k arrow.l.r.double phi.alt ( b ) = phi.alt ( a ) k$。
+  - 这等价于 $phi.alt ( a ) divides phi.alt ( b )$。
 
 #strong[结论];：区间 $\[ d \, n \]$ 的偏序结构完全等同于 $\[ 1 \, n \/ d \]$。
 
@@ -978,34 +1322,57 @@ $ f ( n ) = sum_(d \| n) g ( d ) arrow.l.r.double g ( n ) = sum_(d \| n) mu ( d 
 
 由核心引理可知，区间 $\[ d \, n \]$ 的结构仅依赖于商 $n \/ d$。 因此，我们可以定义#strong[约化函数];。
 
-对于关联代数中的任意函数 $h ( x \, y )$，若其满足 $h ( x \, y ) = h ( k x \, k y )$（即具有平移不变性），我们可以定义对应的一元算术函数 $tilde(h)$： $ tilde(h) ( k ) equiv h ( 1 \, k ) $ 从而有： $ h ( d \, n ) = tilde(h) (n / d) $
+对于关联代数中的任意函数 $h ( x \, y )$，若其满足 $h ( x \, y ) = h ( k x \, k y )$（即具有平移不变性），我们可以定义对应的一元算术函数 $tilde(h)$：
 
-#strong[检查 $zeta$ 和 $mu$ 是否符合此条件：] 1. #strong[Zeta];: $zeta ( d \, n ) = 1 arrow.l.r.double d divides n$。 $zeta ( 1 \, n \/ d ) = 1 arrow.l.r.double 1 divides ( n \/ d )$。 显然恒成立，故 $zeta ( d \, n ) = tilde(zeta) ( n \/ d ) = 1$。 这里 $tilde(zeta)$ 就是数论中的常数函数 $upright(bold(1)) ( n ) = 1$。
+$ tilde(h) ( k ) equiv h ( 1 \, k ) $
 
-#block[
-#set enum(numbering: "1.", start: 2)
+从而有：
+
+$ h ( d \, n ) = tilde(h) (n / d) $
+
+#strong[检查 $zeta$ 和 $mu$ 是否符合此条件：]
+
++ #strong[Zeta];: $zeta ( d \, n ) = 1 arrow.l.r.double d divides n$。 $zeta ( 1 \, n \/ d ) = 1 arrow.l.r.double 1 divides ( n \/ d )$。 显然恒成立，故 $zeta ( d \, n ) = tilde(zeta) ( n \/ d ) = 1$。 这里 $tilde(zeta)$ 就是数论中的常数函数 $upright(bold(1)) ( n ) = 1$。
+
 + #strong[Mu];: 由于 $mu$ 是 $zeta$ 的逆元，且 $zeta$ 具有平移不变性，由代数性质可知 $mu$ 也必然继承此性质（同构区间的逆元结构也相同）。 定义数论莫比乌斯函数 $mu_(N T) ( k ) = mu ( 1 \, k )$。 则 $mu ( d \, n ) = mu_(N T) ( n \/ d )$。
-]
 
 现在我们将广义反演公式代入整除格环境。
 
-#strong[广义形式];： $ f ( n ) = sum_(d divides n) g ( d ) mu ( d \, n ) $ #emph[(注：这里 $d lt.eq n$ 即 $d divides n$)]
+#strong[广义形式];：
 
-#strong[代入降维后的 $mu$];： $ f ( n ) = sum_(d divides n) g ( d ) mu_(N T) (n / d) $
+$ f ( n ) = sum_(d divides n) g ( d ) mu ( d \, n ) $
 
-为了验证这个 $mu_(N T)$ 确实是我们熟知的那个函数，我们检查它的一元卷积性质。 在广义代数中：$mu \* zeta = delta$。 对应的一元卷积（狄利克雷卷积）为： $ ( tilde(mu) \* tilde(zeta) ) ( n ) = sum_(d divides n) tilde(mu) ( d ) tilde(zeta) (n / d) = sum_(d divides n) mu_(N T) ( d ) dot.op 1 $
+#emph[(注：这里 $d lt.eq n$ 即 $d divides n$)]
 
-而在广义代数中，$delta ( x \, y )$ 降维后对应单位函数 $epsilon.alt ( n ) = \[ n = 1 \]$。 \>为啥？此时$d = n$,$n \/ d = 1$
+#strong[代入降维后的 $mu$];：
 
-因此： $ sum_(d divides n) mu_(N T) ( d ) = \[ n = 1 \] $
+$ f ( n ) = sum_(d divides n) g ( d ) mu_(N T) (n / d) $
+
+为了验证这个 $mu_(N T)$ 确实是我们熟知的那个函数，我们检查它的一元卷积性质。 在广义代数中：$mu \* zeta = delta$。 对应的一元卷积（狄利克雷卷积）为：
+
+$ ( tilde(mu) \* tilde(zeta) ) ( n ) = sum_(d divides n) tilde(mu) ( d ) tilde(zeta) (n / d) = sum_(d divides n) mu_(N T) ( d ) dot.op 1 $
+
+而在广义代数中，$delta ( x \, y )$ 降维后对应单位函数 $epsilon.alt ( n ) = \[ n = 1 \]$。
+
+#quote(block: true)[
+为啥？此时$d = n$,$n \/ d = 1$
+]
+
+因此：
+
+$ sum_(d divides n) mu_(N T) ( d ) = \[ n = 1 \] $
 
 这正是数论中莫比乌斯函数的#strong[定义式];。
 
-====== 最终结论
+==== 最终结论
 <最终结论>
-通过#strong[整除格区间 $\[ d \, n \] tilde.equiv \[ 1 \, n \/ d \]$ 的序同构];，我们将定义在 $I ( D )$ 上的广义莫比乌斯反演： $ f ( n ) = sum_(d divides n) g ( d ) mu ( d \, n ) $
+通过#strong[整除格区间 $\[ d \, n \] tilde.equiv \[ 1 \, n \/ d \]$ 的序同构];，我们将定义在 $I ( D )$ 上的广义莫比乌斯反演：
 
-严格推导为数论形式： $ f ( n ) = sum_(d divides n) g ( d ) mu_(N T) (n / d) $
+$ f ( n ) = sum_(d divides n) g ( d ) mu ( d \, n ) $
+
+严格推导为数论形式：
+
+$ f ( n ) = sum_(d divides n) g ( d ) mu_(N T) (n / d) $
 
 证毕。
 
@@ -1015,17 +1382,17 @@ $ sum_(d \| n) phi ( d ) = n $
 
 $ sum_(d \| n) mu ( d ) = \[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1) $
 
-把$n$换成$g c d ( a \, b )$
+把 $n$ 换成 $gcd ( a \, b )$
 
 $ sum_(d \| g c d ( a \, b )) mu ( d ) = \[ g c d ( a \, b ) = 1 \] cases(delim: "{", 1 & g c d ( a \, b ) = 1, 0 & g c d ( a \, b ) > 1) $
 
 初等证明前已述及
 
-===== Min-Max 容斥
+=== Min-Max 容斥
 <min-max-容斥>
 Min-Max 容斥用于将“全集中最大值（最后出现）的问题”转化为“子集中最小值（最先出现）的问题”。在概率期望中，$min$ 通常比 $max$ 好算得多。
 
-====== 公式
+==== 公式
 <公式>
 对于全序集合 $S$ 和其上的值 ${ x_i }$：
 
@@ -1042,15 +1409,17 @@ $ E ( min_(i in S) zws_k x_i ) = sum_(T subset.eq S) ( - 1 )^(\| T \| - k) binom
 由期望线性性可知。
 
 #quote(block: true)[
-期望的线性性告诉我们：和的期望等于期望的和。 即 $E \[ sum c_i dot.op V_i \] = sum c_i dot.op E \[ V_i \]$，无论这些随机变量 $V_i$ 之间是否独立。 $ E \[ Y \] & = E [sum_(T subset.eq S) a ( \| T \| ) dot.op Z_T]\
- & = sum_(T subset.eq S) a ( \| T \| ) dot.op E \[ Z_T \] quad ( upright("常数提出，求和拆开") ) $
+期望的线性性告诉我们：和的期望等于期望的和。 即 $E \[ sum c_i dot.op V_i \] = sum c_i dot.op E \[ V_i \]$，无论这些随机变量 $V_i$ 之间是否独立。
 ]
+
+$ E \[ Y \] & = E [sum_(T subset.eq S) a ( \| T \| ) dot.op Z_T]\
+ & = sum_(T subset.eq S) a ( \| T \| ) dot.op E \[ Z_T \] quad ( upright("常数提出，求和拆开") ) $
 
 特殊情况 ($k = 1$, 最大值):
 
 $ max ( S ) = sum_(T subset.eq S \, T eq.not nothing) ( - 1 )^(\| T \| - 1) min ( T ) $
 
-====== 初等证明
+==== 初等证明
 <初等证明>
 我们需要构造一个关于集合大小的系数函数 $a ( \| T \| )$，使得等式成立：
 
@@ -1106,7 +1475,7 @@ max和min在全序上是对称的,所以第二个式子就不证了
 从广义莫反证明min-max容斥是有点难度的，留作读者证明
 ]
 
-===== 斯特林反演
+=== 斯特林反演
 <斯特林反演>
 斯特林反演揭示了普通幂与下降幂/上升幂之间的基底变换关系。
 
@@ -1118,7 +1487,7 @@ max和min在全序上是对称的,所以第二个式子就不证了
 
 $ f ( n ) = sum_(i = 0)^n mat(delim: "{", n; i) g ( i ) arrow.l.r.double g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) mat(delim: "[", n; i) f ( i ) $
 
-====== 前置知识
+==== 前置知识
 <前置知识>
 #strong[上升幂和下降幂]
 
@@ -1156,20 +1525,46 @@ $ x^(underline(n + 1)) & = ( x - n ) x^(underline(n))\
 
 $ x^n = sum_(i = 0)^n mat(delim: "{", n; i) x^(underline(i)) quad $
 
-证明：考虑组合意义 假设我们有：$n$ 个不同的球（标号 $1 \, 2 \, dots.h \, n$）$x$ 个不同的盒子（标号 $1 \, 2 \, dots.h \, x$） 我们要计算：把这 $n$ 个球任意放入这 $x$ 个盒子中，允许盒子为空，一共有多少种方案？ 左边 对于每一个球，我们都可以从 $x$ 个盒子中任选一个放入。所以总方案数为 $x^n$。 右边 假设最后放完球后，恰好有 $i$ 个盒子 里有球（即非空盒子数为 $i$） 1.选出这 $i$ 个盒子我们在 $x$ 个不同的盒子中，选出 $i$ 个将被使用的盒子。方案数为组合数：$binom(x, i)$ 2.把 $n$ 个球分给这 $i$ 个盒子（暂时不区分盒子的顺序） 这相当于把 $n$ 个不同的元素，划分成 $i$ 个非空的集合（堆）。 这正是第二类斯特林数 $mat(delim: "{", n; i)$ 的定义！ 3.把这 $i$ 堆球放入刚才选好的 $i$ 个盒子里因为盒子是不同的，我们需要决定哪一堆球放进哪一个盒子。这相当于 $i$ 个元素的全排列。方案数为：$i !$ 方案总数为： $ med binom(x, i) times mat(delim: "{", n; i) times i ! = mat(delim: "{", n; i) x^(underline(i)) $
+证明：考虑组合意义 假设我们有：$n$ 个不同的球（标号 $1 \, 2 \, dots.h \, n$）$x$ 个不同的盒子（标号 $1 \, 2 \, dots.h \, x$） 我们要计算：把这 $n$ 个球任意放入这 $x$ 个盒子中，允许盒子为空，一共有多少种方案？ 左边 对于每一个球，我们都可以从 $x$ 个盒子中任选一个放入。所以总方案数为 $x^n$。 右边 假设最后放完球后，恰好有 $i$ 个盒子 里有球（即非空盒子数为 $i$） 1.选出这 $i$ 个盒子我们在 $x$ 个不同的盒子中，选出 $i$ 个将被使用的盒子。方案数为组合数：$binom(x, i)$ 2.把 $n$ 个球分给这 $i$ 个盒子（暂时不区分盒子的顺序） 这相当于把 $n$ 个不同的元素，划分成 $i$ 个非空的集合（堆）。 这正是第二类斯特林数 $mat(delim: "{", n; i)$ 的定义！ 3.把这 $i$ 堆球放入刚才选好的 $i$ 个盒子里因为盒子是不同的，我们需要决定哪一堆球放进哪一个盒子。这相当于 $i$ 个元素的全排列。方案数为：$i !$ 方案总数为：
+
+$ med binom(x, i) times mat(delim: "{", n; i) times i ! = mat(delim: "{", n; i) x^(underline(i)) $
 
 普通幂转上升幂
 
 $ x^n = sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^(n - i) x^(overline(i)) $
 
-我们会发现一个关于负数的重要性质： $ ( - x )^(underline(n)) = ( - 1 )^n x^(overline(n)) $ 推导引理： $ ( - x )^(underline(n)) & = ( - x ) ( - x - 1 ) ( - x - 2 ) dots.h ( - x - n + 1 )\
+我们会发现一个关于负数的重要性质：
+
+$ ( - x )^(underline(n)) = ( - 1 )^n x^(overline(n)) $
+
+推导引理：
+
+$ ( - x )^(underline(n)) & = ( - x ) ( - x - 1 ) ( - x - 2 ) dots.h ( - x - n + 1 )\
  & = [( - 1 ) ( x )] dot.op [( - 1 ) ( x + 1 )] dot.op [( - 1 ) ( x + 2 )] dots.h [( - 1 ) ( x + n - 1 )]\
  & = ( - 1 )^n dot.op underbrace(x ( x + 1 ) ( x + 2 ) dots.h ( x + n - 1 ), x^(overline(n)))\
  & = ( - 1 )^n x^(overline(n)) $
 
-我们已知普通幂转下降幂的公式： $ x^n = sum_(i = 0)^n mat(delim: "{", n; i) x^(underline(i)) $ 在这个恒等式中，将 $x$ 替换为 $- x$： $ ( - x )^n = sum_(i = 0)^n mat(delim: "{", n; i) ( - x )^(underline(i)) $ 左边展开为 $( - 1 )^n x^n$，右边利用引理代换： $ ( - 1 )^n x^n = sum_(i = 0)^n mat(delim: "{", n; i) [( - 1 )^i x^(overline(i))] $ 两边同时除以 $( - 1 )^n$（或者乘以 $( - 1 )^n$）： $ x^n & = frac(1, ( - 1 )^n) sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^i x^(overline(i))\
+我们已知普通幂转下降幂的公式：
+
+$ x^n = sum_(i = 0)^n mat(delim: "{", n; i) x^(underline(i)) $
+
+在这个恒等式中，将 $x$ 替换为 $- x$：
+
+$ ( - x )^n = sum_(i = 0)^n mat(delim: "{", n; i) ( - x )^(underline(i)) $
+
+左边展开为 $( - 1 )^n x^n$，右边利用引理代换：
+
+$ ( - 1 )^n x^n = sum_(i = 0)^n mat(delim: "{", n; i) [( - 1 )^i x^(overline(i))] $
+
+两边同时除以 $( - 1 )^n$（或者乘以 $( - 1 )^n$）：
+
+$ x^n & = frac(1, ( - 1 )^n) sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^i x^(overline(i))\
  & = sum_(i = 0)^n mat(delim: "{", n; i) frac(( - 1 )^i, ( - 1 )^n) x^(overline(i))\
- & = sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^(i - n) x^(overline(i)) $ 由于 $( - 1 )^(i - n) = ( - 1 )^(n - i)$（指数差偶数倍不影响符号），整理得： $ x^n = sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^(n - i) x^(overline(i)) $
+ & = sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^(i - n) x^(overline(i)) $
+
+由于 $( - 1 )^(i - n) = ( - 1 )^(n - i)$（指数差偶数倍不影响符号），整理得：
+
+$ x^n = sum_(i = 0)^n mat(delim: "{", n; i) ( - 1 )^(n - i) x^(overline(i)) $
 
 #strong[反转公式]
 
@@ -1181,7 +1576,9 @@ $ sum_(i = m)^n ( - 1 )^(m - i) mat(delim: "[", n; i) mat(delim: "{", i; m) = \[
 
 $ x^(underline(n)) & = sum_(i = 0)^n mat(delim: "[", n; i) ( - 1 )^(n - i) x^i\
  & = sum_(i = 0)^n mat(delim: "[", n; i) ( - 1 )^(n - i) sum_(j = 0)^i mat(delim: "{", i; j) x^(underline(j))\
- & = sum_(i = 0)^n x^(underline(i)) sum_(j = i)^n ( - 1 )^(n - j) mat(delim: "[", n; j) mat(delim: "{", j; i) $ 当 $i = n$ 时，等式右边为 $x^(underline(n))$，等式成立 当 $i < n$ 时，等式右边为 要为$0$，等式成立
+ & = sum_(i = 0)^n x^(underline(i)) sum_(j = i)^n ( - 1 )^(n - j) mat(delim: "[", n; j) mat(delim: "{", j; i) $
+
+当 $i = n$ 时，等式右边为 $x^(underline(n))$，等式成立 当 $i < n$ 时，等式右边为 要为$0$，等式成立
 
 反转公式（2）证明：
 
@@ -1205,31 +1602,55 @@ $ f ( n ) & = sum_(i = 0) \[ i = n \] f ( i )\
  & = sum_(i = 0)^n mat(delim: "{", n; i) sum_(j = 0)^i ( - 1 )^(i - j) mat(delim: "[", i; j) f ( j )\
  & = sum_(i = 0)^n mat(delim: "{", n; i) g ( i ) $
 
-====== 另一个视角
+==== 另一个视角
 <另一个视角>
 #strong[斯特林反演本质上是“集合分划格”（Partition Lattice）上的广义莫比乌斯反演。]
 
 就像： \* #strong[二项式反演] 对应 #strong[子集格（布尔格）] 上的莫比乌斯反演。 \* #strong[数论莫比乌斯反演] 对应 #strong[整除格] 上的莫比乌斯反演。 \* #strong[斯特林反演] 对应 #strong[集合分划格] 上的莫比乌斯反演。
 
-======= 1. 什么是集合分划格 $Pi_n$？
+===== 1. 什么是集合分划格 $Pi_n$？
 <什么是集合分划格-pi_n>
 我们定义一个偏序集（Poset） $P = Pi_n$。 \* #strong[元素];：集合 $S = { 1 \, 2 \, dots.h \, n }$ 的所有#strong[分划];。 \* 例如 $n = 3$，${ { 1 \, 2 } \, { 3 } }$ 就是一个分划。 \* #strong[偏序关系 $lt.eq$];： \* 对于两个分划 $sigma$ 和 $tau$，如果 $sigma$ 中的每一个块（block）都完全包含在 $tau$ 的某一个块中，我们称 $sigma lt.eq tau$（$sigma$ 比 $tau$ 更“细”，或者 $tau$ 比 $sigma$ 更“粗”）。 \* #strong[最小元 $hat(0)$];：${ { 1 } \, { 2 } \, dots.h \, { n } }$（全部分开，最细）。 \* #strong[最大元 $hat(1)$];：${ { 1 \, 2 \, dots.h \, n } }$（全部在一起，最粗）。
 
-======= 2. 这个格上的 Zeta 和 Möbius 函数
+===== 2. 这个格上的 Zeta 和 Möbius 函数
 <这个格上的-zeta-和-möbius-函数>
 在 $Pi_n$ 上定义广义莫比乌斯反演的两个核心函数：
 
 Zeta 函数 $zeta ( sigma \, tau )$ 定义为：若 $sigma lt.eq tau$，则为 $1$，否则为 $0$。 它对应着#strong[求和];操作，也就是我们熟悉的“第二类斯特林数”方向。
 
-Möbius 函数 $mu ( sigma \, tau )$ 它是 $zeta$ 的逆。在集合分划格中，$mu$ 的取值非常特殊： 对于区间 $\[ hat(0) \, hat(1) \]$（即从全分散到全聚合），有著名的定理： $ mu ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) ! $
+Möbius 函数 $mu ( sigma \, tau )$ 它是 $zeta$ 的逆。在集合分划格中，$mu$ 的取值非常特殊： 对于区间 $\[ hat(0) \, hat(1) \]$（即从全分散到全聚合），有著名的定理：
+
+$ mu ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) ! $
 
 #quote(block: true)[
-咋证？ 我们要证的目标是 $M_n = ( - 1 )^(n - 1) ( n - 1 ) !$，其中 $M_n$ 简记为 $n$ 个元素分划格最顶端的 $mu ( hat(0) \, hat(1) )$。 利用 $sum mu = 0$ 构造递推 #strong[\1. 莫比乌斯函数的定义] 对于任意 $n > 1$，分划格 $Pi_n$ 中所有元素的 $mu$ 值之和必须为 0： $ sum_(sigma in Pi_n) mu ( hat(0) \, sigma ) = 0 $ 换句话说： $ M_n = - sum_(sigma eq.not hat(1)) mu ( hat(0) \, sigma ) $ #emph[(最顶上的那一项，等于底下所有项之和的相反数)] #strong[\2. 巧妙的分组] 我们根据 #strong[“元素 $n$ 所在的块的大小”] 来对所有的分划 $sigma$ 进行归类。 设元素 $n$ 所在的块为 $B$，设 $\| B \| = i$。 $i$ 的取值范围是 $1$ 到 $n$。 选出这个块 $B$ 的方案数是 $binom(n - 1, i - 1)$（因为 $n$ 必须在里面，从剩下 $n - 1$ 个里选 $i - 1$ 个陪它）。 #strong[\3. 结构的乘积] 对于一个固定的块 $B$（大小为 $i$），剩下的 $n - i$ 个元素组成了某种分划 $tau$。 因为块之间互不干扰，$mu$ 值具有乘积性质： $ mu ( hat(0) \, sigma ) = underbrace(M_i, upright("块") B upright("的贡献")) times underbrace(mu ( upright("剩余部分的") tau ), upright("剩下的贡献")) $ #strong[\4. 所有的项求和] 把刚才的 $sum mu = 0$ 按照 $i$ 展开： $ 0 = sum_(i = 1)^n binom(n - 1, i - 1) M_i times underbrace((sum_(tau in Pi_(n - i)) mu ( hat(0) \, tau )), upright("剩余部分的所有情况之和")) $ #strong[\5. 奇迹发生了] 请盯着最后那个括号里的部分：$sum_(tau in Pi_(n - i)) mu ( hat(0) \, tau )$。 这是一个大小为 $n - i$ 的全部分划格的 $mu$ 之和。 根据莫比乌斯函数的定义，只要 $n - i > 1$，这个和就是 #strong[0];！ 这个和不为 0 的只有两种情况： #strong[$n - i = 1$];：只剩 1 个元素，和为 $M_1 = 1$。 #strong[$n - i = 0$];：没有剩余元素（即 $i = n$），定义为 1。 #strong[\6. 最后的递推] 因为只有 $n - i = 0$ 和 $n - i = 1$ 有值，长长的求和式瞬间只剩下两项： #strong[当 $i = n$ 时];（全在一起）： 系数是 $binom(n - 1, n - 1) M_n times 1 = M_n$ #strong[当 $i = n - 1$ 时];（剩一个孤立点）： 系数是 $binom(n - 1, n - 2) M_(n - 1) times M_1 = ( n - 1 ) M_(n - 1)$ 方程变成了： $ M_n + ( n - 1 ) M_(n - 1) = 0 $ $ arrow.r.double M_n = - ( n - 1 ) M_(n - 1) $ #strong[\7. 求解] $M_1 = 1$ $M_2 = - 1 dot.op M_1 = - 1$ $M_3 = - 2 dot.op M_2 = 2$ … $M_n = ( - 1 )^(n - 1) ( n - 1 ) !$
+咋证？ 我们要证的目标是 $M_n = ( - 1 )^(n - 1) ( n - 1 ) !$，其中 $M_n$ 简记为 $n$ 个元素分划格最顶端的 $mu ( hat(0) \, hat(1) )$。 利用 $sum mu = 0$ 构造递推 #strong[\1. 莫比乌斯函数的定义] 对于任意 $n > 1$，分划格 $Pi_n$ 中所有元素的 $mu$ 值之和必须为 0：
 ]
+
+$ sum_(sigma in Pi_n) mu ( hat(0) \, sigma ) = 0 $
+
+换句话说：
+
+$ M_n = - sum_(sigma eq.not hat(1)) mu ( hat(0) \, sigma ) $
+
+#emph[(最顶上的那一项，等于底下所有项之和的相反数)] #strong[\2. 巧妙的分组] 我们根据 #strong[“元素 $n$ 所在的块的大小”] 来对所有的分划 $sigma$ 进行归类。 设元素 $n$ 所在的块为 $B$，设 $\| B \| = i$。 $i$ 的取值范围是 $1$ 到 $n$。 选出这个块 $B$ 的方案数是 $binom(n - 1, i - 1)$（因为 $n$ 必须在里面，从剩下 $n - 1$ 个里选 $i - 1$ 个陪它）。 #strong[\3. 结构的乘积] 对于一个固定的块 $B$（大小为 $i$），剩下的 $n - i$ 个元素组成了某种分划 $tau$。 因为块之间互不干扰，$mu$ 值具有乘积性质：
+
+$ mu ( hat(0) \, sigma ) = underbrace(M_i, upright("块") B upright("的贡献")) times underbrace(mu ( upright("剩余部分的") tau ), upright("剩下的贡献")) $
+
+#strong[\4. 所有的项求和] 把刚才的 $sum mu = 0$ 按照 $i$ 展开：
+
+$ 0 = sum_(i = 1)^n binom(n - 1, i - 1) M_i times underbrace((sum_(tau in Pi_(n - i)) mu ( hat(0) \, tau )), upright("剩余部分的所有情况之和")) $
+
+#strong[\5. 奇迹发生了] 请盯着最后那个括号里的部分：$sum_(tau in Pi_(n - i)) mu ( hat(0) \, tau )$。 这是一个大小为 $n - i$ 的全部分划格的 $mu$ 之和。 根据莫比乌斯函数的定义，只要 $n - i > 1$，这个和就是 #strong[0];！ 这个和不为 0 的只有两种情况： #strong[$n - i = 1$];：只剩 1 个元素，和为 $M_1 = 1$。 #strong[$n - i = 0$];：没有剩余元素（即 $i = n$），定义为 1。 #strong[\6. 最后的递推] 因为只有 $n - i = 0$ 和 $n - i = 1$ 有值，长长的求和式瞬间只剩下两项： #strong[当 $i = n$ 时];（全在一起）： 系数是 $binom(n - 1, n - 1) M_n times 1 = M_n$ #strong[当 $i = n - 1$ 时];（剩一个孤立点）： 系数是 $binom(n - 1, n - 2) M_(n - 1) times M_1 = ( n - 1 ) M_(n - 1)$ 方程变成了：
+
+$ M_n + ( n - 1 ) M_(n - 1) = 0 $
+
+$ arrow.r.double M_n = - ( n - 1 ) M_(n - 1) $
+
+#strong[\7. 求解] $M_1 = 1$ $M_2 = - 1 dot.op M_1 = - 1$ $M_3 = - 2 dot.op M_2 = 2$ … $M_n = ( - 1 )^(n - 1) ( n - 1 ) !$
 
 更一般地，对于任意 $sigma lt.eq tau$，$mu ( sigma \, tau )$ 的值只与它们之间的结构差异有关，其数值形式就是#strong[带符号的第一类斯特林数];的乘积形式。
 
-======= 3. 如何连接到斯特林反演？
+===== 3. 如何连接到斯特林反演？
 <如何连接到斯特林反演>
 我们通常看到的斯特林反演公式是关于 $n$ 和 $k$ 的，而不是关于具体分划 $sigma$ 的。这是因为斯特林反演是集合分划格反演的 #strong[“约化”（Reduced）形式];。
 
@@ -1237,11 +1658,17 @@ Möbius 函数 $mu ( sigma \, tau )$ 它是 $zeta$ 的逆。在集合分划格�
 
 考虑映射 $f : { 1 \, dots.h \, n } arrow.r { 1 \, dots.h \, x }$。总共有 $x^n$ 种映射。 我们可以根据这个映射的 #strong[核（Kernel）] 来分类。核是一个分划 $sigma$，也就是把映射到同一个值的元素归为一个块。
 
-如果我们设 $N ( sigma )$ 是“恰好以 $sigma$ 为核”的映射数量（即 $sigma$ 的每个块映射到不同的值）。 那么总数 $x^n$ 就是对所有可能的核 $sigma$ 求和（这就是 Zeta 变换的体现）： $ x^n = sum_(sigma in Pi_n) N ( sigma ) $
+如果我们设 $N ( sigma )$ 是“恰好以 $sigma$ 为核”的映射数量（即 $sigma$ 的每个块映射到不同的值）。 那么总数 $x^n$ 就是对所有可能的核 $sigma$ 求和（这就是 Zeta 变换的体现）：
+
+$ x^n = sum_(sigma in Pi_n) N ( sigma ) $
 
 注意到，如果分划 $sigma$ 有 $k$ 个块（记为 $\| sigma \| = k$），那么 $N ( sigma ) = x^(underline(k))$（从 $x$ 个值选 $k$ 个排列）。 而这也正好对应了有多少个分划具有 $k$ 个块------这正是#strong[第二类斯特林数] $mat(delim: "{", n; k)$。
 
-所以上面的式子变成了我们熟悉的： $ x^n = sum_(k = 0)^n mat(delim: "{", n; k) x^(underline(k)) $ #strong[(这对应 $zeta$ 变换，也就是 $g = zeta \* f$)]
+所以上面的式子变成了我们熟悉的：
+
+$ x^n = sum_(k = 0)^n mat(delim: "{", n; k) x^(underline(k)) $
+
+#strong[(这对应 $zeta$ 变换，也就是 $g = zeta \* f$)]
 
 #quote(block: true)[
 听不懂？见A3.普通幂转下降幂的组合意义
@@ -1253,20 +1680,58 @@ Möbius 函数 $mu ( sigma \, tau )$ 它是 $zeta$ 的逆。在集合分划格�
 
 在“约化”的代数视角下，$Pi_n$ 的 Möbius 函数系数对应正是 #strong[第一类斯特林数];。
 
-具体来说，由于 $mu ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) !$，这其实是第一类斯特林数 $s ( n \, 1 )$。 推广到从 $n$ 个元素的块反演回 $k$ 个元素的块，系数正是： $ s ( n \, k ) = ( - 1 )^(n - k) mat(delim: "[", n; k) $
+具体来说，由于 $mu ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) !$，这其实是第一类斯特林数 $s ( n \, 1 )$。 推广到从 $n$ 个元素的块反演回 $k$ 个元素的块，系数正是：
+
+$ s ( n \, k ) = ( - 1 )^(n - k) mat(delim: "[", n; k) $
 
 #quote(block: true)[
-咋推广？ 对于 $n$ 个元素的#strong[全部分划格] $Pi_n$，从最底（全散）到最顶（全聚）的莫比乌斯函数是： $ mu_(Pi_n) ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) ! $ #strong[那如果不是到最顶 $hat(1)$，而是到一个中间状态 $sigma$ 呢？] 假设分划 $sigma$ 将 $n$ 个元素分成了 $k$ 个块，块的大小分别为 $b_1 \, b_2 \, dots.h \, b_k$（显然 $sum b_i = n$）。 #strong[关键性质：] 区间 $\[ hat(0) \, sigma \]$ 在结构上等价于 #strong[$k$ 个独立的小分划格的直积];。 $ \[ hat(0) \, sigma \] tilde.equiv Pi_(b_1) times Pi_(b_2) times dots.h times Pi_(b_k) $ 因为莫比乌斯函数在直积上具有#strong[积性];（Multiplicative），所以： $ mu ( hat(0) \, sigma ) = product_(i = 1)^k mu_(Pi_(b_i)) ( hat(0) \, hat(1) ) $ 代入基础结论： $ mu ( hat(0) \, sigma ) & = product_(i = 1)^k [( - 1 )^(b_i - 1) ( b_i - 1 ) !]\
- & = ( - 1 )^(sum ( b_i - 1 )) product_(i = 1)^k ( b_i - 1 ) !\
- & = ( - 1 )^(n - k) product_(i = 1)^k ( b_i - 1 ) ! $ 这是一个非常重要的中间结论：#strong[任意分划 $sigma$ 的莫比乌斯函数值，取决于它的块大小的阶乘积。] 我们在做斯特林反演时，不是针对某一个特定的 $sigma$，而是把#strong[所有块数（Rank）为 $k$ 的分划];归为一类。 所谓的“反演系数” $s ( n \, k )$，本质上就是把所有“这就只有 $k$ 个块”的分划的 $mu$ 值加起来： $ s ( n \, k ) = sum_(sigma in Pi_n\
-\| sigma \| = k) mu ( hat(0) \, sigma ) $ 代入刚才推导的公式： $ s ( n \, k ) = sum_(sigma in Pi_n\
-\| sigma \| = k) (( - 1 )^(n - k) product_(i = 1)^k ( b_i - 1 ) !) $ 提公因式 $( - 1 )^(n - k)$： $ s ( n \, k ) = ( - 1 )^(n - k) underbrace(sum_(sigma in Pi_n\
-\| sigma \| = k) (product_(i = 1)^k ( b_i - 1 ) !), upright("这是什么？")) $ #strong[让我们看看这个求和部分的组合意义：] #strong[外部求和];：枚举所有把 $n$ 个元素分成 $k$ 个块的方案（分划 $sigma$）。 #strong[内部乘积] $product ( b_i - 1 ) !$：对于每一个块（大小为 $b_i$），$( b_i - 1 ) !$ 正好是#strong[圆排列];（Circle Permutation）的方案数。 #strong[合起来的意思是：] 先选定一种分块方式，然后把每个块里的元素排成一个圆环（Cycle）。 把所有分块方式对应的圆环方案加起来，这不就是： #strong[“把 $n$ 个元素排成 $k$ 个圆环（轮换）的总方案数”吗？] 这正是#strong[无符号第一类斯特林数] $mat(delim: "[", n; k)$ 的定义！ 所以： $ s ( n \, k ) = ( - 1 )^(n - k) mat(delim: "[", n; k) $ 这就是为什么斯特林反演的系数里藏着圆排列的阶乘，也是它“推广”的内在逻辑。
+咋推广？ 对于 $n$ 个元素的#strong[全部分划格] $Pi_n$，从最底（全散）到最顶（全聚）的莫比乌斯函数是：
 ]
 
-所以反演公式为： $ x^(underline(n)) = sum_(k = 0)^n ( - 1 )^(n - k) mat(delim: "[", n; k) x^k $ #strong[(这对应 $f = mu \* g$)]
+$ mu_(Pi_n) ( hat(0) \, hat(1) ) = ( - 1 )^(n - 1) ( n - 1 ) ! $
 
-===== 总结
+#strong[那如果不是到最顶 $hat(1)$，而是到一个中间状态 $sigma$ 呢？] 假设分划 $sigma$ 将 $n$ 个元素分成了 $k$ 个块，块的大小分别为 $b_1 \, b_2 \, dots.h \, b_k$（显然 $sum b_i = n$）。 #strong[关键性质：] 区间 $\[ hat(0) \, sigma \]$ 在结构上等价于 #strong[$k$ 个独立的小分划格的直积];。
+
+$ \[ hat(0) \, sigma \] tilde.equiv Pi_(b_1) times Pi_(b_2) times dots.h times Pi_(b_k) $
+
+因为莫比乌斯函数在直积上具有#strong[积性];（Multiplicative），所以：
+
+$ mu ( hat(0) \, sigma ) = product_(i = 1)^k mu_(Pi_(b_i)) ( hat(0) \, hat(1) ) $
+
+代入基础结论：
+
+$ mu ( hat(0) \, sigma ) & = product_(i = 1)^k [( - 1 )^(b_i - 1) ( b_i - 1 ) !]\
+ & = ( - 1 )^(sum ( b_i - 1 )) product_(i = 1)^k ( b_i - 1 ) !\
+ & = ( - 1 )^(n - k) product_(i = 1)^k ( b_i - 1 ) ! $
+
+这是一个非常重要的中间结论：#strong[任意分划 $sigma$ 的莫比乌斯函数值，取决于它的块大小的阶乘积。] 我们在做斯特林反演时，不是针对某一个特定的 $sigma$，而是把#strong[所有块数（Rank）为 $k$ 的分划];归为一类。 所谓的“反演系数” $s ( n \, k )$，本质上就是把所有“这就只有 $k$ 个块”的分划的 $mu$ 值加起来：
+
+$ s ( n \, k ) = sum_(sigma in Pi_n\
+\| sigma \| = k) mu ( hat(0) \, sigma ) $
+
+代入刚才推导的公式：
+
+$ s ( n \, k ) = sum_(sigma in Pi_n\
+\| sigma \| = k) (( - 1 )^(n - k) product_(i = 1)^k ( b_i - 1 ) !) $
+
+提公因式 $( - 1 )^(n - k)$：
+
+$ s ( n \, k ) = ( - 1 )^(n - k) underbrace(sum_(sigma in Pi_n\
+\| sigma \| = k) (product_(i = 1)^k ( b_i - 1 ) !), upright("这是什么？")) $
+
+#strong[让我们看看这个求和部分的组合意义：] #strong[外部求和];：枚举所有把 $n$ 个元素分成 $k$ 个块的方案（分划 $sigma$）。 #strong[内部乘积] $product ( b_i - 1 ) !$：对于每一个块（大小为 $b_i$），$( b_i - 1 ) !$ 正好是#strong[圆排列];（Circle Permutation）的方案数。 #strong[合起来的意思是：] 先选定一种分块方式，然后把每个块里的元素排成一个圆环（Cycle）。 把所有分块方式对应的圆环方案加起来，这不就是： #strong[“把 $n$ 个元素排成 $k$ 个圆环（轮换）的总方案数”吗？] 这正是#strong[无符号第一类斯特林数] $mat(delim: "[", n; k)$ 的定义！ 所以：
+
+$ s ( n \, k ) = ( - 1 )^(n - k) mat(delim: "[", n; k) $
+
+这就是为什么斯特林反演的系数里藏着圆排列的阶乘，也是它“推广”的内在逻辑。
+
+所以反演公式为：
+
+$ x^(underline(n)) = sum_(k = 0)^n ( - 1 )^(n - k) mat(delim: "[", n; k) x^k $
+
+#strong[(这对应 $f = mu \* g$)]
+
+=== 总结
 <总结>
 #figure(
   align(center)[#table(
@@ -1290,57 +1755,114 @@ Möbius 函数 $mu ( sigma \, tau )$ 它是 $zeta$ 的逆。在集合分划格�
 <和式变换规则与技术>
 ==== 基本变换规则
 <基本变换规则>
-+ #strong[分配律] \
-  $ sum_(k in K) c a_k = c sum_(k in K) a_k $
++ #strong[分配律]
 
-+ #strong[结合律] \
-  $ sum_(k in K) ( a_k + b_k ) = sum_(k in K) a_k + sum_(k in K) b_k $
+$ sum_(k in K) c a_k = c sum_(k in K) a_k $
 
-+ #strong[交换律] \
-  $ sum_(k in K) a_k = sum_(p ( k ) in K) a_(p ( k )) $ 其中 $p ( k )$ 是指标集的任意排列 \
-  #strong[示例];： \
-  $a_1 + a_2 + a_3 + a_6 = a_6 + a_3 + a_2 + a_1$
+#block[
+#set enum(numbering: "1.", start: 2)
++ #strong[结合律]
+]
+
+$ sum_(k in K) ( a_k + b_k ) = sum_(k in K) a_k + sum_(k in K) b_k $
+
+#block[
+#set enum(numbering: "1.", start: 3)
++ #strong[交换律]
+]
+
+$ sum_(k in K) a_k = sum_(p ( k ) in K) a_(p ( k )) $
+
+其中 $p ( k )$ 是指标集的任意排列
+
+#strong[示例];：$a_1 + a_2 + a_3 + a_6 = a_6 + a_3 + a_2 + a_1$
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 ==== 高级变换技术
 <高级变换技术>
-===== 1. 替换条件式
+==== 1. 替换条件式
 <替换条件式>
 $ sum_(i = 1)^n sum_(j = 1)^m sum_(d \| gcd ( i \, j )) d = sum_(i = 1)^n sum_(j = 1)^m sum_(d = 1)^(min ( n \, m )) \[ d \| i \] \[ d \| j \] d $
 
-===== 2. 替换指标变量
+==== 2. 替换指标变量
 <替换指标变量>
-$ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = k \] = sum_(i' = 1)^(floor.l n \/ k floor.r) sum_(j' = 1)^(floor.l m \/ k floor.r) \[ gcd ( i' \, j' ) = 1 \] $ 其中 $i' = i \/ k \, j' = j \/ k$
+$ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = k \] = sum_(i' = 1)^(floor.l n \/ k floor.r) sum_(j' = 1)^(floor.l m \/ k floor.r) \[ gcd ( i' \, j' ) = 1 \] $
 
-===== 3. 交换求和次序
+其中 $i' = i \/ k \, j' = j \/ k$
+
+==== 3. 交换求和次序
 <交换求和次序>
 $ sum_(i = 1)^n sum_(j = 1)^m A ( i ) B ( j ) = sum_(j = 1)^m sum_(i = 1)^n A ( i ) B ( j ) $
 
-===== 4. 分离变量
+==== 4. 分离变量
 <分离变量>
 $ sum_(i = 1)^n sum_(j = 1)^m A ( i ) B ( j ) = (sum_(i = 1)^n A ( i )) (sum_(j = 1)^m B ( j )) $
 
-==== 技巧
+=== 技巧
 <技巧>
-===== 1. 区间整除条件式的封闭形式
+==== 1. 区间整除条件式的封闭形式
 <区间整除条件式的封闭形式>
-$ sum_(i = 1)^n \[ k \| i \] = floor.l n / k floor.r $ 扩展 $ floor.l frac(floor.l n / k floor.r, m) floor.r = floor.l frac(n, k m) floor.r $ \>人话：在1到n的整数中，能被k整除的数的个数是 $floor.l n / k floor.r$
+$ sum_(i = 1)^n \[ k \| i \] = floor.l n / k floor.r $
 
-===== 2. $\[ g c d ( i \, j ) = 1 \]$的进一步变换
+扩展
+
+$ floor.l frac(floor.l n / k floor.r, m) floor.r = floor.l frac(n, k m) floor.r $
+
+#quote(block: true)[
+人话：在1到n的整数中，能被k整除的数的个数是 $floor.l n / k floor.r$
+]
+
+==== 2. $\[ g c d ( i \, j ) = 1 \]$的进一步变换
 <gcdij1的进一步变换>
-$ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = 1 \] = sum_(i = 1)^n sum_(j = 1)^m sum_(d \| gcd ( i \, j )) mu ( d ) $ $ = sum_(i = 1)^n sum_(j = 1)^m sum_(d = 1)^(min ( n \, m )) mu ( d ) \[ d \| i \] \[ d \| j \] $ \>人话：变换枚举顺序，d能整除i和j，则d能整除gcd(i,j)
+$ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = 1 \] = sum_(i = 1)^n sum_(j = 1)^m sum_(d \| gcd ( i \, j )) mu ( d ) $
 
-===== 3. 有序对和无序对求和的互相转换
+$ = sum_(i = 1)^n sum_(j = 1)^m sum_(d = 1)^(min ( n \, m )) mu ( d ) \[ d \| i \] \[ d \| j \] $
+
+#quote(block: true)[
+人话：变换枚举顺序，d能整除i和j，则d能整除gcd(i,j)
+]
+
+==== 3. 有序对和无序对求和的互相转换
 <有序对和无序对求和的互相转换>
-$ sum_(i = 1)^n sum_(j = 1)^n A ( i \, j ) = 2 \* sum_(i = 1)^n sum_(j = i)^n A ( i \, j ) - sum_(i = 1)^n A ( i \, i ) $ 当且仅当 $A ( i \, j ) = A ( j \, i )$ 时成立 \>人话：将有序对转换为无序对，注意枚举顺序
+$ sum_(i = 1)^n sum_(j = 1)^n A ( i \, j ) = 2 \* sum_(i = 1)^n sum_(j = i)^n A ( i \, j ) - sum_(i = 1)^n A ( i \, i ) $
 
-===== 4. 通过$g c d ( i \, j ) = 1$构造条件式$\[ g c d ( i \, j ) = 1 \]$
+当且仅当 $A ( i \, j ) = A ( j \, i )$ 时成立
+
+#quote(block: true)[
+人话：将有序对转换为无序对，注意枚举顺序
+]
+
+==== 4. 通过$g c d ( i \, j ) = 1$构造条件式$\[ g c d ( i \, j ) = 1 \]$
 <通过gcdij1构造条件式gcdij1>
-令 $ d = gcd ( i \, j ) \, i = i' d \, j = j' d $ 注意，当且仅当 $ gcd ( i' \, j' ) = 1 $ 时，此变换成立，于是 $ sum_(i = 1)^n sum_(j = 1)^m f ( gcd ( i \, j ) ) $ $ = sum_(d = 1)^(min ( n \, m )) sum_(i' d = 1)^n sum_(j' d = 1)^m f ( d ) \[ gcd ( i' \, j' ) = 1 \] $ $ = sum_(d = 1)^(min ( n \, m )) sum_(i' = 1)^(floor.l n \/ d floor.r) sum_(j' = 1)^(floor.l m \/ d floor.r) f ( d ) \[ gcd ( i' \, j' ) = 1 \] $ 变量换名 $ = sum_(d = 1)^(min ( n \, m )) sum_(i = 1)^(floor.l n \/ d floor.r) sum_(j = 1)^(floor.l m \/ d floor.r) f ( d ) \[ gcd ( i \, j ) = 1 \] $ \>人话：没有人话
+令
 
-===== 5. $g c d ( x \, y )$的变换
+$ d = gcd ( i \, j ) \, i = i' d \, j = j' d $
+
+注意，当且仅当
+
+$ gcd ( i' \, j' ) = 1 $
+
+时，此变换成立，于是
+
+$ sum_(i = 1)^n sum_(j = 1)^m f ( gcd ( i \, j ) ) $
+
+$ = sum_(d = 1)^(min ( n \, m )) sum_(i' d = 1)^n sum_(j' d = 1)^m f ( d ) \[ gcd ( i' \, j' ) = 1 \] $
+
+$ = sum_(d = 1)^(min ( n \, m )) sum_(i' = 1)^(floor.l n \/ d floor.r) sum_(j' = 1)^(floor.l m \/ d floor.r) f ( d ) \[ gcd ( i' \, j' ) = 1 \] $
+
+变量换名
+
+$ = sum_(d = 1)^(min ( n \, m )) sum_(i = 1)^(floor.l n \/ d floor.r) sum_(j = 1)^(floor.l m \/ d floor.r) f ( d ) \[ gcd ( i \, j ) = 1 \] $
+
+#quote(block: true)[
+人话：没有人话
+]
+
+==== 5. $g c d ( x \, y )$的变换
 <gcdxy的变换>
-$ n = sum_(d \| n) phi ( d ) $ $ g c d ( x \, y ) = sum_(d \| gcd ( x \, y )) phi ( d ) = sum_(d \| x \, d \| y) phi ( d ) $
+$ n = sum_(d \| n) phi ( d ) $
+
+$ g c d ( x \, y ) = sum_(d \| gcd ( x \, y )) phi ( d ) = sum_(d \| x \, d \| y) phi ( d ) $
 
 
 = 组合与生成函数
@@ -1351,14 +1873,23 @@ $ n = sum_(d \| n) phi ( d ) $ $ g c d ( x \, y ) = sum_(d \| gcd ( x \, y )) ph
 <圆排列>
 $n$ 个不同元素围成一圈的#strong[圆排列数];，记作 $Q_n^n$。
 
-考虑其中已经排好的一圈，从不同位置断开，会变成 $n$ 个不同的线排列： \
-$ Q_n^n times n = A_n^n $ 则 \
+考虑其中已经排好的一圈，从不同位置断开，会变成 $n$ 个不同的线排列：
+
+$ Q_n^n times n = A_n^n $
+
+则
+
 $ Q_n^n = A_n^n / n = ( n - 1 ) ! $
 
 例如，3 个不同元素的圆排列数为 $( 3 - 1 ) ! = 2$ 种：
 
-从 $n$ 个不同元素中选 $m$ 个围成一圈的#strong[圆排列数];，记作 $Q_n^m$： \
-$ Q_n^m = C_n^m dot.op Q_m^m = frac(n !, m dot.op ( n - m ) !) $ \>其实就是全排列固定了一个数
+从 $n$ 个不同元素中选 $m$ 个围成一圈的#strong[圆排列数];，记作 $Q_n^m$：
+
+$ Q_n^m = C_n^m dot.op Q_m^m = frac(n !, m dot.op ( n - m ) !) $
+
+#quote(block: true)[
+其实就是全排列固定了一个数
+]
 
 === 错位排列
 <错位排列>
@@ -1372,9 +1903,11 @@ $ Q_n^m = C_n^m dot.op Q_m^m = frac(n !, m dot.op ( n - m ) !) $ \>其实就是�
 - $D_4 = 9$（即 ${ 2 \, 1 \, 4 \, 3 } \, { 2 \, 3 \, 4 \, 1 } \, { 2 \, 4 \, 1 \, 3 } \, { 3 \, 1 \, 4 \, 2 } \, { 3 \, 4 \, 1 \, 2 } \, { 3 \, 4 \, 2 \, 1 } \, { 4 \, 1 \, 2 \, 3 } \, { 4 \, 3 \, 1 \, 2 } \, { 4 \, 3 \, 2 \, 1 }$）
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 递推关系 $D_n = ( n - 1 ) ( D_(n - 1) + D_(n - 2) )$
+==== 递推关系 $D_n = ( n - 1 ) ( D_(n - 1) + D_(n - 2) )$
 <递推关系-d_n-n-1d_n-1-d_n-2>
-#strong[边界条件];： $ D_1 = 0 \, quad D_2 = 1 $
+#strong[边界条件];：
+
+$ D_1 = 0 \, quad D_2 = 1 $
 
 #figure(
   align(center)[#table(
@@ -1391,16 +1924,14 @@ $ Q_n^m = C_n^m dot.op Q_m^m = frac(n !, m dot.op ( n - m ) !) $ \>其实就是�
 <信封问题>
 $n$ 封不同的信（编号 $1 \, 2 \, dots.h \, n$）放入 $n$ 个编号对应的信封中，要求每个信封的编号与信的编号都不相同。有多少种放置方法？
 
-===== 递推关系分析
+==== 递推关系分析
 <递推关系分析>
-考虑第 $n$ 封信的放置： 1. #strong[情况1];：前 $n - 1$ 封信已全错排 \
-\- 第 $n$ 封信只需与前面任一封信交换位置 \
-\- 方法数：$( n - 1 ) dot.op D_(n - 1)$
+考虑第 $n$ 封信的放置： 1. #strong[情况1];：前 $n - 1$ 封信已全错排 - 第 $n$ 封信只需与前面任一封信交换位置 - 方法数：$( n - 1 ) dot.op D_(n - 1)$
 
 #block[
 #set enum(numbering: "1.", start: 2)
 + #strong[情况2];：前 $n - 1$ 封信恰好有 1 封位置正确
-  - 第 $n$ 封信必须与位置正确的信交换 \
+  - 第 $n$ 封信必须与位置正确的信交换
   - 方法数：$( n - 1 ) dot.op D_(n - 2)$
 ]
 
@@ -1410,8 +1941,9 @@ $n$ 封不同的信（编号 $1 \, 2 \, dots.h \, n$）放入 $n$ 个编号对�
 
 === 第一类斯特林数（斯特林轮换数）
 <第一类斯特林数斯特林轮换数>
-将 $n$ 个不同元素划分为 $m$ 个非空圆排列的方案数， \
-记作 $S ( n \, m )$ 或： $ mat(delim: "[", n; m) $
+将 $n$ 个不同元素划分为 $m$ 个非空圆排列的方案数， 记作 $S ( n \, m )$ 或：
+
+$ mat(delim: "[", n; m) $
 
 ==== 递推关系
 <递推关系>
@@ -1423,17 +1955,18 @@ $ mat(delim: "[", n; m) = mat(delim: "[", n - 1; m - 1) + ( n - 1 ) mat(delim: "
 $n$ 个人坐 $m$ 张圆桌的方案数，考虑第 $n$ 个人的两种坐法：
 
 + #strong[单独坐一桌]
-  - 前 $n - 1$ 人坐满剩余的 $m - 1$ 张桌 \
+  - 前 $n - 1$ 人坐满剩余的 $m - 1$ 张桌
   - 方案数：$mat(delim: "[", n - 1; m - 1)$
 + #strong[与其他人同坐]
-  - 前 $n - 1$ 人先坐满 $m$ 张桌 \
-  - 第 $n$ 人可坐到任意 $n - 1$ 个人的左侧 \
+  - 前 $n - 1$ 人先坐满 $m$ 张桌
+  - 第 $n$ 人可坐到任意 $n - 1$ 个人的左侧
   - 方案数：$( n - 1 ) dot.op mat(delim: "[", n - 1; m)$
 
 === 第二类斯特林数（斯特林子集数）
 <第二类斯特林数斯特林子集数>
-将 $n$ 个不同元素划分为 $m$ 个非空子集的方案数， \
-记作 $S ( n \, m )$ 或： $ mat(delim: "{", n; m) $
+将 $n$ 个不同元素划分为 $m$ 个非空子集的方案数， 记作 $S ( n \, m )$ 或：
+
+$ mat(delim: "{", n; m) $
 
 ==== 递推关系
 <递推关系-1>
@@ -1445,19 +1978,19 @@ $ mat(delim: "{", n; m) = mat(delim: "{", n - 1; m - 1) + m mat(delim: "{", n - 
 $n$ 个人进入 $m$ 个房间的方案数（每个房间非空），考虑第 $n$ 个人的两种选择：
 
 + #strong[单独进入新房间]
-  - 前 $n - 1$ 人进入剩余的 $m - 1$ 个房间 \
+  - 前 $n - 1$ 人进入剩余的 $m - 1$ 个房间
   - 方案数：$mat(delim: "{", n - 1; m - 1)$
 + #strong[进入已有人的房间]
-  - 前 $n - 1$ 人先进入所有 $m$ 个房间 \
-  - 第 $n$ 人可选择进入任意一个已有人的房间 \
+  - 前 $n - 1$ 人先进入所有 $m$ 个房间
+  - 第 $n$ 人可选择进入任意一个已有人的房间
   - 方案数：$m dot.op mat(delim: "{", n - 1; m)$
 
 === Catalan数 通项公式
 <catalan数-通项公式>
 #block[
 #set enum(numbering: "(1)", start: 1)
-+ $H_n = C_(2 n)^n - C_(2 n)^(n - 1)$ \
-+ $H_n = frac(1, n + 1) C_(2 n)^n$ \
++ $H_n = C_(2 n)^n - C_(2 n)^(n - 1)$
++ $H_n = frac(1, n + 1) C_(2 n)^n$
 + $H_n = frac(4 n - 2, n + 1) H_(n - 1)$
 ]
 
@@ -1483,80 +2016,86 @@ $n$ 个人进入 $m$ 个房间的方案数（每个房间非空），考虑第 $
 
 ==== Catalan 特征
 <catalan-特征>
-从 (0,0) 到 (n,n)，不越过对角线，即任何时候，向上走的步数不能超过向右走的步数。 \
-一种操作数不能超过另外一种操作数，或者两种操作不能有交集，这些操作的合法方案数，通常是卡特兰数。
+从 (0,0) 到 (n,n)，不越过对角线，即任何时候，向上走的步数不能超过向右走的步数。 一种操作数不能超过另外一种操作数，或者两种操作不能有交集，这些操作的合法方案数，通常是卡特兰数。
 
 ==== Catalan 应用
 <catalan-应用>
-+ 一个有 $n$ 个 0 和 $n$ 个 1 组成的字串，且所有的前缀字串皆满足 1 的个数不超过 0 的个数。这样的字串个数有多少？ \
-+ 包含 $n$ 组括号的合法运算式的个数有多少？ \
-+ 一个栈的进栈序列为 1,2,3,···, $n$，有多少个不同的出栈序列？ \
-  合法性：任何时刻不能空栈出栈 ⇒ 任意前缀“)”不多于“(”；最后入栈、出栈各n次，栈空。
-+ $n$ 个结点可构造多少个不同的二叉树？ \
-+ 在圆上选择 $2 n$ 个点，将这些点成对连接起来使得所得的 $n$ 条弦不相交的方法数？ \
++ 一个有 $n$ 个 0 和 $n$ 个 1 组成的字串，且所有的前缀字串皆满足 1 的个数不超过 0 的个数。这样的字串个数有多少？
++ 包含 $n$ 组括号的合法运算式的个数有多少？
++ 一个栈的进栈序列为 1,2,3,···, $n$，有多少个不同的出栈序列？ 合法性：任何时刻不能空栈出栈 ⇒ 任意前缀“)”不多于“(”；最后入栈、出栈各n次，栈空。
++ $n$ 个结点可构造多少个不同的二叉树？
++ 在圆上选择 $2 n$ 个点，将这些点成对连接起来使得所得的 $n$ 条弦不相交的方法数？
 + 通过连结顶点而将 $n + 2$ 边的凸多边形分成 $n$ 个三角形的方法数？
 
 ==== 说明
 <说明>
-这些都是卡特兰数，因为它们都与#strong[合法括号序列 / Dyck 路径];存在天然的双射，或者都满足同一个#strong[卡特兰递推] \
-$ C_0 = 1 \, #h(2em) C_n = sum_(i = 0)^(n - 1) C_i thin C_(n - 1 - i) med ( n gt.eq 1 ) \, $ 并且初值一致，所以计数相同。分别说------
+这些都是卡特兰数，因为它们都与#strong[合法括号序列 / Dyck 路径];存在天然的双射，或者都满足同一个#strong[卡特兰递推]
+
+$ C_0 = 1 \, #h(2em) C_n = sum_(i = 0)^(n - 1) C_i thin C_(n - 1 - i) med ( n gt.eq 1 ) \, $
+
+并且初值一致，所以计数相同。分别说------
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 3) 单栈出栈序列的个数 = $C_n$
+==== 3) 单栈出栈序列的个数 = $C_n$
 <单栈出栈序列的个数-c_n>
-把栈的操作写成长度 $2 n$ 的串： \
-\- 入栈记“(”，出栈记“)”。 \
-合法性：任何时刻不能空栈出栈 ⇒ 任意前缀“)”不多于“(”；最后入栈、出栈各 $n$ 次。 \
-这正是#strong[合法括号序列];的定义，因此个数为 $C_n = frac(1, n + 1) binom(2 n, n)$。
+把栈的操作写成长度 $2 n$ 的串： - 入栈记“(”，出栈记“)”。 合法性：任何时刻不能空栈出栈 ⇒ 任意前缀“)”不多于“(”；最后入栈、出栈各 $n$ 次。 这正是#strong[合法括号序列];的定义，因此个数为 $C_n = frac(1, n + 1) binom(2 n, n)$。
 
 （同说法：栈可生成的排列=231-避免排列，其数目为卡特兰数。）
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 4) $n$ 个结点的二叉树个数 = $C_n$
+==== 4) $n$ 个结点的二叉树个数 = $C_n$
 <n-个结点的二叉树个数-c_n>
-设 $T_n$ 为有 $n$ 个结点（有序、无标号）的二叉树数。以根为界：左子树 $i$ 个结点、右子树 $n - 1 - i$ 个结点，二者独立： $ T_n = sum_(i = 0)^(n - 1) T_i thin T_(n - 1 - i) \, quad T_0 = 1 . $ 这恰是卡特兰递推，因此 $T_n = C_n$。 \
-（等价双射：对二叉树做先序/中序边走访，“向下”记“(”，“返回”记“)”，得到 Dyck 串，反之亦然。）
+设 $T_n$ 为有 $n$ 个结点（有序、无标号）的二叉树数。以根为界：左子树 $i$ 个结点、右子树 $n - 1 - i$ 个结点，二者独立：
+
+$ T_n = sum_(i = 0)^(n - 1) T_i thin T_(n - 1 - i) \, quad T_0 = 1 . $
+
+这恰是卡特兰递推，因此 $T_n = C_n$。 （等价双射：对二叉树做先序/中序边走访，“向下”记“(”，“返回”记“)”，得到 Dyck 串，反之亦然。）
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 5) 圆上 $2 n$ 点配对且弦不相交的配法数 = $C_n$
+==== 5) 圆上 $2 n$ 点配对且弦不相交的配法数 = $C_n$
 <圆上-2n-点配对且弦不相交的配法数-c_n>
-固定点 1，它必须与某个点 $2 k$ 相连（顺时针计）。这一条弦把圆分成两侧： \
-\- 一侧有 $2 k - 2$ 个点，可不交配对数 $C_(k - 1)$； \
-\- 另一侧有 $2 n - 2 k$ 个点，可不交配对数 $C_(n - k)$。 \
-枚举 $k = 1 . . n$ 得 $ M_n = sum_(k = 1)^n C_(k - 1) C_(n - k) = sum_(i = 0)^(n - 1) C_i C_(n - 1 - i) . $ 同初值 $M_0 = 1$，故 $M_n = C_n$。
+固定点 1，它必须与某个点 $2 k$ 相连（顺时针计）。这一条弦把圆分成两侧： - 一侧有 $2 k - 2$ 个点，可不交配对数 $C_(k - 1)$； - 另一侧有 $2 n - 2 k$ 个点，可不交配对数 $C_(n - k)$。 枚举 $k = 1 . . n$ 得
+
+$ M_n = sum_(k = 1)^n C_(k - 1) C_(n - k) = sum_(i = 0)^(n - 1) C_i C_(n - 1 - i) . $
+
+同初值 $M_0 = 1$，故 $M_n = C_n$。
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 6) 将凸 $( n + 2 )$-边形三角剖分的方法数 = $C_n$
+==== 6) 将凸 $( n + 2 )$-边形三角剖分的方法数 = $C_n$
 <将凸-n2-边形三角剖分的方法数-c_n>
-固定顶点 1，选一条对角线 $( 1 \, j )$（$j = 3 . . n + 2$）。它把多边形分成： \
-\- 一个 $( j - 1 )$-边形（可三角剖分数 $C_(j - 3)$）； \
-\- 一个 $( n + 3 - j )$-边形（可三角剖分数 $C_(n - ( j - 2 ))$）。 \
-求和得同一递推： $ T_n = sum_(j = 3)^(n + 2) C_(j - 3) C_(n - ( j - 2 )) = sum_(i = 0)^(n - 1) C_i C_(n - 1 - i) \, quad T_0 = 1 \, $ 故 $T_n = C_n$。
+固定顶点 1，选一条对角线 $( 1 \, j )$（$j = 3 . . n + 2$）。它把多边形分成： - 一个 $( j - 1 )$-边形（可三角剖分数 $C_(j - 3)$）； - 一个 $( n + 3 - j )$-边形（可三角剖分数 $C_(n - ( j - 2 ))$）。 求和得同一递推：
+
+$ T_n = sum_(j = 3)^(n + 2) C_(j - 3) C_(n - ( j - 2 )) = sum_(i = 0)^(n - 1) C_i C_(n - 1 - i) \, quad T_0 = 1 \, $
+
+故 $T_n = C_n$。
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 ==== 递推来源
 <递推来源>
-===== 从合法括号序列（Dyck 路径）推导
+==== 从合法括号序列（Dyck 路径）推导
 <从合法括号序列dyck-路径推导>
 考虑长度 $2 n$ 的合法括号序列：
 
-- 第一个符号必然是“(”。 \
+- 第一个符号必然是“(”。
 - 找到与之匹配的 “)” 位置。假设它在第 $2 k + 2$ 个位置（即括号包住了 $k$ 对括号）。
 
-于是序列可以分成三部分： \
+于是序列可以分成三部分：
+
 $ upright("(") thin underbrace(S, 2 k med upright("长度的合法串")) thin upright(")") thin underbrace(T, 2 ( n - k - 1 ) med upright("长度的合法串")) $
 
-- 内部 $S$ 是一个合法串，长度 $2 k$，个数 $C_k$； \
+- 内部 $S$ 是一个合法串，长度 $2 k$，个数 $C_k$；
 - 外部 $T$ 也是一个合法串，长度 $2 ( n - k - 1 )$，个数 $C_(n - 1 - k)$。
 
-所以 $ C_n = sum_(k = 0)^(n - 1) C_k dot.op C_(n - 1 - k) . $
+所以
+
+$ C_n = sum_(k = 0)^(n - 1) C_k dot.op C_(n - 1 - k) . $
 
 这就是递推的来源。
 
 
 == 数论/数论笔记部分/数论笔记(排列组合进阶)
 
-===== 组合意义天地灭 代数推导保平安
+=== 组合意义天地灭 代数推导保平安
 <组合意义天地灭-代数推导保平安>
 #quote(block: true)[
 主要记录一些好玩的小玩意 特别感谢#link("https://www.cnblogs.com/cbdsopa/p/16319395.html")[cbdsopa的博客-OI中基本的组合数学公式];/#link("https://oi-wiki.org/math/combinatorics/combination/")[oi\_wiki组合数学]
@@ -1564,11 +2103,11 @@ $ upright("(") thin underbrace(S, 2 k med upright("长度的合法串")) thin up
 
 比较深刻的是 如果两个计数过程本质相同，那么答案相同，即使过程不同
 
-==== 插板法
+=== 插板法
 <插板法>
 插板法是用于求一类给相同元素分组的方案数的一种技巧，也可以用于求一类线性不定方程的解的组数。
 
-===== 正整数和的数目
+==== 正整数和的数目
 <正整数和的数目>
 问题一：现有 $n$ 个 #strong[完全相同] 的元素，要求将其分为 $k$ 组，保证每组至少有一个元素，一共有多少种分法？
 
@@ -1578,7 +2117,7 @@ $ upright("(") thin underbrace(S, 2 k med upright("长度的合法串")) thin up
 
 本质是求 $x_1 + x_2 + dots.h.c + x_k = n$ 的正整数解的组数。
 
-===== 非负整数和的数目
+==== 非负整数和的数目
 <非负整数和的数目>
 问题二：现有 $n$ 个 #strong[完全相同] 的元素，要求将其分为 $k$ 组，每组可以为空，一共有多少种分法？
 
@@ -1594,7 +2133,7 @@ $ binom(n + k - 1, k - 1) = binom(n + k - 1, n) $
 
 本质是求 $x_1 + x_2 + dots.h.c + x_k = n$ 的非负整数解的组数（即要求 $x_i gt.eq 0$）。
 
-===== 不同下界整数和的数目
+==== 不同下界整数和的数目
 <不同下界整数和的数目>
 问题三：现有 $n$ 个 #strong[完全相同] 的元素，要求将其分为 $k$ 组，对于第 $i$ 组，至少要分到 $a_i \, sum a_i lt.eq n$ 个元素
 
@@ -1618,7 +2157,7 @@ $ x_i' gt.eq 0 $
 
 $ binom(n - sum a_i + k - 1, n - sum a_i) $
 
-===== 不相邻的排列
+==== 不相邻的排列
 <不相邻的排列>
 $1 tilde.op n$ 这 $n$ 个自然数中选 $k$ 个，这 $k$ 个数中任何两个数都不相邻的组合有 $binom(n - k + 1, k)$ 种。
 
@@ -1630,17 +2169,41 @@ $1 tilde.op n$ 这 $n$ 个自然数中选 $k$ 个，这 $k$ 个数中任何两�
 
 构造双射：
 
-问题等价于 我们需要从 $1 \, 2 \, dots.h \, n$ 中选出 $k$ 个数，设这就 $k$ 个数从小到大排序后为 $a_1 \, a_2 \, dots.h \, a_k$。 满足： $ 1 lt.eq a_1 < a_2 < dots.h < a_k lt.eq n $ 且 $ a_(i + 1) - a_i gt.eq 2 quad ( 1 lt.eq i < k ) $ 考虑构造 $ b_i = a_i - ( i - 1 ) $ 原式变为 $ b_i < b_(i + 1) $ $b_i$ 上界 $ b_k = a_k - ( k - 1 ) lt.eq n - ( k - 1 ) = n - k + 1 $ 经过变换后，原问题等价于： 从整数集合 ${ 1 \, 2 \, dots.h \, n - k + 1 }$ 中选出 $k$ 个互不相同的整数 $b_1 < b_2 < dots.h < b_k$ 这个问题是简单的，请读者自己算
+问题等价于 我们需要从 $1 \, 2 \, dots.h \, n$ 中选出 $k$ 个数，设这就 $k$ 个数从小到大排序后为 $a_1 \, a_2 \, dots.h \, a_k$。 满足：
 
-==== 组合恒等式
+$ 1 lt.eq a_1 < a_2 < dots.h < a_k lt.eq n $
+
+且
+
+$ a_(i + 1) - a_i gt.eq 2 quad ( 1 lt.eq i < k ) $
+
+考虑构造
+
+$ b_i = a_i - ( i - 1 ) $
+
+原式变为
+
+$ b_i < b_(i + 1) $
+
+$b_i$ 上界
+
+$ b_k = a_k - ( k - 1 ) lt.eq n - ( k - 1 ) = n - k + 1 $
+
+经过变换后，原问题等价于： 从整数集合 ${ 1 \, 2 \, dots.h \, n - k + 1 }$ 中选出 $k$ 个互不相同的整数 $b_1 < b_2 < dots.h < b_k$ 这个问题是简单的，请读者自己算
+
+=== 组合恒等式
 <组合恒等式>
-===== 1. 对称式
+==== 1. 对称式
 <对称式>
-$ binom(n, m) = binom(n, n - m) $ 组合意义: 你 $n$ 中拿 $m$ 个等价于有 $n - m$ 个不拿。
+$ binom(n, m) = binom(n, n - m) $
 
-===== 2. 二项式定理/多项式定理
+组合意义: 你 $n$ 中拿 $m$ 个等价于有 $n - m$ 个不拿。
+
+==== 2. 二项式定理/多项式定理
 <二项式定理多项式定理>
-$ ( x + y )^n = sum_(i = 0)^n binom(n, i) x^i y^(n - i) $ 组合意义： 我们把 $( x + y )^n$ 看作是有 $n$ 个 $( x + y )$ 相乘，那么得到一个 $x^a y^(n - a)$ 相当于是从 $n$ 个 $( x + y )$ 中选出 $a$ 个 $( x + y )$ 中的 $x$ 相乘，那么结果的多项式中就有一项是 $binom(n, a) x^a y^(n - a)$ 。所有的这种项都满足这种情况，那么公式可得。
+$ ( x + y )^n = sum_(i = 0)^n binom(n, i) x^i y^(n - i) $
+
+组合意义： 我们把 $( x + y )^n$ 看作是有 $n$ 个 $( x + y )$ 相乘，那么得到一个 $x^a y^(n - a)$ 相当于是从 $n$ 个 $( x + y )$ 中选出 $a$ 个 $( x + y )$ 中的 $x$ 相乘，那么结果的多项式中就有一项是 $binom(n, a) x^a y^(n - a)$ 。所有的这种项都满足这种情况，那么公式可得。
 
 其实不一定要求必须是两元的，多元的也是同理。 然后我们可以得到#strong[多项式定理];：
 
@@ -1652,13 +2215,15 @@ $ frac(n !, n_1 ! n_2 ! dots.h.c n_m !) = binom(n, n_1 \, n_2 \, dots.h \, n_m) 
 
 其实这个式子就是多重集排列数
 
-===== 3. 帕斯卡定理
+==== 3. 帕斯卡定理
 <帕斯卡定理>
-$ binom(n, k) = binom(n - 1, k - 1) + binom(n - 1, k) $ 我们知道 $( x + y )^n$ 得到的多项式是系数满足杨辉三角的，我们知道了二项式定理的话，这个东西就是杨辉三角的递推式。
+$ binom(n, k) = binom(n - 1, k - 1) + binom(n - 1, k) $
+
+我们知道 $( x + y )^n$ 得到的多项式是系数满足杨辉三角的，我们知道了二项式定理的话，这个东西就是杨辉三角的递推式。
 
 组合意义： 考虑已经选了$n - 1$个数，现在要选第$n$个数，那么第$n$个数选了的话，就相当于从$n - 1$个数中选$k - 1$个数，第$n$个数没选的话，就相当于从$n - 1$个数中选$k$个数。
 
-===== 4. 特殊的二项式定理/第一类二项式反演
+==== 4. 特殊的二项式定理/第一类二项式反演
 <特殊的二项式定理第一类二项式反演>
 $ binom(n, 0) + binom(n, 1) + dots.h + binom(n, n) = 2^n $
 
@@ -1668,7 +2233,7 @@ $ sum_(i = 0)^n ( - 1 )^i binom(n, i) = \[ n = 0 \] $
 
 实际上是 $( 1 - 1 )^n$ ，我称之为第一类二项式反演。
 
-===== 5. 递推式 1
+==== 5. 递推式 1
 <递推式-1>
 $ binom(n, k) = n / k binom(n - 1, k - 1) $
 
@@ -1680,20 +2245,34 @@ $ binom(n, k) & = frac(n !, k ! ( n - k ) !)\
  & = frac(n !, ( k - 1 ) ! ( n - k ) !) dot.op n / k\
  & = n / k binom(n - 1, k - 1) $
 
-这个式子比较深刻 比如，要求解这个经典求和：$ S = sum_(k = 0)^n k binom(n, k) $直接算很难，因为系数里有个 $k$。利用 $k binom(n, k) = n binom(n - 1, k - 1)$，我们可以把 $k$ “吸”进组合数里，把常数 $n$ “吐”出来：$ sum_(k = 1)^n k binom(n, k) & = sum_(k = 1)^n n binom(n - 1, k - 1)\
+这个式子比较深刻 比如，要求解这个经典求和：
+
+$ S = sum_(k = 0)^n k binom(n, k) $
+
+直接算很难，因为系数里有个 $k$。利用 $k binom(n, k) = n binom(n - 1, k - 1)$，我们可以把 $k$ “吸”进组合数里，把常数 $n$ “吐”出来：
+
+$ sum_(k = 1)^n k binom(n, k) & = sum_(k = 1)^n n binom(n - 1, k - 1)\
  & = n sum_(k = 1)^n binom(n - 1, k - 1) quad ( upright("令 ") j = k - 1 )\
  & = n sum_(j = 0)^(n - 1) binom(n - 1, j)\
- & = n dot.op 2^(n - 1) $ \>这个式子正是7.变下项求和式中的第一个式子。
+ & = n dot.op 2^(n - 1) $
 
-===== 6. 积式
+#quote(block: true)[
+这个式子正是7.变下项求和式中的第一个式子。
+]
+
+==== 6. 积式
 <积式>
-$ binom(n, r) binom(r, k) = binom(n, k) binom(n - k, r - k) $ 定义展开左边上下分子分母同乘 $( n - k ) !$ 即可证明。
+$ binom(n, r) binom(r, k) = binom(n, k) binom(n - k, r - k) $
 
-代数推导： $ binom(n, r) binom(r, k) & = frac(n !, r ! ( n - r ) !) dot.op frac(r !, k ! ( r - k ) !)\
+定义展开左边上下分子分母同乘 $( n - k ) !$ 即可证明。
+
+代数推导：
+
+$ binom(n, r) binom(r, k) & = frac(n !, r ! ( n - r ) !) dot.op frac(r !, k ! ( r - k ) !)\
  & = frac(n !, k ! ( n - k ) !) dot.op frac(( n - k ) !, ( r - k ) ! ( n - r ) !)\
  & = binom(n, k) binom(n - k, r - k) $
 
-===== 7. 变下项求和式
+==== 7. 变下项求和式
 <变下项求和式>
 $ sum_(k = 0)^n k binom(n, k) = n 2^(n - 1) $
 
@@ -1704,13 +2283,25 @@ $ sum_(k = 0)^n k binom(n, k) & = sum_(k = 1)^n k binom(n, k)\
  & = n sum_(i = 0)^(n - 1) binom(n - 1, i)\
  & = n 2^(n - 1) $
 
-从二项式定理的求导也可以推出 利用二项式定理：$ ( 1 + x )^n = sum_(k = 0)^n binom(n, k) x^k $两边对 $x$ 求导：$ n ( 1 + x )^(n - 1) = sum_(k = 0)^n k binom(n, k) x^(k - 1) $令 $x = 1$，代入得：$ n ( 1 + 1 )^(n - 1) = sum_(k = 0)^n k binom(n, k) ( 1 )^(k - 1) $ $ n 2^(n - 1) = sum_(k = 0)^n k binom(n, k) $
+从二项式定理的求导也可以推出 利用二项式定理：
+
+$ ( 1 + x )^n = sum_(k = 0)^n binom(n, k) x^k $
+
+两边对 $x$ 求导：
+
+$ n ( 1 + x )^(n - 1) = sum_(k = 0)^n k binom(n, k) x^(k - 1) $
+
+令 $x = 1$，代入得：
+
+$ n ( 1 + 1 )^(n - 1) = sum_(k = 0)^n k binom(n, k) ( 1 )^(k - 1) $
+
+$ n 2^(n - 1) = sum_(k = 0)^n k binom(n, k) $
 
 $ sum_(k = 0)^n k^2 binom(n, k) = n ( n + 1 ) 2^(n - 2) $
 
 证明和上面差不多，就不证了。
 
-===== 8. 变上项求和式
+==== 8. 变上项求和式
 <变上项求和式>
 $ sum_(l = 0)^n binom(l, k) = binom(n + 1, k + 1) $
 
@@ -1728,17 +2319,19 @@ $ dots.v $
 
 总体的组合意义 $sum_(i = 0)^n binom(i, k)$ 等价于从 $n + 1$ 个数中选出 $k + 1$ 个，那么等式左右两边组合意义相同，等式成立。
 
-===== 8.1 变上项求和式 (扩展)
+==== 8.1 变上项求和式 (扩展)
 <变上项求和式-扩展>
 $ sum_(i = 0)^n binom(i + m, m) = binom(n + m + 1, m + 1) $
 
-另外的一种常用的形式是上下项共变的。 证明和上面的式子是类似的。 但是我们采取代数推导： $ S = underbrace(binom(m + 1, m + 1), upright("原") binom(m, m)) + binom(m + 1, m) + binom(m + 2, m) + dots.h + binom(n + m, m) $
+另外的一种常用的形式是上下项共变的。 证明和上面的式子是类似的。 但是我们采取代数推导：
+
+$ S = underbrace(binom(m + 1, m + 1), upright("原") binom(m, m)) + binom(m + 1, m) + binom(m + 2, m) + dots.h + binom(n + m, m) $
 
 $ S = underbrace(binom(m + 2, m + 1) + binom(m + 2, m), upright("合并这两项")) + dots.h + binom(n + m, m) $
 
 一直合并 Q.E.D.
 
-===== 9. 积和式 (范德蒙德卷积)
+==== 9. 积和式 (范德蒙德卷积)
 <积和式-范德蒙德卷积>
 $ sum_(k = 0)^r binom(m, k) binom(n, r - k) = binom(m + n, r) \, quad r lt.eq min { n \, m } $
 
@@ -1754,7 +2347,7 @@ $ sum_(k = 0)^r binom(k, a) binom(r - k, b) = binom(r + 1, a + b + 1) $
 
 为啥不重复？ 我们考虑 $S$ 是升序的 $a_i$ ，即为第 $a + 1$ 小，我们钦定 $i$ 的时候保证了独立性
 
-===== 10. 第二类二项式反演
+==== 10. 第二类二项式反演
 <第二类二项式反演>
 $ f ( n ) = sum_(i = 0)^n ( - 1 )^i binom(n, i) g ( i ) arrow.l.r.double g ( n ) = sum_(i = 0)^n ( - 1 )^i binom(n, i) f ( i ) $
 
@@ -1784,17 +2377,25 @@ $ therefore g ( n ) ( - 1 )^n = sum_(i = 0)^n ( - 1 )^i binom(n, i) f ( i ) $
 
 当 $n$ 为偶数，则 $n - i$ 与 $i$ 奇偶性相同，有 $g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) binom(n, i) f ( i )$ 当 $n$ 为奇数，则 $n - i$ 与 $i$ 奇偶性相反，同样有 $g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) binom(n, i) f ( i )$ 由此有 $g ( n ) = sum_(i = 0)^n ( - 1 )^(n - i) binom(n, i) f ( i )$
 
-===== 11.浅对角线求和
+==== 11.浅对角线求和
 <浅对角线求和>
-$ sum_(i = 0)^n binom(n - i, i) = F_(n + 1) $ 组合意义：爬楼梯 (Climbing Stairs)问题： 假设你要爬一个 $n$ 级台阶的楼梯。你每次只能走 1阶 或 2阶。问有多少种不同的爬法？ 角度 A：动态规划（对应右边 $F_(n + 1)$）设 $f ( n )$ 为爬 $n$ 级台阶的方法数。 最后一步可能是迈了 1 阶（前一步在 $n - 1$），或者是迈了 2 阶（前一步在 $n - 2$）。 递推公式：$f ( n ) = f ( n - 1 ) + f ( n - 2 )$。初始值：$f ( 0 ) = 1$ (不动也是一种), $f ( 1 ) = 1$。这是标准的斐波那契数列定义。 所以总方案数对应 $F_(n + 1)$。 角度 B：枚举“迈2阶”的次数（对应左边 $sum$）我们换一种数法：按“一共迈了几次 2 阶”来分类。假设我们在整个过程中，一共迈了 $i$ 次 2阶。消耗台阶数：这 $i$ 次 2 阶共消耗了 $2 i$ 级台阶。剩余台阶数：剩下的 $n - 2 i$ 级台阶，必须全部由 1阶 走完（共 $n - 2 i$ 次 1 阶）。 总步数： $ upright("总步数") = ( upright("2阶的次数") ) + ( upright("1阶的次数") ) = i + ( n - 2 i ) = n - i $排列组合：我们要在这 $n - i$ 步中，选出哪 $i$ 步是走“2阶”的。这相当于从 $n - i$ 个位置中选 $i$ 个位置。方案数为：$binom(n - i, i)$。结论既然所有的方案就是枚举 $i$ 从 $0$ 到最大可能值（$floor.l n \/ 2 floor.r$），把这些情况加起来，就是总的爬楼梯方案数。$ sum_i binom(n - i, i) = upright("爬n阶楼梯的总方案数") = F_(n + 1) $
+$ sum_(i = 0)^n binom(n - i, i) = F_(n + 1) $
 
-==== 多重集的组合数 1
+组合意义：爬楼梯 (Climbing Stairs)问题： 假设你要爬一个 $n$ 级台阶的楼梯。你每次只能走 1阶 或 2阶。问有多少种不同的爬法？ 角度 A：动态规划（对应右边 $F_(n + 1)$）设 $f ( n )$ 为爬 $n$ 级台阶的方法数。 最后一步可能是迈了 1 阶（前一步在 $n - 1$），或者是迈了 2 阶（前一步在 $n - 2$）。 递推公式：$f ( n ) = f ( n - 1 ) + f ( n - 2 )$。初始值：$f ( 0 ) = 1$ (不动也是一种), $f ( 1 ) = 1$。这是标准的斐波那契数列定义。 所以总方案数对应 $F_(n + 1)$。 角度 B：枚举“迈2阶”的次数（对应左边 $sum$）我们换一种数法：按“一共迈了几次 2 阶”来分类。假设我们在整个过程中，一共迈了 $i$ 次 2阶。消耗台阶数：这 $i$ 次 2 阶共消耗了 $2 i$ 级台阶。剩余台阶数：剩下的 $n - 2 i$ 级台阶，必须全部由 1阶 走完（共 $n - 2 i$ 次 1 阶）。 总步数：
+
+$ upright("总步数") = ( upright("2阶的次数") ) + ( upright("1阶的次数") ) = i + ( n - 2 i ) = n - i $
+
+排列组合：我们要在这 $n - i$ 步中，选出哪 $i$ 步是走“2阶”的。这相当于从 $n - i$ 个位置中选 $i$ 个位置。方案数为：$binom(n - i, i)$。结论既然所有的方案就是枚举 $i$ 从 $0$ 到最大可能值（$floor.l n \/ 2 floor.r$），把这些情况加起来，就是总的爬楼梯方案数。
+
+$ sum_i binom(n - i, i) = upright("爬n阶楼梯的总方案数") = F_(n + 1) $
+
+=== 多重集的组合数 1
 <多重集的组合数-1>
 设 $S = { n_1 dot.op a_1 \, n_2 dot.op a_2 \, dots.h.c \, n_k dot.op a_k }$ 表示由 $n_1$ 个 $a_1$，$n_2$ 个 $a_2$，…，$n_k$ 个 $a_k$ 组成的多重集。那么对于整数 $r ( r < n_i \, forall i in \[ 1 \, k \] )$，从 $S$ 中选择 $r$ 个元素组成一个多重集的方案数就是 #strong[多重集的组合数];。这个问题等价于 $x_1 + x_2 + dots.h.c + x_k = r$ 的非负整数解的数目，可以用插板法解决，答案为
 
 $ binom(r + k - 1, k - 1) $
 
-==== 多重集的组合数 2
+=== 多重集的组合数 2
 <多重集的组合数-2>
 考虑这个问题：设 $S = { n_1 dot.op a_1 \, n_2 dot.op a_2 \, dots.h.c \, n_k dot.op a_k \, }$ 表示由 $n_1$ 个 $a_1$，$n_2$ 个 $a_2$，…，$n_k$ 个 $a_k$ 组成的多重集。那么对于正整数 $r$，从 $S$ 中选择 $r$ 个元素组成一个多重集的方案数。
 
@@ -1819,7 +2420,7 @@ $ lr(|sect.big_(i = 1)^k S_i|) = \| U \| - lr(|union.big_(i = 1)^k overline(S_i)
 
 $ lr(|union.big_(i = 1)^k overline(S_i)|) = & sum_i lr(|overline(S_i)|) - sum_(i \, j) lr(|overline(S_i) sect overline(S_j)|) + sum_(i \, j \, k) lr(|overline(S_i) sect overline(S_j) sect overline(S_k)|) - dots.h.c\
  & + ( - 1 )^(k - 1) lr(|sect.big_(i = 1)^k overline(S_i)|)\
-=== & sum_i binom(k + r - n_i - 2, k - 1) - sum_(i \, j) binom(k + r - n_i - n_j - 3, k - 1) + sum_(i \, j \, k) binom(k + r - n_i - n_j - n_k - 4, k - 1) - dots.h.c\
+= & sum_i binom(k + r - n_i - 2, k - 1) - sum_(i \, j) binom(k + r - n_i - n_j - 3, k - 1) + sum_(i \, j \, k) binom(k + r - n_i - n_j - n_k - 4, k - 1) - dots.h.c\
  & + ( - 1 )^(k - 1) binom(k + r - sum_(i = 1)^k n_i - k - 1, k - 1) $
 
 拿全集 $\| U \| = binom(k + r - 1, k - 1)$ 减去上式，得到多重集的组合数
@@ -1831,6 +2432,8 @@ $ A n s = sum_(p = 0)^k ( - 1 )^p sum_A binom(k + r - 1 - sum_A n_(A_i) - p, k -
 
 == 数论/数论笔记部分/数论笔记(生成函数)
 
+=== 普通生成函数
+<普通生成函数>
 序列 $a$ 的普通生成函数（ordinary generating function，OGF）定义为形式幂级数（其实就是一个多项式()）：
 
 $ F ( x ) = sum_n a_n x^n $
@@ -1844,7 +2447,7 @@ $a$ 既可以是有穷序列，也可以是无穷序列。常见的例子（假�
 
 换句话说，如果序列 $a$ 有通项公式，那么它的普通生成函数的系数就是通项公式。
 
-==== 基本运算
+=== 基本运算
 <基本运算>
 考虑两个序列 $a \, b$ 的普通生成函数，分别为 $F ( x ) \, G ( x )$。那么有
 
@@ -1858,7 +2461,7 @@ $ F ( x ) G ( x ) = sum_n x^n sum_(i = 0)^n a_i b_(n - i) $
 
 因此 $F ( x ) G ( x )$ 是序列 $angle.l sum_(i = 0)^n a_i b_(n - i) angle.r$ 的普通生成函数。
 
-==== 封闭形式
+=== 封闭形式
 <封闭形式>
 在运用生成函数的过程中，我们不会一直使用形式幂级数的形式，而会适时地转化为封闭形式以更好地化简。
 
@@ -1879,44 +2482,42 @@ F ( x ) & = frac(1, 1 - p x) $
 
 等比数列的封闭形式与展开形式是常用的变换手段。
 
-==== 应用
+=== 应用
 <应用>
 接下来给出一些例题，来介绍生成函数在 OI 中的具体应用。
 
-======= 普通生成函数可以用来解决#strong[多重集合组合数];问题。
+==== 普通生成函数可以用来解决#strong[多重集合组合数];问题。
 <普通生成函数可以用来解决多重集合组合数问题>
 #line(length: 100%, stroke: 0.5pt + luma(180))
 问题：有 $n$ 种物品，每种物品有 $a_i$ 个，问取 $m$ 个物品的组合数？
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 多重集合组合数
+==== 多重集合组合数
 <多重集合组合数>
-设从每种物品中取 $b_i$ 个，$0 lt.eq b_i lt.eq a_i$， \
-$m = sum_(i = 1)^n b_i$，对于一组选定的 $b_i$ 进行组合的方案数为 #strong[1];。 \
-例如，取 3 个 A，1 个 B 的方案就是 {AAAB}；取 2 个 A、2 个 B 的方案就是 {AABB}。 \
-那么，所有满足 \
-#emph[#strong[b₁ + b₂ + ⋯ + bₙ = m];] 的方案之和，即答案。
+设从每种物品中取 $b_i$ 个，$0 lt.eq b_i lt.eq a_i$， $m = sum_(i = 1)^n b_i$，对于一组选定的 $b_i$ 进行组合的方案数为 #strong[1];。 例如，取 3 个 A，1 个 B 的方案就是 {AAAB}；取 2 个 A、2 个 B 的方案就是 {AABB}。 那么，所有满足 #emph[#strong[b₁ + b₂ + ⋯ + bₙ = m];] 的方案之和，即答案。
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 构造普通生成函数
+==== 构造普通生成函数
 <构造普通生成函数>
-第 1 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_1) )$， \
-第 $n$ 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_n) )$。
+第 1 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_1) )$， 第 $n$ 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_n) )$。
 
-即 \
-$ ( 1 + x^1 + x^2 + dots.h.c + x^(a_1) ) ( 1 + x^1 + x^2 + dots.h.c + x^(a_2) ) dots.h.c ( 1 + x^1 + x^2 + dots.h.c + x^(a_n) ) $ 求 $x^m$ 的系数。
+即
+
+$ ( 1 + x^1 + x^2 + dots.h.c + x^(a_1) ) ( 1 + x^1 + x^2 + dots.h.c + x^(a_2) ) dots.h.c ( 1 + x^1 + x^2 + dots.h.c + x^(a_n) ) $
+
+求 $x^m$ 的系数。
 
 #quote(block: true)[
 #strong[注意：] 指数即物品个数，系数即组合数。
 ]
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 例如：
+==== 例如：
 <例如>
-有三种物品，分别有 3、2、1 个，问取 4 个物品的组合数？ \
-枚举的话，有 {AAAB, AAAC, AABB, AABC, ABBC}，5 个方案。
+有三种物品，分别有 3、2、1 个，问取 4 个物品的组合数？ 枚举的话，有 {AAAB, AAAC, AABB, AABC, ABBC}，5 个方案。
 
-构造 \
+构造
+
 $ ( 1 + x + x^2 + x^3 ) ( 1 + x + x^2 ) ( 1 + x ) $
 
 逐步展开：
@@ -1928,13 +2529,12 @@ $  & = ( 1 + x + x^2 + x^3 ) ( 1 + x + x^2 ) ( 1 + x )\
 
 $x^4$ 的系数为 5，即答案。
 
-===== HDU - 1085 Holding Bin-Laden Captive!
+==== HDU - 1085 Holding Bin-Laden Captive!
 <hdu---1085-holding-bin-laden-captive>
-面值为 1, 2, 5 的硬币分别有 $a_1 \, a_2 \, a_3$ 枚， \
-问用这些硬币#strong[不能];组成的最小面值是多少？
+面值为 1, 2, 5 的硬币分别有 $a_1 \, a_2 \, a_3$ 枚， 问用这些硬币#strong[不能];组成的最小面值是多少？
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 思路
+==== 思路
 <思路>
 构造生成函数：
 
@@ -1943,7 +2543,7 @@ $ ( 1 + x^1 + x^2 + dots.h.c + x^(a_1) ) times ( 1 + x^2 + x^4 + dots.h.c + x^(2
 从小到大遍历系数，#strong[为 0 的那一项];就是答案。
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-===== 例如：
+==== 例如：
 <例如-1>
 1 分有 1 枚，2 分有 1 枚，5 分有 1 枚：
 
@@ -1954,22 +2554,20 @@ $  & = ( 1 + x^2 + x^1 + x^3 ) ( 1 + x^5 )\
 
 最小不能组成的面值是 4。
 
-===== 食物
+==== 食物
 <食物>
-```
 在许多不同种类的食物中选出 $n$ 个，每种食物的限制如下：
 
-1.  承德汉堡：偶数个
-2.  可乐：0 个或 1 个
-3.  鸡腿：0 个，1 个或 2 个
-4.  蜜桃多：奇数个
-5.  鸡块：4 的倍数个
-6.  包子：0 个，1 个，2 个或 3 个
-7.  土豆片炒肉：不超过一个。
-8.  面包：3 的倍数个
++ 承德汉堡：偶数个
++ 可乐：0 个或 1 个
++ 鸡腿：0 个，1 个或 2 个
++ 蜜桃多：奇数个
++ 鸡块：4 的倍数个
++ 包子：0 个，1 个，2 个或 3 个
++ 土豆片炒肉：不超过一个。
++ 面包：3 的倍数个
 
 每种食物都是以「个」为单位，只要总数加起来是 n 就算一种方案。对于给出的 n 你需要计算出方案数，对 10007 取模。
-```
 
 这是一道经典的生成函数题。对于一种食物，我们可以设 $a_n$ 表示这种食物选 $n$ 个的方案数，并求出它的生成函数。而两种食物一共选 $n$ 个的方案数的生成函数，就是它们生成函数的卷积。多种食物选 $n$ 个的方案数的生成函数也是它们生成函数的卷积。
 
@@ -1988,7 +2586,9 @@ $  & = ( 1 + x^2 + x^1 + x^3 ) ( 1 + x^5 )\
 
 $ F ( x ) = frac(( 1 + x ) ( 1 - x^3 ) x ( 1 - x^4 ) ( 1 + x ), ( 1 - x^2 ) ( 1 - x ) ( 1 - x^2 ) ( 1 - x^4 ) ( 1 - x ) ( 1 - x^3 )) = frac(x, ( 1 - x )^4) $
 
-#strong[广义二项式定理] $ frac(1, ( 1 - x )^n) = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
+#strong[广义二项式定理]
+
+$ frac(1, ( 1 - x )^n) = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
 
 然后将它转化为展开形式（使用广义二项式定理）：
 
@@ -2001,17 +2601,21 @@ $ F ( x ) & = x sum_(i = 0)^oo (C_(4 + i - 1)^i) x^i\
 
 $ C_(n + 2)^3 $
 
-==== 指数生成函数
+=== 指数生成函数
 <指数生成函数>
 指数生成函数：
 
 $ F ( x ) = sum_(n gt.eq 0) a_n frac(x^n, n !) $
 
-序列 $< 1 \, 1 \, 1 \, dots.h.c >$ 的指数生成函数是 $ 1 + frac(x, 1 !) + frac(x^2, 2 !) + frac(x^3, 3 !) + dots.h.c = sum_(n gt.eq 0) frac(x^n, n !) = e^x $
+序列 $< 1 \, 1 \, 1 \, dots.h.c >$ 的指数生成函数是
 
-序列 $< 1 \, p \, p^2 \, dots.h.c >$ 的指数生成函数是 $ 1 + p frac(x, 1 !) + p^2 frac(x^2, 2 !) + p^3 frac(x^3, 3 !) + dots.h.c = sum_(n gt.eq 0) p^n frac(x^n, n !) = e^(p x) $
+$ 1 + frac(x, 1 !) + frac(x^2, 2 !) + frac(x^3, 3 !) + dots.h.c = sum_(n gt.eq 0) frac(x^n, n !) = e^x $
 
-===== 基本运算
+序列 $< 1 \, p \, p^2 \, dots.h.c >$ 的指数生成函数是
+
+$ 1 + p frac(x, 1 !) + p^2 frac(x^2, 2 !) + p^3 frac(x^3, 3 !) + dots.h.c = sum_(n gt.eq 0) p^n frac(x^n, n !) = e^(p x) $
+
+==== 基本运算
 <基本运算-1>
 加减运算
 
@@ -2025,7 +2629,7 @@ $ F ( x ) G ( x ) = sum_(i gt.eq 0) a_i frac(x^i, i !) sum_(j gt.eq 0) b_j frac(
 
 因此 $F ( x ) G ( x )$ 是序列 $< sum_(i = 0)^n C_n^i a_i b_(n - i) >$ 的指数生成函数。
 
-===== 封闭形式
+==== 封闭形式
 <封闭形式-1>
 我们同样考虑指数生成函数的封闭形式。
 
@@ -2039,7 +2643,7 @@ $ hat(F) ( x ) = sum_(n gt.eq 0) frac(x^n, n !) = upright(e)^x $
 
 $ hat(F) ( x ) = sum_(n gt.eq 0) frac(p^n x^n, n !) = upright(e)^(p x) $
 
-===== 指数生成函数可以用来解决多重集排列数问题。
+==== 指数生成函数可以用来解决多重集排列数问题。
 <指数生成函数可以用来解决多重集排列数问题>
 HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个，问取 $m$ 个物品的排列数？
 
@@ -2051,7 +2655,7 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 
 做乘法，$frac(x^(b_1), b_1 !) times frac(x^(b_2), b_2 !) times dots.h.c times frac(x^(b_n), b_n !) = frac(x^(b_1 + b_2 + dots.h.c + b_n), b_1 ! b_2 ! dots.h.c b_n !) = frac(x^m, b_1 ! b_2 ! dots.h.c b_n !) = frac(m !, b_1 ! b_2 ! dots.h.c b_n !) dot.op frac(x^m, m !)$。 做卷积，所有满足 $b_1 + b_2 + dots.h.c + b_n = m$ 的项的系数之和，再乘以 $m !$，即答案。
 
-==== 一点小结论（前已述及）
+=== 一点小结论（前已述及）
 <一点小结论前已述及>
 #block[
 #set enum(numbering: "(1)", start: 1)
@@ -2063,28 +2667,72 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 #line(length: 100%, stroke: 0.5pt + luma(180))
 #strong[泰勒展开式]
 
-普通生成函数： $ frac(1, 1 - x) = 1 + x + x^2 + x^3 + dots.h.c = sum_(n = 0)^oo x^n $ $ frac(1, 1 - x^2) = 1 + x^2 + x^4 + dots.h.c $ $ frac(1, 1 - x^3) = 1 + x^3 + x^6 + dots.h.c $ $ frac(1, ( 1 - x )^2) = 1 + 2 x + 3 x^2 + dots.h.c $
+普通生成函数：
 
-指数生成函数： $ e^x = 1 + frac(x^1, 1 !) + frac(x^2, 2 !) + frac(x^3, 3 !) + dots.h.c = sum_(n = 0)^oo frac(x^n, n !) $ $ e^(- x) = 1 - frac(x^1, 1 !) + frac(x^2, 2 !) - frac(x^3, 3 !) + dots.h.c $ $ frac(e^x + e^(- x), 2) = 1 + frac(x^2, 2 !) + frac(x^4, 4 !) + dots.h.c $ $ frac(e^x - e^(- x), 2) = x + frac(x^3, 3 !) + frac(x^5, 5 !) + dots.h.c $
+$ frac(1, 1 - x) = 1 + x + x^2 + x^3 + dots.h.c = sum_(n = 0)^oo x^n $
+
+$ frac(1, 1 - x^2) = 1 + x^2 + x^4 + dots.h.c $
+
+$ frac(1, 1 - x^3) = 1 + x^3 + x^6 + dots.h.c $
+
+$ frac(1, ( 1 - x )^2) = 1 + 2 x + 3 x^2 + dots.h.c $
+
+指数生成函数：
+
+$ e^x = 1 + frac(x^1, 1 !) + frac(x^2, 2 !) + frac(x^3, 3 !) + dots.h.c = sum_(n = 0)^oo frac(x^n, n !) $
+
+$ e^(- x) = 1 - frac(x^1, 1 !) + frac(x^2, 2 !) - frac(x^3, 3 !) + dots.h.c $
+
+$ frac(e^x + e^(- x), 2) = 1 + frac(x^2, 2 !) + frac(x^4, 4 !) + dots.h.c $
+
+$ frac(e^x - e^(- x), 2) = x + frac(x^3, 3 !) + frac(x^5, 5 !) + dots.h.c $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-#strong[有穷序列的生成函数] $ 1 + x + x^2 = frac(1 - x^3, 1 - x) $ $ 1 + x + x^2 + x^3 = frac(1 - x^4, 1 - x) $
+#strong[有穷序列的生成函数]
+
+$ 1 + x + x^2 = frac(1 - x^3, 1 - x) $
+
+$ 1 + x + x^2 + x^3 = frac(1 - x^4, 1 - x) $
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
-#strong[广义二项式定理] $ frac(1, ( 1 - x )^n) = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
+#strong[广义二项式定理]
+
+$ frac(1, ( 1 - x )^n) = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
 
 #strong[证明：]
 
-二项式定理： $ ( 1 + x )^n = sum_(i = 0)^n C_n^i x^i $
+二项式定理：
+
+$ ( 1 + x )^n = sum_(i = 0)^n C_n^i x^i $
 
 #block[
 #set enum(numbering: "(1)", start: 1)
-+ 扩展域： $ ( 1 + x )^n = sum_(i = 0)^oo C_n^i x^i \, quad upright("当 ") i > n upright(" 时 ") C_n^i = 0 $
-
-+ 扩展指数为负数： $ C_(- n)^i = ( - n ) ( - n - 1 ) dots.h.c ( - n - i + 1 ) $ $ = ( - 1 )^i dot.op frac(n ( n + 1 ) dots.h.c ( n + i - 1 ), i !) = ( - 1 )^i C_(n + i - 1)^i $ $ ( 1 + x )^(- n) = sum_(i = 0)^oo C_(- n)^i x^i $ $ = sum_(i = 0)^oo ( - 1 )^i C_(n + i - 1)^i x^i $
-
-+ 括号内的加号变减号： $ ( 1 - x )^(- n) = sum_(i = 0)^oo ( - 1 )^i C_(n + i - 1)^i ( - x )^i $ $ = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
++ 扩展域：
 ]
+
+$ ( 1 + x )^n = sum_(i = 0)^oo C_n^i x^i \, quad upright("当 ") i > n upright(" 时 ") C_n^i = 0 $
+
+#block[
+#set enum(numbering: "(1)", start: 2)
++ 扩展指数为负数：
+]
+
+$ C_(- n)^i = ( - n ) ( - n - 1 ) dots.h.c ( - n - i + 1 ) $
+
+$ = ( - 1 )^i dot.op frac(n ( n + 1 ) dots.h.c ( n + i - 1 ), i !) = ( - 1 )^i C_(n + i - 1)^i $
+
+$ ( 1 + x )^(- n) = sum_(i = 0)^oo C_(- n)^i x^i $
+
+$ = sum_(i = 0)^oo ( - 1 )^i C_(n + i - 1)^i x^i $
+
+#block[
+#set enum(numbering: "(1)", start: 3)
++ 括号内的加号变减号：
+]
+
+$ ( 1 - x )^(- n) = sum_(i = 0)^oo ( - 1 )^i C_(n + i - 1)^i ( - x )^i $
+
+$ = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
 
 证毕。
 
@@ -2093,6 +2741,8 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 
 == 数论/数论笔记部分/FFT笔记
 
+=== FFT
+<fft>
 #figure(image("../../数论/数论笔记部分/md.img/FFT1.png"),
   caption: [
     本地图片
@@ -2138,7 +2788,7 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 
 == 数论/数论笔记部分/数论笔记(sosdp&fmt&fwt)
 
-===== sosdp(高维前缀和)
+=== sosdp(高维前缀和)
 <sosdp高维前缀和>
 我们要求 $d p \[ i \]$ 的所有子集 $j subset.eq i$ 的 $A \[ j \]$ 之和。
 
@@ -2148,7 +2798,7 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 
 再只处理列（y轴）： 基于第一步的结果，对每一列单独做 1D 前缀和。
 
-====== 推广到 $N$ 维（比特位）
+==== 推广到 $N$ 维（比特位）
 <推广到-n-维比特位>
 在 SOS DP 中，我们把一个数字的二进制表示看作维度。 比如数字 $5 ( 101_2 )$，可以看作是一个 3 维坐标 $( 1 \, 0 \, 1 )$。 求“子集和”（即 $i$ 的所有子集 $j subset.eq i$ 的 $A \[ j \]$ 之和），本质上就是在求这个 $N$ 维超立方体的“高维前缀和”。
 
@@ -2188,7 +2838,7 @@ for (int j = 0; j < n; ++j) { // 枚举每一个维度（每一位）
 + #strong[`j=1` (处理第1位)：] $d p \[ . .1 . \] + = d p \[ . .0 . \]$。 此时 $d p \[ 111 \]$ 加上了 $d p \[ 101 \]$。 #emph[注意：] 这里的 $d p \[ 101 \]$ 在上一轮已经加上了 $d p \[ 100 \]$。 #emph[意义：现在 $d p \[ 111 \]$ 包含了 ${ 111 \, 110 \, 101 \, 100 }$ 的和。]
 + #strong[`j=2` (处理第2位)：] $d p \[ 1 . . \] + = d p \[ 0 . . \]$。 此时 $d p \[ 111 \]$ 加上了 $d p \[ 011 \]$。 #emph[注意：] $d p \[ 011 \]$ 在前两轮已经包含了 ${ 011 \, 010 \, 001 \, 000 }$。 #emph[意义：现在 $d p \[ 111 \]$ 包含了所有 8 个子集。]
 
-====== 超集和
+==== 超集和
 <超集和>
 换个符号即可
 
@@ -2197,7 +2847,7 @@ for (int j = 0; j < n; ++j) {
     for (int i = 0; i < (1 << n); ++i) {
         if (!((i >> j) & 1)) { // 如果第 j 位是 0
             // 它的超集包括第 j 位是 1 的那个状态
-            dp[i] += dp[i ^ (1 << j)]; 
+            dp[i] += dp[i ^ (1 << j)];
         }
     }
 }
@@ -2207,7 +2857,7 @@ for (int j = 0; j < n; ++j) {
 如果做高维差分 反着做前缀和即可
 ]
 
-====== 例题：luogu P5495 【模板】Dirichlet 前缀和
+==== 例题：luogu P5495 【模板】Dirichlet 前缀和
 <例题luogu-p5495-模板dirichlet-前缀和>
 唯一分解定理：$N = product p_i^(c_i)$，其中 $p_i$ 是质数，$c_i$ 是次数。
 
@@ -2215,7 +2865,7 @@ for (int j = 0; j < n; ++j) {
 
 考虑先枚举 $p_i$， 再在每个维度上做偏序关系转移即可
 
-====== 例题：CF449D
+==== 例题：CF449D
 <例题cf449d>
 考虑答案是st的超集的方案数是好求的：
 
@@ -2225,11 +2875,21 @@ for (int j = 0; j < n; ++j) {
 
 现在我们有至少 考虑恰好的关系
 
-用一下超集反演： $ f ( S ) = sum_(S subset.eq T) g ( T ) arrow.l.r.double g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $
+用一下超集反演：
 
-我们知道 $ f ( 0 ) = sum_(S subset.eq T) g ( T ) $ \>这里的f函数含义是 答案是0的超集的方案数 \>右边是 对所有0的超集 恰好为t的方案数
+$ f ( S ) = sum_(S subset.eq T) g ( T ) arrow.l.r.double g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $
 
-所以 $ g ( 0 ) = sum_(S subset.eq T) ( - 1 )^(\| T \|) f ( T ) $
+我们知道
+
+$ f ( 0 ) = sum_(S subset.eq T) g ( T ) $
+
+#quote(block: true)[
+这里的f函数含义是 答案是0的超集的方案数 右边是 对所有0的超集 恰好为t的方案数
+]
+
+所以
+
+$ g ( 0 ) = sum_(S subset.eq T) ( - 1 )^(\| T \|) f ( T ) $
 
 #quote(block: true)[
 其实这是简单容斥
@@ -2237,11 +2897,15 @@ for (int j = 0; j < n; ++j) {
 
 容斥求解即可
 
-===== FMT(快速莫比乌斯变换)
+=== FMT(快速莫比乌斯变换)
 <fmt快速莫比乌斯变换>
-回忆多项式乘法 $ C_k = sum_(i + j = k) A_i times B_j $
+回忆多项式乘法
 
-考虑把下标 换成按位或 $ C_k = sum_(i or j = k) A_i times B_j $
+$ C_k = sum_(i + j = k) A_i times B_j $
+
+考虑把下标 换成按位或
+
+$ C_k = sum_(i or j = k) A_i times B_j $
 
 #quote(block: true)[
 你如果把下标看成集合意义下的状压的话 可能比较好理解一点 e.g.~$i or j = k$ 就是说 $i$ 和 $j$ 的并集是 $k$
@@ -2253,19 +2917,31 @@ for (int j = 0; j < n; ++j) {
 
 or卷积也能这样加速
 
-定义： $ F M T ( A ) \[ k \] = sum_(i subset.eq k) A \[ i \] $
+定义：
+
+$ F M T ( A ) \[ k \] = sum_(i subset.eq k) A \[ i \] $
 
 #quote(block: true)[
 注意这是子集和的形式
 ]
 
-考虑： $ F M T ( A ) \[ k \] times F M T ( B ) \[ k \] = ( sum_(i subset.eq k) A \[ i \] ) times ( sum_(j subset.eq k) B \[ j \] ) $ $ = sum_(i subset.eq k) sum_(j subset.eq k) A \[ i \] B \[ j \] $
+考虑：
 
-注意条件：如果 $i$ 是 $k$ 的子集，且 $j$ 也是 $k$ 的子集，那么 $i or j$ 一定也是 $k$ 的子集。 所以上面那坨式子其实等于： $ sum_(( i or j ) subset.eq k) A \[ i \] B \[ j \] $
+$ F M T ( A ) \[ k \] times F M T ( B ) \[ k \] = ( sum_(i subset.eq k) A \[ i \] ) times ( sum_(j subset.eq k) B \[ j \] ) $
 
-按定义，我们知道： $ F M T ( C ) \[ k \] = sum_(i subset.eq k) C \[ i \] = sum_(( i or j ) subset.eq k) A \[ i \] B \[ j \] $
+$ = sum_(i subset.eq k) sum_(j subset.eq k) A \[ i \] B \[ j \] $
 
-所以： $ F M T ( A ) \[ k \] times F M T ( B ) \[ k \] = F M T ( C ) \[ k \] $
+注意条件：如果 $i$ 是 $k$ 的子集，且 $j$ 也是 $k$ 的子集，那么 $i or j$ 一定也是 $k$ 的子集。 所以上面那坨式子其实等于：
+
+$ sum_(( i or j ) subset.eq k) A \[ i \] B \[ j \] $
+
+按定义，我们知道：
+
+$ F M T ( C ) \[ k \] = sum_(i subset.eq k) C \[ i \] = sum_(( i or j ) subset.eq k) A \[ i \] B \[ j \] $
+
+所以：
+
+$ F M T ( A ) \[ k \] times F M T ( B ) \[ k \] = F M T ( C ) \[ k \] $
 
 所以我们可以把多项式乘法变成 $F M T$ 乘法，然后再 $I F M T$ 回去。
 
@@ -2279,22 +2955,46 @@ $C_k = sum_(i and j = k) A_i times B_j$
 
 推导基本从上，恕我从略，只要把高维前缀和变成高维后缀和，高维前缀差分变成高维后缀差分即可
 
-===== FWT(快速沃尔什变换)
+=== FWT(快速沃尔什变换)
 <fwt快速沃尔什变换>
 FWT除了可以处理and/or卷积，还可以处理异或卷积
 
-异或卷积： $ C_k = sum_(i xor j = k) A_i times B_j $
+异或卷积：
+
+$ C_k = sum_(i xor j = k) A_i times B_j $
 
 下面详细推导一下xor卷积的FWT
 
-构造： $ F W T ( A )_k = sum_(i = 0)^(2^n - 1) ( - 1 )^(\| i sect k \|) A_i $
+构造：
+
+$ F W T ( A )_k = sum_(i = 0)^(2^n - 1) ( - 1 )^(\| i sect k \|) A_i $
 
 其中 $\| x \|$ 表示 $x$ 二进制表示中 $1$ 的个数（popcount）。 $\| i sect k \|$ 表示 $i$ 和 $k$ 按位与之后，包含 $1$ 的个数。 $( - 1 )^(\| i sect k \|)$ 实际上是在检测 $i$ 和 $k$ 的“相关性”奇偶。
 
-我们要证明：$F W T ( C )_k = F W T ( A )_k dot.op F W T ( B )_k$。 推导左边 (LHS)：根据定义，把 $C_p = sum_(i xor j = p) A_i B_j$ 代入： $ F W T ( C )_k & = sum_p ( - 1 )^(\| p sect k \|) C_p\
- & = sum_p ( - 1 )^(\| p sect k \|) (sum_(i xor j = p) A_i B_j) $ 由于 $p = i xor j$，我们可以把求和号展开，直接枚举 $i$ 和 $j$： $ F W T ( C )_k = sum_i sum_j ( - 1 )^(\| ( i xor j ) sect k \|) A_i B_j $ 关键性质：$ \| ( i xor j ) sect k \| equiv \| i sect k \| + \| j sect k \| med (mod 2) $ 解释：$i$ 和 $j$ 在第 $m$ 位异或为 1，当且仅当它们在该位上一个为 0 一个为 1。与 $k$ 做 AND 后，只有当 $k$ 在该位也是 1 时才会产生贡献。这一位的贡献要么是 $1 + 0 = 1$，要么是 $0 + 1 = 1$，奇偶性都和加法一致。因为 $( - 1 )^x$ 只关心 $x$ 的奇偶性，所以： $ ( - 1 )^(\| ( i xor j ) sect k \|) = ( - 1 )^(\| i sect k \| + \| j sect k \|) = ( - 1 )^(\| i sect k \|) dot.op ( - 1 )^(\| j sect k \|) $ 代回原式： $ F W T ( C )_k & = sum_i sum_j (( - 1 )^(\| i sect k \|) dot.op ( - 1 )^(\| j sect k \|)) A_i B_j\
+我们要证明：$F W T ( C )_k = F W T ( A )_k dot.op F W T ( B )_k$。 推导左边 (LHS)：根据定义，把 $C_p = sum_(i xor j = p) A_i B_j$ 代入：
+
+$ F W T ( C )_k & = sum_p ( - 1 )^(\| p sect k \|) C_p\
+ & = sum_p ( - 1 )^(\| p sect k \|) (sum_(i xor j = p) A_i B_j) $
+
+由于 $p = i xor j$，我们可以把求和号展开，直接枚举 $i$ 和 $j$：
+
+$ F W T ( C )_k = sum_i sum_j ( - 1 )^(\| ( i xor j ) sect k \|) A_i B_j $
+
+关键性质：
+
+$ \| ( i xor j ) sect k \| equiv \| i sect k \| + \| j sect k \| med (mod 2) $
+
+解释：$i$ 和 $j$ 在第 $m$ 位异或为 1，当且仅当它们在该位上一个为 0 一个为 1。与 $k$ 做 AND 后，只有当 $k$ 在该位也是 1 时才会产生贡献。这一位的贡献要么是 $1 + 0 = 1$，要么是 $0 + 1 = 1$，奇偶性都和加法一致。因为 $( - 1 )^x$ 只关心 $x$ 的奇偶性，所以：
+
+$ ( - 1 )^(\| ( i xor j ) sect k \|) = ( - 1 )^(\| i sect k \| + \| j sect k \|) = ( - 1 )^(\| i sect k \|) dot.op ( - 1 )^(\| j sect k \|) $
+
+代回原式：
+
+$ F W T ( C )_k & = sum_i sum_j (( - 1 )^(\| i sect k \|) dot.op ( - 1 )^(\| j sect k \|)) A_i B_j\
  & = (sum_i ( - 1 )^(\| i sect k \|) A_i) dot.op (sum_j ( - 1 )^(\| j sect k \|) B_j)\
- & = F W T ( A )_k dot.op F W T ( B )_k $ 得证。
+ & = F W T ( A )_k dot.op F W T ( B )_k $
+
+得证。
 
 现在我们推导FWT的分治算法
 
@@ -2302,20 +3002,38 @@ FWT除了可以处理and/or卷积，还可以处理异或卷积
 
 现在我们要计算 $F W T ( A )$。 对于任意结果下标 $k$，我们把它写成 $( 0 \, k' )$ 或者 $( 1 \, k' )$ 的形式，其中 $k'$ 是去掉最高位剩下的部分。
 
-====== 情况 1：结果下标最高位为 0 ($k < 2^(n - 1)$)
+==== 情况 1：结果下标最高位为 0 ($k < 2^(n - 1)$)
 <情况-1结果下标最高位为-0-k-2n-1>
 $ F W T ( A )_k & = sum_(i = 0)^(2^n - 1) ( - 1 )^(\| i sect k \|) A_i\
- & = sum_(i = 0)^(2^(n - 1) - 1) ( - 1 )^(\| i sect k \|) A_i + sum_(i = 2^(n - 1))^(2^n - 1) ( - 1 )^(\| i sect k \|) A_i $ \* #strong[左半边和 ($A_0$)];：$i$ 的最高位是 0，$k$ 的最高位是 0。$i sect k$ 不涉及最高位。这部分就是 $F W T ( A_0 )_k$。 \* #strong[右半边和 ($A_1$)];：$i$ 的最高位是 1，$k$ 的最高位是 0。$i sect k$ #strong[依然不涉及最高位];（因为 $1 med & med 0 = 0$）。这部分就是 $F W T ( A_1 )_k$。
+ & = sum_(i = 0)^(2^(n - 1) - 1) ( - 1 )^(\| i sect k \|) A_i + sum_(i = 2^(n - 1))^(2^n - 1) ( - 1 )^(\| i sect k \|) A_i $
 
-#strong[结论 1：] $ F W T ( A )_(l e f t) = F W T ( A_0 ) + F W T ( A_1 ) $
+- #strong[左半边和 ($A_0$)];：$i$ 的最高位是 0，$k$ 的最高位是 0。$i sect k$ 不涉及最高位。这部分就是 $F W T ( A_0 )_k$。
+- #strong[右半边和 ($A_1$)];：$i$ 的最高位是 1，$k$ 的最高位是 0。$i sect k$ #strong[依然不涉及最高位];（因为 $1 med & med 0 = 0$）。这部分就是 $F W T ( A_1 )_k$。
 
-====== 情况 2：结果下标最高位为 1 ($k gt.eq 2^(n - 1)$)
+#strong[结论 1：]
+
+$ F W T ( A )_(l e f t) = F W T ( A_0 ) + F W T ( A_1 ) $
+
+==== 情况 2：结果下标最高位为 1 ($k gt.eq 2^(n - 1)$)
 <情况-2结果下标最高位为-1-k-ge-2n-1>
-令实际计算的下标为 $k + 2^(n - 1)$（其中 $k < 2^(n - 1)$）。 $ F W T ( A )_(k + 2^(n - 1)) & = sum_(i = 0)^(2^(n - 1) - 1) ( - 1 )^(\| i sect ( k + 2^(n - 1) ) \|) A_i + sum_(i = 2^(n - 1))^(2^n - 1) ( - 1 )^(\| i sect ( k + 2^(n - 1) ) \|) A_i $ \* #strong[左半边和 ($A_0$)];：$i$ 最高位 0。$i sect ( k + 2^(n - 1) )$ 的最高位是 $0 med & med 1 = 0$。最高位无贡献。这部分依然是 $F W T ( A_0 )_k$。 \* #strong[右半边和 ($A_1$)];：$i$ 最高位 1。$i sect ( k + 2^(n - 1) )$ 的最高位是 $1 med & med 1 = 1$。#strong[最高位贡献了 1 个 1];。 所以 $( - 1 )^(\| . . . \|)$ 会多乘一个 $( - 1 )^1 = - 1$。 这部分变成了 $- F W T ( A_1 )_k$。
+令实际计算的下标为 $k + 2^(n - 1)$（其中 $k < 2^(n - 1)$）。
 
-#strong[结论 2：] $ F W T ( A )_(r i g h t) = F W T ( A_0 ) - F W T ( A_1 ) $
+$ F W T ( A )_(k + 2^(n - 1)) & = sum_(i = 0)^(2^(n - 1) - 1) ( - 1 )^(\| i sect ( k + 2^(n - 1) ) \|) A_i + sum_(i = 2^(n - 1))^(2^n - 1) ( - 1 )^(\| i sect ( k + 2^(n - 1) ) \|) A_i $
 
-综合上面的推导，我们得到了递归式：$ F W T ( A ) = upright("merge") ( F W T ( A_0 ) \, F W T ( A_1 ) ) $其中 merge 操作为： $ {A'_(l e f t) = A_(0') + A_(1')\
+- #strong[左半边和 ($A_0$)];：$i$ 最高位 0。$i sect ( k + 2^(n - 1) )$ 的最高位是 $0 med & med 1 = 0$。最高位无贡献。这部分依然是 $F W T ( A_0 )_k$。
+- #strong[右半边和 ($A_1$)];：$i$ 最高位 1。$i sect ( k + 2^(n - 1) )$ 的最高位是 $1 med & med 1 = 1$。#strong[最高位贡献了 1 个 1];。 所以 $( - 1 )^(\| . . . \|)$ 会多乘一个 $( - 1 )^1 = - 1$。 这部分变成了 $- F W T ( A_1 )_k$。
+
+#strong[结论 2：]
+
+$ F W T ( A )_(r i g h t) = F W T ( A_0 ) - F W T ( A_1 ) $
+
+综合上面的推导，我们得到了递归式：
+
+$ F W T ( A ) = upright("merge") ( F W T ( A_0 ) \, F W T ( A_1 ) ) $
+
+其中 merge 操作为：
+
+$ {A'_(l e f t) = A_(0') + A_(1')\
 A'_(r i g h t) = A_(0') - A_(1') $
 
 这正是FWT的分治算法。
@@ -2326,25 +3044,35 @@ IFWT对反解上述过程即可
 
 同理 我们可以推导
 
-====== and卷积的FWT
+==== and卷积的FWT
 <and卷积的fwt>
 $ F W T ( A )_k = sum_(i subset.eq k) A_i $
 
-假设数组 $A$ 长度为 $2^n$。我们将 $A$ 一分为二，同样可以推导 正变换: $ {A'_(l e f t) = A'_0\
+假设数组 $A$ 长度为 $2^n$。我们将 $A$ 一分为二，同样可以推导 正变换:
+
+$ {A'_(l e f t) = A'_0\
 A'_(r i g h t) = A'_0 + A'_1 $
 
-逆变换:解上面的方程组求 $A'_0 \, A'_1$： $ {A'_0 = A'_(l e f t)\
+逆变换:解上面的方程组求 $A'_0 \, A'_1$：
+
+$ {A'_0 = A'_(l e f t)\
 A'_1 = A'_(r i g h t) - A'_(l e f t) $
 
-====== or卷积的FWT
+==== or卷积的FWT
 <or卷积的fwt>
 $ F W T ( A )_k = sum_(k subset.eq i) A_i $
 
-正变换:$ {A'_(l e f t) = A'_0 + A'_1\
-A'_(r i g h t) = A'_1 $ 逆变换:解方程组：$ {A'_1 = A'_(r i g h t)\
+正变换:
+
+$ {A'_(l e f t) = A'_0 + A'_1\
+A'_(r i g h t) = A'_1 $
+
+逆变换:解方程组：
+
+$ {A'_1 = A'_(r i g h t)\
 A'_0 = A'_(l e f t) - A'_(r i g h t) $
 
-====== 例题： luogu P5387 \[Cnoi2019\] 人形演舞
+==== 例题： luogu P5387 \[Cnoi2019\] 人形演舞
 <例题-luogu-p5387-cnoi2019-人形演舞>
 观察到游戏是独立的，打表出sg函数 sg(x)=x-highbit(x)+1
 
@@ -2357,45 +3085,178 @@ A'_0 = A'_(l e f t) - A'_(r i g h t) $
 答案就是这个数组自卷v次的cnt\[0\]
 
 #quote(block: true)[
-为啥？ 假设只有两轮游戏，或者只选了两个数。 第一个数选出的 SG 值为 $i$ 的方案数是 $c n t \[ i \]$。 第二个数选出的 SG 值为 $j$ 的方案数是 $c n t \[ j \]$。 现在我想知道：这两个数的异或和 $i xor j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $c n t \[ i \] times c n t \[ j \]$。我们要找所有满足 $i xor j = k$ 的情况，把它们加起来：$ upright("Total") \[ k \] = sum_(i xor j = k) c n t \[ i \] times c n t \[ j \] $ 这就是xor卷积
+为啥？ 假设只有两轮游戏，或者只选了两个数。 第一个数选出的 SG 值为 $i$ 的方案数是 $c n t \[ i \]$。 第二个数选出的 SG 值为 $j$ 的方案数是 $c n t \[ j \]$。 现在我想知道：这两个数的异或和 $i xor j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $c n t \[ i \] times c n t \[ j \]$。我们要找所有满足 $i xor j = k$ 的情况，把它们加起来：
 ]
+
+$ upright("Total") \[ k \] = sum_(i xor j = k) c n t \[ i \] times c n t \[ j \] $
+
+这就是xor卷积
 
 先fwt一下 然后对点值求v次方 最后ifwt回去即可
 
 
 == 数论/数论笔记部分/数论笔记(阶,原根与ntt)
 
-====== 1.1 欧拉定理
+=== 1.1 欧拉定理
 <欧拉定理>
-#strong[欧拉定理];：设 $a in bb(Z) \, thin m in bb(N)^(\*)$，若 $gcd ( a \, m ) = 1$，则 $a^(phi ( m )) equiv 1 med (mod m)$。 $phi ( m )$ 是欧拉函数，表示小于 $m$ 且与 $m$ 互质的正整数个数。 \>证明：考虑模 $m$ 的简化剩余系，即 $ R = { r_1 \, r_2 \, dots.h.c \, r_(phi ( m )) } $ 这个集合包含了所有在 $1$ 到 $m$ 之间且与 $m$ 互质的整数。显然，这个集合里有 $phi ( m )$ 个元素。 现在，我们把集合 $R$ 里的每一个元素都乘上 $a$，注意$gcd ( a \, m ) = 1$，得到一个新的集合：$ S = { a r_1 \, a r_2 \, dots.h \, a r_(phi ( m )) } $ 注意到 1.$S$ 中的元素都与 $m$ 互质; 2.$S$ 中的元素在模 $m$ 下两两不同(可以用反证法证明)。 既然 $S$ 中有 $phi ( m )$ 个与 $m$ 互质且模 $m$ 两两不同的数，那么它们在模 $m$ 意义下一定与 $R$ 里的数一一对应。 那么： $ product_(i = 1)^(phi ( m )) ( a r_i ) equiv product_(i = 1)^(phi ( m )) r_i med (mod m) $ $ a^(phi ( m )) product_(i = 1)^(phi ( m )) r_i equiv product_(i = 1)^(phi ( m )) r_i med (mod m) $ $ a^(phi ( m )) equiv 1 med (mod m) $
+#strong[欧拉定理];：设 $a in bb(Z) \, thin m in bb(N)^(\*)$，若 $gcd ( a \, m ) = 1$，则 $a^(phi ( m )) equiv 1 med (mod m)$。 $phi ( m )$ 是欧拉函数，表示小于 $m$ 且与 $m$ 互质的正整数个数。
+
+#quote(block: true)[
+证明：考虑模 $m$ 的简化剩余系，即
+]
+
+$ R = { r_1 \, r_2 \, dots.h.c \, r_(phi ( m )) } $
+
+这个集合包含了所有在 $1$ 到 $m$ 之间且与 $m$ 互质的整数。显然，这个集合里有 $phi ( m )$ 个元素。 现在，我们把集合 $R$ 里的每一个元素都乘上 $a$，注意$gcd ( a \, m ) = 1$，得到一个新的集合：
+
+$ S = { a r_1 \, a r_2 \, dots.h \, a r_(phi ( m )) } $
+
+注意到 1.$S$ 中的元素都与 $m$ 互质; 2.$S$ 中的元素在模 $m$ 下两两不同(可以用反证法证明)。 既然 $S$ 中有 $phi ( m )$ 个与 $m$ 互质且模 $m$ 两两不同的数，那么它们在模 $m$ 意义下一定与 $R$ 里的数一一对应。 那么：
+
+$ product_(i = 1)^(phi ( m )) ( a r_i ) equiv product_(i = 1)^(phi ( m )) r_i med (mod m) $
+
+$ a^(phi ( m )) product_(i = 1)^(phi ( m )) r_i equiv product_(i = 1)^(phi ( m )) r_i med (mod m) $
+
+$ a^(phi ( m )) equiv 1 med (mod m) $
 
 这边用到的一个厉害的性质是，模 $m$ 的简化剩余系，他在模 $m$ 意义下对乘法（和 $m$ 互质的数 $a$）是封闭的。
 
-====== 1.2.1 阶，原根
+=== 1.2.1 阶，原根
 <阶原根>
-#strong[阶];：若满足同余式 $a^n equiv 1 med (mod m)$ 的最小正整数解 $n$ 存在，则称 $n$ 为 $a$ 模 $m$ 的阶，记作 $delta_m ( a )$。 #strong[原根];：设 $a in bb(Z)$，$m in bb(N)^(\*)$，若 $delta_m ( a ) = phi ( m )$，则称 $a$ 为模 $m$ 的一个原根。 \>不难注意， $delta_m ( a )$ 是一个最小循环节，而$delta_m ( a )$ 一定是 $phi ( m )$ 的一个约数。
+#strong[阶];：若满足同余式 $a^n equiv 1 med (mod m)$ 的最小正整数解 $n$ 存在，则称 $n$ 为 $a$ 模 $m$ 的阶，记作 $delta_m ( a )$。 #strong[原根];：设 $a in bb(Z)$，$m in bb(N)^(\*)$，若 $delta_m ( a ) = phi ( m )$，则称 $a$ 为模 $m$ 的一个原根。
 
-====== 1.2.2 原根数量
+#quote(block: true)[
+不难注意， $delta_m ( a )$ 是一个最小循环节，而$delta_m ( a )$ 一定是 $phi ( m )$ 的一个约数。
+]
+
+=== 1.2.2 原根数量
 <原根数量>
-如何求解 $m$ 的原根数量？ 因为 $a$ 是 $m$ 的一个原根，所以 $a^1 \, a^2 \, a^3 \, dots.h.c \, a^(phi ( m ))$ 在取模 $m$ 意义下均不相同（否则就与 $delta_m ( a )$ 的最短循环节定义相矛盾了）。 设$t$是某个与$phi ( m )$互质的正整数。 容易得到$t \, 2 t \, dots.h.c \, phi ( m ) dot.op t$在模$phi ( m )$意义下均不相同。 \>实际上这个结论是，完全剩余系在模 $m$ 意义下对乘法（乘一个与$m$互质的数）是封闭的。（证明和上面是一致的）
+如何求解 $m$ 的原根数量？ 因为 $a$ 是 $m$ 的一个原根，所以 $a^1 \, a^2 \, a^3 \, dots.h.c \, a^(phi ( m ))$ 在取模 $m$ 意义下均不相同（否则就与 $delta_m ( a )$ 的最短循环节定义相矛盾了）。 设$t$是某个与$phi ( m )$互质的正整数。 容易得到$t \, 2 t \, dots.h.c \, phi ( m ) dot.op t$在模$phi ( m )$意义下均不相同。
 
-根据欧拉定理，那么 $a^t \, a^(2 t) \, dots.h.c \, a^(phi ( m ) dot.op t)$ 在取模 $m$ 的意义下也就两两不同。 所以 $a^t$ 也是模 $m$ 的一个原根，因为 $t$ 是一个跟 $phi ( m )$ 互质的数，也就是说满足这样条件的数有 $phi ( phi ( m ) )$ 个。 \>由于 $a^t$ 的不断乘方（即 $( a^t )^1 \, ( a^t )^2 \, dots.h$）也能遍历所有互质同余类，这完全符合原根的定义。所以，$a^t$ 就是 $m$ 的一个新的原根。
+#quote(block: true)[
+实际上这个结论是，完全剩余系在模 $m$ 意义下对乘法（乘一个与$m$互质的数）是封闭的。（证明和上面是一致的）
+]
 
-====== 1.2.3 原根存在定理
+根据欧拉定理，那么 $a^t \, a^(2 t) \, dots.h.c \, a^(phi ( m ) dot.op t)$ 在取模 $m$ 的意义下也就两两不同。 所以 $a^t$ 也是模 $m$ 的一个原根，因为 $t$ 是一个跟 $phi ( m )$ 互质的数，也就是说满足这样条件的数有 $phi ( phi ( m ) )$ 个。
+
+#quote(block: true)[
+由于 $a^t$ 的不断乘方（即 $( a^t )^1 \, ( a^t )^2 \, dots.h$）也能遍历所有互质同余类，这完全符合原根的定义。所以，$a^t$ 就是 $m$ 的一个新的原根。
+]
+
+=== 1.2.3 原根存在定理
 <原根存在定理>
-#strong[原根存在定理];： 一个数 $m$ 存在原根，当且仅当$ m = 2 \, 4 \, p^alpha \, 2 p^alpha $ 其中 $p$ 为奇素数，$alpha in bb(N)^(\*)$。 \>太难了，不想证。 \>然后我们就能O(m^(1/4) \*logm^2)求出m的原根了。
+#strong[原根存在定理];： 一个数 $m$ 存在原根，当且仅当
 
-====== 2. NTT
+$ m = 2 \, 4 \, p^alpha \, 2 p^alpha $
+
+其中 $p$ 为奇素数，$alpha in bb(N)^(\*)$。
+
+#quote(block: true)[
+太难了，不想证。 然后我们就能O(m^(1/4) \*logm^2)求出m的原根了。
+]
+
+=== 2. NTT
 <ntt>
-======= 2.1 性质
+==== 2.1 性质
 <性质>
-考虑单位根和原根所构造的单位根的相似性，有如下四点性质: 1. 周期性 FFT（复数域）： $omega_n^n = e^(2 pi i) = 1$。转了一圈回到 $1$。 NTT（模 $p$ 域）： 考虑NTT的模数是$p = c dot.op 2^k + 1$的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^(p - 1) equiv 1 med (mod p)$。 考虑\$n = 2^t $\, 令$g\_n g^{} p$（ 单 位 根 ） ， 那 么$(g\_n)^n (g#super[{})];n g^{p-1} p\$ \>对比FFT，可以发现此处的$2^t$正好是块长。 2. 互异性 FFT（复数域）： $omega_n^0 \, omega_n^1 \, dots.h \, omega_n^(n - 1)$ 在复平面上均匀分布，互不相等。这样代入多项式才能得到 $n$ 个独立的点值。 NTT（模 $p$ 域）： $g_n^0 \, g_n^1 \, dots.h \, g_n^(n - 1)$ 模 $p$ 下互不相同，此处由原根的性质保证。 3. 折半引理 FFT（复数域）： $omega_(2 n)^2 = omega_n$。这是 FFT 能把偶数项和奇数项拆开递归的核心。 NTT（模 $p$ 域）：注意： $ g_(2 n)^2 equiv (g^(frac(p - 1, 2 n)))^2 equiv g^(frac(p - 1, n)) equiv g_n med (mod p) $ 4. 求和引理 FFT（复数域）： 对于任意不为 $0$ 的整数 $k$（且 $k$ 不是 $n$ 的倍数），$sum_(j = 0)^(n - 1) ( omega_n^k )^j = 0$。这是把点值转回系数的关键。 NTT（模 $p$ 域）： 这是一个等比数列求和：$ sum_(j = 0)^(n - 1) ( g_n^k )^j equiv frac(1 - ( g_n^k )^n, 1 - g_n^k) med (mod p) $ 注意分子为$0$，分母不为$0$，这个式子依旧$= 0$。 \#\#\#\#\# 2.2 递归过程 考虑重新手推一下NTT的递归过程。 假设我们有一个长度为 $n$（$n$ 是 $2$ 的幂次）的多项式：$ A ( x ) = a_0 + a_1 x + a_2 x^2 + dots.h + a_(n - 1) x^(n - 1) $我们要把 $n$ 个点 $x = g_n^0 \, g_n^1 \, dots.h \, g_n^(n - 1)$ 代入进去求值。 设： 偶数项：$A_0 ( x ) = a_0 + a_2 x + a_4 x^2 + dots.h + a_(n - 2) x^(n / 2 - 1)$ 奇数项：$A_1 ( x ) = a_1 + a_3 x + a_5 x^2 + dots.h + a_(n - 1) x^(n / 2 - 1)$ 于是： $ A ( x ) = A_0 ( x^2 ) + x dot.op A_1 ( x^2 ) $ 带入$x = g_n^k$ : $ A ( g_n^k ) = A_0 ( ( g_n^k )^2 ) + g_n^k dot.op A_1 ( ( g_n^k )^2 ) $ 注意: $ ( g_n^k )^2 equiv (g^(k dot.op frac(p - 1, n)))^2 equiv g^(k dot.op frac(p - 1, n \/ 2)) equiv g_(n \/ 2)^k med (mod p) $ 于是: $ A ( g_n^k ) equiv A_0 ( g_(n \/ 2)^k ) + g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $ 考虑后半段$g_n^(k + n \/ 2)$（此时 $k < n \/ 2$），代入： $ A ( g_n^(k + n \/ 2) ) = A_0 ( ( g_n^(k + n \/ 2) )^2 ) + g_n^(k + n \/ 2) dot.op A_1 ( ( g_n^(k + n \/ 2) )^2 ) $
+考虑单位根和原根所构造的单位根的相似性，有如下四点性质: 1. 周期性 FFT（复数域）： $omega_n^n = e^(2 pi i) = 1$。转了一圈回到 $1$。 NTT（模 $p$ 域）： 考虑NTT的模数是$p = c dot.op 2^k + 1$的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^(p - 1) equiv 1 med (mod p)$。 考虑\$n = 2^t $\, 令$g\_n g^{} p$（ 单 位 根 ） ， 那 么$(g\_n)^n (g#super[{})];n g^{p-1} p\$
 
-注意： $ ( g_n^(k + n \/ 2) )^2 equiv g_n^(2 k + n) equiv g_n^(2 k) dot.op g_n^n equiv g_n^(2 k) dot.op 1 equiv ( g_n^k )^2 equiv g_(n \/ 2)^k med (mod p) $
+#quote(block: true)[
+对比FFT，可以发现此处的$2^t$正好是块长。 2. 互异性 FFT（复数域）： $omega_n^0 \, omega_n^1 \, dots.h \, omega_n^(n - 1)$ 在复平面上均匀分布，互不相等。这样代入多项式才能得到 $n$ 个独立的点值。 NTT（模 $p$ 域）： $g_n^0 \, g_n^1 \, dots.h \, g_n^(n - 1)$ 模 $p$ 下互不相同，此处由原根的性质保证。 3. 折半引理 FFT（复数域）： $omega_(2 n)^2 = omega_n$。这是 FFT 能把偶数项和奇数项拆开递归的核心。 NTT（模 $p$ 域）：注意：
+]
 
-再次注意： $ g_n^(k + n \/ 2) equiv g_n^k dot.op g_n^(n \/ 2) med (mod p) $ 其中 $g_n^(n \/ 2)$： $ g_n^(n \/ 2) equiv (g^(frac(p - 1, n)))^(n / 2) equiv g^(frac(p - 1, 2)) med (mod p) $ 于是： $ g_n^(k + n \/ 2) equiv - g_n^k med (mod p) $
+$ g_(2 n)^2 equiv (g^(frac(p - 1, 2 n)))^2 equiv g^(frac(p - 1, n)) equiv g_n med (mod p) $
 
-最终： 前半段：$ A ( g_n^k ) equiv A_0 ( g_(n \/ 2)^k ) + g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $ 后半段：$ A ( g_n^(k + n \/ 2) ) equiv A_0 ( g_(n \/ 2)^k ) - g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $ \>把递归写成递推跟FFT是一致的，不再赘述 \#\#\#\#\# 2.3 INTT 假设我们原本的多项式系数是 $a_0 \, a_1 \, dots.h \, a_(n - 1)$。 经过正向 NTT 后，我们得到了 $n$ 个点值 $y_0 \, y_1 \, dots.h \, y_(n - 1)$。 正向 NTT 的方程是这样的：$ y_k = sum_(j = 0)^(n - 1) a_j ( g_n^k )^j med (mod p) $ 构造： $ c_i = sum_(k = 0)^(n - 1) y_k ( g_n^(- 1) )^(k i) med (mod p) $ 代入： $ c_i = sum_(k = 0)^(n - 1) (sum_(j = 0)^(n - 1) a_j g_n^(k j)) g_n^(- k i) med (mod p) $ 交换求和顺序： $ c_i = sum_(j = 0)^(n - 1) a_j (sum_(k = 0)^(n - 1) ( g_n^(j - i) )^k) med (mod p) $ 对括号里面的东西用求和引理，当仅当$j = i$等于 $n$，否则等于 $0$。 于是： $ c_i equiv a_i dot.op n med (mod p) $ 那么： $ a_i equiv c_i dot.op n^(- 1) med (mod p) $ 于是对做完点乘的点值做一次反向 NTT ，然后乘上 $n$ 的逆元即可。
+#block[
+#set enum(numbering: "1.", start: 4)
++ 求和引理 FFT（复数域）： 对于任意不为 $0$ 的整数 $k$（且 $k$ 不是 $n$ 的倍数），$sum_(j = 0)^(n - 1) ( omega_n^k )^j = 0$。这是把点值转回系数的关键。 NTT（模 $p$ 域）： 这是一个等比数列求和：
+]
+
+$ sum_(j = 0)^(n - 1) ( g_n^k )^j equiv frac(1 - ( g_n^k )^n, 1 - g_n^k) med (mod p) $
+
+注意分子为$0$，分母不为$0$，这个式子依旧$= 0$。
+
+==== 2.2 递归过程
+<递归过程>
+考虑重新手推一下NTT的递归过程。 假设我们有一个长度为 $n$（$n$ 是 $2$ 的幂次）的多项式：
+
+$ A ( x ) = a_0 + a_1 x + a_2 x^2 + dots.h + a_(n - 1) x^(n - 1) $
+
+我们要把 $n$ 个点 $x = g_n^0 \, g_n^1 \, dots.h \, g_n^(n - 1)$ 代入进去求值。 设： 偶数项：$A_0 ( x ) = a_0 + a_2 x + a_4 x^2 + dots.h + a_(n - 2) x^(n / 2 - 1)$ 奇数项：$A_1 ( x ) = a_1 + a_3 x + a_5 x^2 + dots.h + a_(n - 1) x^(n / 2 - 1)$ 于是：
+
+$ A ( x ) = A_0 ( x^2 ) + x dot.op A_1 ( x^2 ) $
+
+带入$x = g_n^k$ :
+
+$ A ( g_n^k ) = A_0 ( ( g_n^k )^2 ) + g_n^k dot.op A_1 ( ( g_n^k )^2 ) $
+
+注意:
+
+$ ( g_n^k )^2 equiv (g^(k dot.op frac(p - 1, n)))^2 equiv g^(k dot.op frac(p - 1, n \/ 2)) equiv g_(n \/ 2)^k med (mod p) $
+
+于是:
+
+$ A ( g_n^k ) equiv A_0 ( g_(n \/ 2)^k ) + g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $
+
+考虑后半段$g_n^(k + n \/ 2)$（此时 $k < n \/ 2$），代入：
+
+$ A ( g_n^(k + n \/ 2) ) = A_0 ( ( g_n^(k + n \/ 2) )^2 ) + g_n^(k + n \/ 2) dot.op A_1 ( ( g_n^(k + n \/ 2) )^2 ) $
+
+注意：
+
+$ ( g_n^(k + n \/ 2) )^2 equiv g_n^(2 k + n) equiv g_n^(2 k) dot.op g_n^n equiv g_n^(2 k) dot.op 1 equiv ( g_n^k )^2 equiv g_(n \/ 2)^k med (mod p) $
+
+再次注意：
+
+$ g_n^(k + n \/ 2) equiv g_n^k dot.op g_n^(n \/ 2) med (mod p) $
+
+其中 $g_n^(n \/ 2)$：
+
+$ g_n^(n \/ 2) equiv (g^(frac(p - 1, n)))^(n / 2) equiv g^(frac(p - 1, 2)) med (mod p) $
+
+于是：
+
+$ g_n^(k + n \/ 2) equiv - g_n^k med (mod p) $
+
+最终： 前半段：
+
+$ A ( g_n^k ) equiv A_0 ( g_(n \/ 2)^k ) + g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $
+
+后半段：
+
+$ A ( g_n^(k + n \/ 2) ) equiv A_0 ( g_(n \/ 2)^k ) - g_n^k dot.op A_1 ( g_(n \/ 2)^k ) med (mod p) $
+
+#quote(block: true)[
+把递归写成递推跟FFT是一致的，不再赘述
+]
+
+==== 2.3 INTT
+<intt>
+假设我们原本的多项式系数是 $a_0 \, a_1 \, dots.h \, a_(n - 1)$。 经过正向 NTT 后，我们得到了 $n$ 个点值 $y_0 \, y_1 \, dots.h \, y_(n - 1)$。 正向 NTT 的方程是这样的：
+
+$ y_k = sum_(j = 0)^(n - 1) a_j ( g_n^k )^j med (mod p) $
+
+构造：
+
+$ c_i = sum_(k = 0)^(n - 1) y_k ( g_n^(- 1) )^(k i) med (mod p) $
+
+代入：
+
+$ c_i = sum_(k = 0)^(n - 1) (sum_(j = 0)^(n - 1) a_j g_n^(k j)) g_n^(- k i) med (mod p) $
+
+交换求和顺序：
+
+$ c_i = sum_(j = 0)^(n - 1) a_j (sum_(k = 0)^(n - 1) ( g_n^(j - i) )^k) med (mod p) $
+
+对括号里面的东西用求和引理，当仅当$j = i$等于 $n$，否则等于 $0$。 于是：
+
+$ c_i equiv a_i dot.op n med (mod p) $
+
+那么：
+
+$ a_i equiv c_i dot.op n^(- 1) med (mod p) $
+
+于是对做完点乘的点值做一次反向 NTT ，然后乘上 $n$ 的逆元即可。
 
 
 = Trick 与杂项
@@ -2424,8 +3285,7 @@ ntt如果有多次intt，有可能可以不用先intt然后答案相加，而是
 #line(length: 100%, stroke: 0.5pt + luma(180))
 ==== 勒让德公式是什么
 <勒让德公式是什么>
-勒让德公式用来算#strong[质数 $p$ 在阶乘 $n !$ 的质因子分解中的指数];。 \
-公式是：
+勒让德公式用来算#strong[质数 $p$ 在阶乘 $n !$ 的质因子分解中的指数];。 公式是：
 
 $ v_p ( n ! ) = sum_(k = 1)^oo ⌊n / p^k⌋ \, $
 
@@ -2438,8 +3298,7 @@ $ v_p ( n ! ) = sum_(k = 1)^oo ⌊n / p^k⌋ \, $
 
 - 每隔 $p$ 个数里有一个能被 $p$ 整除，所以至少有 $floor.l n \/ p floor.r$ 个因子 $p$；
 - 每隔 $p^2$ 个数里有一个能被 $p^2$ 整除，它会额外贡献一个 $p$，所以再加 $floor.l n \/ p^2 floor.r$；
-- 每隔 $p^3$ 个数里有一个能被 $p^3$ 整除，它会再额外贡献一个 $p$…… \
-  如此类推，直到 $p^k > n$ 为止。
+- 每隔 $p^3$ 个数里有一个能被 $p^3$ 整除，它会再额外贡献一个 $p$…… 如此类推，直到 $p^k > n$ 为止。
 
 所以总和就是上面的式子。
 
@@ -2450,8 +3309,7 @@ $ v_p ( n ! ) = sum_(k = 1)^oo ⌊n / p^k⌋ \, $
 
 $ floor.l 10 \/ 2 floor.r + floor.l 10 \/ 4 floor.r + floor.l 10 \/ 8 floor.r = 5 + 2 + 1 = 8 . $
 
-验证： \
-$10 ! = 3628800 = 2^8 dot.op 3^4 dot.op 5^2 dot.op 7$.
+验证： $10 ! = 3628800 = 2^8 dot.op 3^4 dot.op 5^2 dot.op 7$.
 
 #line(length: 100%, stroke: 0.5pt + luma(180))
 ==== 在这题里的作用
@@ -2460,66 +3318,206 @@ $10 ! = 3628800 = 2^8 dot.op 3^4 dot.op 5^2 dot.op 7$.
 
 $ C_n = frac(1, n + 1) binom(2 n, n) . $
 
-其中涉及到阶乘： \
-$binom(2 n, n) = frac(( 2 n ) !, ( n ! )^2)$。
+其中涉及到阶乘： $binom(2 n, n) = frac(( 2 n ) !, ( n ! )^2)$。
 
-为了在#strong[任意模数 $p$] 下算出结果（尤其是 $p$ 不是质数时），不能用逆元，要直接做#strong[质因子分解];。 \
-于是对每个质数 $q$，用勒让德公式求它在 $( 2 n ) !$、$n !$ 中的指数差，得到 $q$ 在组合数中的幂次。
+为了在#strong[任意模数 $p$] 下算出结果（尤其是 $p$ 不是质数时），不能用逆元，要直接做#strong[质因子分解];。 于是对每个质数 $q$，用勒让德公式求它在 $( 2 n ) !$、$n !$ 中的指数差，得到 $q$ 在组合数中的幂次。
 
 再减去 $n + 1$ 的质因子指数，就是卡特兰数的质因子分解。最后用快速幂拼起来，就得到答案 $#h(0em) mod med p$。
 
 
 == 数论/数论笔记部分/数学笔记(矩阵半环)
 
-====== 半环
+=== 半环
 <半环>
-一个代数系统 $( R \, xor \, times.circle )$ 被称为半环，满足以下四个条件： 1. 加法构成交换幺半群，即： 结合律：$( a xor b ) xor c = a xor ( b xor c )$ 交换律：$a xor b = b xor a$ 存在加法幺元（零元） $macron(0)$：$a xor macron(0) = macron(0) xor a = a$ 2. 乘法构成幺半群，即： 结合律：$( a times.circle b ) times.circle c = a times.circle ( b times.circle c )$ 存在乘法幺元（单位元）$macron(1)$：$a times.circle macron(1) = macron(1) times.circle a = a$ 3. 乘法对加法存在分配律，即： 左分配律：$a times.circle ( b xor c ) = ( a times.circle b ) xor ( a times.circle c )$ 右分配律：$( a xor b ) times.circle c = ( a times.circle c ) xor ( b times.circle c )$ 4. 加法幺元 $macron(0)$ 对于乘法必须是吸收元：$a times.circle macron(0) = macron(0) times.circle a = macron(0)$
+一个代数系统 $( R \, xor \, times.circle )$ 被称为半环，满足以下四个条件：
 
-====== 常见矩阵半环
++ 加法构成交换幺半群，即：
+  - 结合律：$( a xor b ) xor c = a xor ( b xor c )$
+  - 交换律：$a xor b = b xor a$
+  - 存在加法幺元（零元）$macron(0)$：$a xor macron(0) = macron(0) xor a = a$
++ 乘法构成幺半群，即：
+  - 结合律：$( a times.circle b ) times.circle c = a times.circle ( b times.circle c )$
+  - 存在乘法幺元（单位元）$macron(1)$：$a times.circle macron(1) = macron(1) times.circle a = a$
++ 乘法对加法存在分配律，即：
+  - 左分配律：$a times.circle ( b xor c ) = ( a times.circle b ) xor ( a times.circle c )$
+  - 右分配律：$( a xor b ) times.circle c = ( a times.circle c ) xor ( b times.circle c )$
++ 加法幺元 $macron(0)$ 对于乘法必须是吸收元：$a times.circle macron(0) = macron(0) times.circle a = macron(0)$
+
+=== 常见矩阵半环
 <常见矩阵半环>
 #quote(block: true)[
-矩阵的单位阵，类比普通矩阵的单位阵，就是把0，1替换成 $macron(0)$，$macron(1)$.
+矩阵的单位阵，类比普通矩阵的单位阵，就是把 $0 \, 1$ 替换成 $macron(0) \, macron(1)$。
 ]
 
 #quote(block: true)[
-如果要描述\<=k，可以给矩阵增加一个维度表示汇点，然后给汇点加上自环。 \#\#\#\#\#\# 1. 普通矩阵乘法 定义： $ C_(i \, j) = sum_k ( A_(i \, k) times B_(k \, j) ) $ $xor$ (广义加): $+$ (普通加法) $times.circle$ (广义乘): $times$ (普通乘法) 幺元: $macron(0) = 0$，$macron(1) = 1$ 物理意义（用处）： 1).邻接矩阵经过矩阵乘法 $A^k$ 后，矩阵 $( i \, j )$ 位置的值就代表：从节点 $i$ 出发，恰好经过 $k$ 条边到达节点 $j$ 的路径总方案数。原因是外层的加号表示遍历某个中转点，而内层的乘法相当于乘法原理，而走的长度则正好是矩阵的幂次和。 2).加速某些常系数线性递推式。 此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的直接连边数量.
+如果要描述 $lt.eq k$，可以给矩阵增加一个维度表示汇点，然后给汇点加上自环。
 ]
 
-======== 2.1. min-plus矩阵乘法
-<min-plus矩阵乘法>
-定义： $ C_(i \, j) = min_k ( A_(i \, k) + B_(k \, j) ) $ $xor$ (广义加): $min$ (最小值) $times.circle$ (广义乘): $+$ (普通加法) 幺元: $macron(0) = + oo$，$macron(1) = 0$ 物理意义（用处）：定长最短路问题，将图的邻接矩阵 $A$ 进行 $k$ 次广义自乘，得到的 $A^k$ 中，$( i \, j )$ 位置的值代表“从 $i$ 到 $j$ 恰好走 $k$ 条边的最短路径长度”。原因同样是遍历所有中转点，取min,内层加法相当于拼接，而走的长度则正好是矩阵的幂次和。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的min，无边设为 $+ oo$.
+==== 1. 普通矩阵乘法
+<普通矩阵乘法>
+定义：
 
-======== 2.2. max-plus矩阵乘法
-<max-plus矩阵乘法>
-定义： $ C_(i \, j) = max_k ( A_(i \, k) + B_(k \, j) ) $ $xor$ (广义加): $max$ (最大值) $times.circle$ (广义乘): $+$ (普通加法) 幺元: $macron(0) = - oo$，$macron(1) = 0$ 物理意义（用处）： 1).定长最长路，不再赘述 2).某些dp转移 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的max，无边设为 $0$.
+$ C_(i \, j) = sum_k ( A_(i \, k) times B_(k \, j) ) $
 
-======== 3.1 max-min矩阵乘法
-<max-min矩阵乘法>
-定义： $ C_(i \, j) = max_k ( min ( A_(i \, k) \, B_(k \, j) ) ) $ $xor$ (广义加): $max$ (最大值) $times.circle$ (广义乘): $min$ (最小值) 幺元: $macron(0) = - oo$，$macron(1) = + oo$ 物理意义（用处）：定长最大瓶颈路：$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中对于每个路径最小边权的的最大值。考虑一个现实场景：火车运载的场景，显然你要选择某些有短板的路径中，短板最长的那个。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的max，无边设为 $- oo$.
+- $xor$（广义加）：$+$（普通加法）
+- $times.circle$（广义乘）：$times$（普通乘法）
+- 幺元：$macron(0) = 0$，$macron(1) = 1$
+- 物理意义（用处）：
+  + 邻接矩阵经过矩阵乘法 $A^k$ 后，矩阵 $( i \, j )$ 位置的值就代表：从节点 $i$ 出发，恰好经过 $k$ 条边到达节点 $j$ 的路径总方案数。原因是外层的加号表示遍历某个中转点，而内层的乘法相当于乘法原理，而走的长度则正好是矩阵的幂次和。
+  + 加速某些常系数线性递推式。
 
-======== 3.2 min-max矩阵乘法
-<min-max矩阵乘法>
-定义： $ C_(i \, j) = min_k ( max ( A_(i \, k) \, B_(k \, j) ) ) $ $xor$ (广义加): $min$ (最小值) $times.circle$ (广义乘): $max$ (最大值) 幺元: $macron(0) = + oo$，$macron(1) = - oo$ 物理意义（用处）：定长最小瓶颈路：$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中对于每个路径最大边权的的最小值。考虑一个现实场景：网络传递的场景，边权代表丢包率，我们希望最卡的路径丢包率最低。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的min，无边设为 $+ oo$.
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的直接连边数量。
+]
 
-======== 4. 布尔半环
+==== 2.1. min-plus 矩阵乘法
+<min-plus-矩阵乘法>
+定义：
+
+$ C_(i \, j) = min_k ( A_(i \, k) + B_(k \, j) ) $
+
+- $xor$（广义加）：$min$（最小值）
+- $times.circle$（广义乘）：$+$（普通加法）
+- 幺元：$macron(0) = + oo$，$macron(1) = 0$
+- 物理意义（用处）：定长最短路问题，将图的邻接矩阵 $A$ 进行 $k$ 次广义自乘，得到的 $A^k$ 中，$( i \, j )$ 位置的值代表“从 $i$ 到 $j$ 恰好走 $k$ 条边的最短路径长度”。原因同样是遍历所有中转点，取 min，内层加法相当于拼接，而走的长度则正好是矩阵的幂次和。
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 min，无边设为 $+ oo$。
+]
+
+==== 2.2. max-plus 矩阵乘法
+<max-plus-矩阵乘法>
+定义：
+
+$ C_(i \, j) = max_k ( A_(i \, k) + B_(k \, j) ) $
+
+- $xor$（广义加）：$max$（最大值）
+- $times.circle$（广义乘）：$+$（普通加法）
+- 幺元：$macron(0) = - oo$，$macron(1) = 0$
+- 物理意义（用处）：
+  + 定长最长路，不再赘述
+  + 某些 dp 转移
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 max，无边设为 $0$。
+]
+
+==== 3.1. max-min 矩阵乘法
+<max-min-矩阵乘法>
+定义：
+
+$ C_(i \, j) = max_k ( min ( A_(i \, k) \, B_(k \, j) ) ) $
+
+- $xor$（广义加）：$max$（最大值）
+- $times.circle$（广义乘）：$min$（最小值）
+- 幺元：$macron(0) = - oo$，$macron(1) = + oo$
+- 物理意义（用处）：定长最大瓶颈路：$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中对于每个路径最小边权的最大值。考虑一个现实场景：火车运载的场景，显然你要选择某些有短板的路径中，短板最长的那个。
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 max，无边设为 $- oo$。
+]
+
+==== 3.2. min-max 矩阵乘法
+<min-max-矩阵乘法>
+定义：
+
+$ C_(i \, j) = min_k ( max ( A_(i \, k) \, B_(k \, j) ) ) $
+
+- $xor$（广义加）：$min$（最小值）
+- $times.circle$（广义乘）：$max$（最大值）
+- 幺元：$macron(0) = + oo$，$macron(1) = - oo$
+- 物理意义（用处）：定长最小瓶颈路：$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中对于每个路径最大边权的最小值。考虑一个现实场景：网络传递的场景，边权代表丢包率，我们希望最卡的路径丢包率最低。
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 min，无边设为 $+ oo$。
+]
+
+==== 4. 布尔半环
 <布尔半环>
-定义： $ C_(i \, j) = or_k ( A_(i \, k) and B_(k \, j) ) $ $xor$ (广义加): $or$ (或) $times.circle$ (广义乘): $and$ (与) 幺元: $macron(0) = 0 （ 逻 辑 0 ）$，$macron(1) = 1 （ 逻 辑 1 ）$ 物理意义（用处）：布尔矩阵乘法，$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中是否存在一条路径是通的。 \>可以用来判断是否存在长度k的环。这个东西可以用bitset优化一下。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 是否存在一条边，无边设为 $0$（逻辑0）.
+定义：
 
-======== 5.概率半环
-<概率半环>
-定义： $ C_(i \, j) = max_k ( A_(i \, k) times B_(k \, j) ) $ $xor$ (广义加): $max$ (最大值) $times.circle$ (广义乘): $times$ (普通乘法) 幺元: $macron(0) = 0$，$macron(1) = 1$ 物理意义（用处）：概率矩阵乘法，$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中存在一条路径的最大概率。 \>考虑浮点数乘法的精度问题，我们做如下映射：$f ( x ) = - log ( x )$，$product p_i arrow.r.double.long sum - log ( p_i )$，$max ( product p_i ) arrow.r.double.long min ( sum - log ( p_i ) )$，这样我们就可以用min-plus矩阵乘法来处理概率矩阵乘法了。还原就exp回去就行。
+$ C_(i \, j) = or_k ( A_(i \, k) and B_(k \, j) ) $
+
+- $xor$（广义加）：$or$（或）
+- $times.circle$（广义乘）：$and$（与）
+- 幺元：$macron(0) = 0$（逻辑 $0$），$macron(1) = 1$（逻辑 $1$）
+- 物理意义（用处）：布尔矩阵乘法，$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中是否存在一条路径是通的。
 
 #quote(block: true)[
-此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的概率，无边设为 $0$（概率0）.
+可以用来判断是否存在长度 $k$ 的环。这个东西可以用 bitset 优化一下。
 ]
 
-======== 6. 异或-与 环
-<异或-与-环>
-定义： $ C_(i \, j) = xor_k ( A_(i \, k) and B_(k \, j) ) $ $xor$ (广义加): $xor$ (异或) $times.circle$ (广义乘): $and$ (与) 幺元: $macron(0) = 0$，$macron(1) = 全 1 掩 码$ 物理意义（用处）：异或-与 矩阵乘法，$A^k$ 的 $( i \, j ) = 1$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径数为奇数。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 是否存在一条边，无边设为 $0$（逻辑0）.
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 是否存在一条边，无边设为 $0$（逻辑 $0$）。
+]
 
-======== 7. 最短路计数半环
+==== 5. 概率半环
+<概率半环>
+定义：
+
+$ C_(i \, j) = max_k ( A_(i \, k) times B_(k \, j) ) $
+
+- $xor$（广义加）：$max$（最大值）
+- $times.circle$（广义乘）：$times$（普通乘法）
+- 幺元：$macron(0) = 0$，$macron(1) = 1$
+- 物理意义（用处）：概率矩阵乘法，$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径中存在一条路径的最大概率。
+
+#quote(block: true)[
+考虑浮点数乘法的精度问题，我们做如下映射：$f ( x ) = - log ( x )$，$product p_i arrow.r.double.long sum - log ( p_i )$，$max ( product p_i ) arrow.r.double.long min ( sum - log ( p_i ) )$，这样我们就可以用 min-plus 矩阵乘法来处理概率矩阵乘法了。还原就 exp 回去就行。
+]
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的概率，无边设为 $0$（概率 $0$）。
+]
+
+==== 6. 异或-与环
+<异或-与环>
+定义：
+
+$ C_(i \, j) = xor_k ( A_(i \, k) and B_(k \, j) ) $
+
+- $xor$（广义加）：$xor$（异或）
+- $times.circle$（广义乘）：$and$（与）
+- 幺元：$macron(0) = 0$，$macron(1) = upright("全 1 掩码")$
+- 物理意义（用处）：异或-与矩阵乘法，$A^k$ 的 $( i \, j ) = 1$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径数为奇数。
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 是否存在一条边，无边设为 $0$（逻辑 $0$）。
+]
+
+==== 7. 最短路计数半环
 <最短路计数半环>
-考虑： 元素为 $( d \, c )$，$d$ 为距离，$c$ 为方案数 $xor$ (广义加): 代表在多条路径中择优。 当两条路径集合 $( d_1 \, c_1 )$ 和 $( d_2 \, c_2 )$ 合并时： 如果 $d_1 < d_2$，选前者：结果为 $( d_1 \, c_1 )$ 如果 $d_1 > d_2$，选后者：结果为 $( d_2 \, c_2 )$ 如果 $d_1 = d_2$，产生平局，方案数相加：结果为 $( d_1 \, c_1 + c_2 )$ $times.circle$ (广义乘): 代表路径的拼接。 将第一段路径 $( d_1 \, c_1 )$ 和第二段路径 $( d_2 \, c_2 )$ 拼接起来： 距离直接相加：$d_(n e w) = d_1 + d_2$ 方案数依据乘法原理相乘：$c_(n e w) = c_1 times c_2$ 结果为 $( d_1 + d_2 \, c_1 times c_2 )$ 幺元: 加法幺元 $macron(0) = ( + oo \, 0 )$ （距离无穷大，方案数为 0） 乘法幺元 $macron(1) = ( 0 \, 1 )$ （距离为 0 的原地踏步，方案数为 1） 物理意义（用处）： $A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径的最短路长度，以及满足该长度的路径条数。 \>此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 中所有重边按广义加合并，无边设为加法幺元.
+考虑：
+
+- 元素为 $( d \, c )$，$d$ 为距离，$c$ 为方案数。
+- $xor$（广义加）：代表在多条路径中择优。
+
+当两条路径集合 $( d_1 \, c_1 )$ 和 $( d_2 \, c_2 )$ 合并时：
+
+- 如果 $d_1 < d_2$，选前者：结果为 $( d_1 \, c_1 )$
+- 如果 $d_1 > d_2$，选后者：结果为 $( d_2 \, c_2 )$
+- 如果 $d_1 = d_2$，产生平局，方案数相加：结果为 $( d_1 \, c_1 + c_2 )$
+
+$times.circle$（广义乘）：代表路径的拼接。
+
+将第一段路径 $( d_1 \, c_1 )$ 和第二段路径 $( d_2 \, c_2 )$ 拼接起来：
+
+- 距离直接相加：$d_(upright("new")) = d_1 + d_2$
+- 方案数依据乘法原理相乘：$c_(upright("new")) = c_1 times c_2$
+- 结果为 $( d_1 + d_2 \, c_1 times c_2 )$
+
+幺元：
+
+- 加法幺元 $macron(0) = ( + oo \, 0 )$（距离无穷大，方案数为 $0$）
+- 乘法幺元 $macron(1) = ( 0 \, 1 )$（距离为 $0$ 的原地踏步，方案数为 $1$）
+
+物理意义（用处）：
+
+$A^k$ 的 $( i \, j )$ 就代表从 $i$ 到 $j$ 恰好经过 $k$ 条边时，所有路径的最短路长度，以及满足该长度的路径条数。
+
+#quote(block: true)[
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 中所有重边按广义加合并，无边设为加法幺元。
+]
 
 作业：https:\/\/codeforces.com/gym/102644
 

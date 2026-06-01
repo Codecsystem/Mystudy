@@ -35,6 +35,16 @@
       #text(size: 10pt, weight: "bold")[#it]
     ]
   }
+  show heading.where(level: 4): it => {
+    block(above: 0.45em, below: 0.2em)[
+      #text(size: 9.2pt, weight: "bold")[#it]
+    ]
+  }
+  show heading.where(level: 5): it => {
+    block(above: 0.35em, below: 0.15em)[
+      #text(size: 9pt, weight: "medium", fill: rgb("#333333"))[#it]
+    ]
+  }
 
   // 代码块样式：紧凑小字号
   show raw.where(block: true): it => {
