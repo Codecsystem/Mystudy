@@ -418,6 +418,14 @@
   {
     "board": "board1",
     "folder": "图论",
+    "file": "最近公共祖先（LCA）(欧拉序&dfs序(O(1))).cpp",
+    "title": "最近公共祖先（LCA）(欧拉序&dfs序(O(1)))",
+    "has_usage": false,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
     "file": "树上倍增(点.边).cpp",
     "title": "树上倍增(点.边)",
     "has_usage": false,
@@ -602,8 +610,16 @@
   {
     "board": "board1",
     "folder": "数论",
-    "file": "(ex)CRT((扩展)中国剩余定理).cpp",
-    "title": "(ex)CRT((扩展)中国剩余定理)",
+    "file": "(ex)CRT((扩展)中国剩余定理)(新版).cpp",
+    "title": "(ex)CRT((扩展)中国剩余定理)(新版)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数论",
+    "file": "(ex)CRT((扩展)中国剩余定理)(旧版).cpp",
+    "title": "(ex)CRT((扩展)中国剩余定理)(旧版)",
     "has_usage": true,
     "has_tail": true
   },
@@ -682,8 +698,16 @@
   {
     "board": "board1",
     "folder": "数论",
-    "file": "矩阵快速幂.cpp",
-    "title": "矩阵快速幂",
+    "file": "矩阵快速幂(新版).cpp",
+    "title": "矩阵快速幂(新版)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数论",
+    "file": "矩阵快速幂(旧板).cpp",
+    "title": "矩阵快速幂(旧板)",
     "has_usage": true,
     "has_tail": true
   },
@@ -802,183 +826,197 @@
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记部分/数论笔记(筛法).md",
-    "title": "数论笔记部分/数论笔记(筛法)",
+    "file": "数论/数论笔记部分/数论笔记(筛法).md",
+    "title": "数论/数论笔记部分/数论笔记(筛法)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记部分/数论笔记(线性逆元).md",
-    "title": "数论笔记部分/数论笔记(线性逆元)",
+    "file": "数论/数论笔记部分/数论笔记(线性逆元).md",
+    "title": "数论/数论笔记部分/数论笔记(线性逆元)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记部分/数论笔记(不定方程与同余方程组).md",
-    "title": "数论笔记部分/数论笔记(不定方程与同余方程组)",
+    "file": "数论/数论笔记部分/数论笔记(不定方程与同余方程组).md",
+    "title": "数论/数论笔记部分/数论笔记(不定方程与同余方程组)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论笔记部分/数论小结论.md",
-    "title": "数论笔记部分/数论小结论",
+    "file": "数论/数论笔记部分/数论小结论.md",
+    "title": "数论/数论笔记部分/数论小结论",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
-    "title": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1)",
+    "file": "数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
+    "title": "数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
-    "title": "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2)",
+    "file": "数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
+    "title": "数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记部分/数论笔记(炫酷反演魔术).md",
-    "title": "数论笔记部分/数论笔记(炫酷反演魔术)",
+    "file": "数论/数论笔记部分/数论笔记(炫酷反演魔术).md",
+    "title": "数论/数论笔记部分/数论笔记(炫酷反演魔术)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "卷积与反演",
-    "file": "数论笔记部分/数论笔记(和式变换).md",
-    "title": "数论笔记部分/数论笔记(和式变换)",
+    "file": "数论/数论笔记部分/数论笔记(和式变换).md",
+    "title": "数论/数论笔记部分/数论笔记(和式变换)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记部分/数论笔记(排列组合).md",
-    "title": "数论笔记部分/数论笔记(排列组合)",
+    "file": "数论/数论笔记部分/数论笔记(排列组合).md",
+    "title": "数论/数论笔记部分/数论笔记(排列组合)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记部分/数论笔记(排列组合进阶).md",
-    "title": "数论笔记部分/数论笔记(排列组合进阶)",
+    "file": "数论/数论笔记部分/数论笔记(排列组合进阶).md",
+    "title": "数论/数论笔记部分/数论笔记(排列组合进阶)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "组合与生成函数",
-    "file": "数论笔记部分/数论笔记(生成函数).md",
-    "title": "数论笔记部分/数论笔记(生成函数)",
+    "file": "数论/数论笔记部分/数论笔记(生成函数).md",
+    "title": "数论/数论笔记部分/数论笔记(生成函数)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "变换与多项式",
-    "file": "数论笔记部分/FFT笔记.md",
-    "title": "数论笔记部分/FFT笔记",
+    "file": "数论/数论笔记部分/FFT笔记.md",
+    "title": "数论/数论笔记部分/FFT笔记",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "变换与多项式",
-    "file": "数论笔记部分/数论笔记(sosdp&fmt&fwt).md",
-    "title": "数论笔记部分/数论笔记(sosdp&fmt&fwt)",
+    "file": "数论/数论笔记部分/数论笔记(sosdp&fmt&fwt).md",
+    "title": "数论/数论笔记部分/数论笔记(sosdp&fmt&fwt)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "变换与多项式",
-    "file": "数论笔记部分/数论笔记(阶,原根与ntt).md",
-    "title": "数论笔记部分/数论笔记(阶,原根与ntt)",
+    "file": "数论/数论笔记部分/数论笔记(阶,原根与ntt).md",
+    "title": "数论/数论笔记部分/数论笔记(阶,原根与ntt)",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "Trick 与杂项",
-    "file": "Trick/数学相关trick.md",
-    "title": "Trick/数学相关trick",
+    "file": "数论/Trick/数学相关trick.md",
+    "title": "数论/Trick/数学相关trick",
     "warnings": []
   },
   {
     "board": "board2",
     "group": "Trick 与杂项",
-    "file": "数论笔记部分/数论笔记(杂项).md",
-    "title": "数论笔记部分/数论笔记(杂项)",
+    "file": "数论/数论笔记部分/数论笔记(杂项).md",
+    "title": "数论/数论笔记部分/数论笔记(杂项)",
+    "warnings": []
+  },
+  {
+    "board": "board2",
+    "group": "Trick 与杂项",
+    "file": "数论/数论笔记部分/数学笔记(矩阵半环).md",
+    "title": "数论/数论笔记部分/数学笔记(矩阵半环)",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
     "file": "动态规划/对dp的一些思考.md",
-    "title": "对dp的一些思考",
+    "title": "动态规划/对dp的一些思考",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
     "file": "动态规划/dp笔记/数位dp笔记.md",
-    "title": "dp笔记/数位dp笔记",
+    "title": "动态规划/dp笔记/数位dp笔记",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
     "file": "动态规划/dp笔记/普通dp常见状态.md",
-    "title": "dp笔记/普通dp常见状态",
+    "title": "动态规划/dp笔记/普通dp常见状态",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "动态规划",
     "file": "动态规划/dp笔记/状压dp常见状态.md",
-    "title": "dp笔记/状压dp常见状态",
+    "title": "动态规划/dp笔记/状压dp常见状态",
+    "warnings": []
+  },
+  {
+    "board": "board3",
+    "group": "数据结构",
+    "file": "数据结构/数据结构笔记/数据结构trick.md",
+    "title": "数据结构/数据结构笔记/数据结构trick",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "图论",
     "file": "图论/Trick/图相关trick.md",
-    "title": "Trick/图相关trick",
+    "title": "图论/Trick/图相关trick",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "图论",
     "file": "图论/图论笔记/图论笔记(几类特殊图).md",
-    "title": "图论笔记/图论笔记(几类特殊图)",
+    "title": "图论/图论笔记/图论笔记(几类特殊图)",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "博弈论",
     "file": "博弈论/nim游戏 SG函数.md",
-    "title": "nim游戏 SG函数",
+    "title": "博弈论/nim游戏 SG函数",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "通用 Trick 与杂项",
     "file": "其他/Trick/杂项相关trick.md",
-    "title": "Trick/杂项相关trick",
+    "title": "其他/Trick/杂项相关trick",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "字符串",
     "file": "字符串/笔记/一些比较神秘的hash手法.md",
-    "title": "笔记/一些比较神秘的hash手法",
+    "title": "字符串/笔记/一些比较神秘的hash手法",
     "warnings": []
   },
   {
     "board": "board3",
     "group": "字符串",
     "file": "字符串/笔记/字符串trick.md",
-    "title": "笔记/字符串trick",
+    "title": "字符串/笔记/字符串trick",
     "warnings": []
   }
 ]

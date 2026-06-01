@@ -1,97 +1,28 @@
 #!/usr/bin/env python3
 """
 generate_typst.py — 从原始 .cpp / .md 生成三份 Typst 板子正文
-用法: python generate_typst.py
+用法: python generate_typst.py [--check]
 输出: 板子/generated/board1-algorithms.typ
       板子/generated/board2-number-theory.typ
       板子/generated/board3-misc.typ
       板子/generated/manifest.json
 """
 
-import os, re, json, glob, subprocess
+import glob, json, os, re, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # ROOT = Mystudy 根目录
 GEN_DIR = os.path.join(ROOT, "板子", "generated")
+CONFIG_PATH = os.path.join(ROOT, "板子", "board_config.json")
 os.makedirs(GEN_DIR, exist_ok=True)
 
-# Try to import typst for validation
-try:
-    import typst as _typst
-    _TYPST_TMP = os.path.join(GEN_DIR, '_validate.typ')
-    def validate_typst_math(expr: str) -> bool:
-        """Test if a Typst math expression compiles"""
-        content = f'#set page(paper: "a4")\n${expr}$\n'
-        with open(_TYPST_TMP, 'w', encoding='utf-8', newline='\n') as f:
-            f.write(content)
-        try:
-            _typst.compile(_TYPST_TMP, root=os.path.dirname(_TYPST_TMP))
-            return True
-        except:
-            return False
-except ImportError:
-    def validate_typst_math(expr: str) -> bool:
-        return True  # skip validation if typst not available
 
-# ── Board 1 目录顺序 ──
-BOARD1_FOLDERS = [
-    "数据结构", "图论", "字符串",
-    "动态规划", "数论", "计算几何", "博弈论", "其他",
-]
+def load_config() -> dict:
+    with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
+        return json.load(f)
 
-# ── Board 2 数论笔记主题分组 ──
-BOARD2_GROUPS = {
-    "基础与工具": [
-        "数论笔记部分/数论笔记(筛法).md",
-        "数论笔记部分/数论笔记(线性逆元).md",
-        "数论笔记部分/数论笔记(不定方程与同余方程组).md",
-        "数论笔记部分/数论小结论.md",
-    ],
-    "卷积与反演": [
-        "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md",
-        "数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md",
-        "数论笔记部分/数论笔记(炫酷反演魔术).md",
-        "数论笔记部分/数论笔记(和式变换).md",
-    ],
-    "组合与生成函数": [
-        "数论笔记部分/数论笔记(排列组合).md",
-        "数论笔记部分/数论笔记(排列组合进阶).md",
-        "数论笔记部分/数论笔记(生成函数).md",
-    ],
-    "变换与多项式": [
-        "数论笔记部分/FFT笔记.md",
-        "数论笔记部分/数论笔记(sosdp&fmt&fwt).md",
-        "数论笔记部分/数论笔记(阶,原根与ntt).md",
-    ],
-    "Trick 与杂项": [
-        "Trick/数学相关trick.md",
-        "数论笔记部分/数论笔记(杂项).md",
-    ],
-}
 
-# ── Board 3 杂项笔记主题分组 ──
-BOARD3_GROUPS = {
-    "动态规划": [
-        ("动态规划", "对dp的一些思考.md"),
-        ("动态规划", "dp笔记/数位dp笔记.md"),
-        ("动态规划", "dp笔记/普通dp常见状态.md"),
-        ("动态规划", "dp笔记/状压dp常见状态.md"),
-    ],
-    "图论": [
-        ("图论", "Trick/图相关trick.md"),
-        ("图论", "图论笔记/图论笔记(几类特殊图).md"),
-    ],
-    "博弈论": [
-        ("博弈论", "nim游戏 SG函数.md"),
-    ],
-    "通用 Trick 与杂项": [
-        ("其他", "Trick/杂项相关trick.md"),
-    ],
-    "字符串": [
-        ("字符串", "笔记/一些比较神秘的hash手法.md"),
-        ("字符串", "笔记/字符串trick.md"),
-    ],
-}
+CONFIG = load_config()
 
 # ── Boilerplate 识别 ──
 # 匹配 cpp模板.cpp 中的公共头部行
@@ -210,33 +141,6 @@ def extract_cpp_content(filepath: str) -> dict:
     }
 
 
-def escape_typst_text(s: str) -> str:
-    """转义普通文本行中的 Typst 特殊字符，但保留已转换的 Typst 语法"""
-    result = []
-    i = 0
-    in_dollar = False
-    while i < len(s):
-        ch = s[i]
-        if ch == '$':
-            in_dollar = not in_dollar
-            result.append(ch)
-        elif in_dollar:
-            result.append(ch)
-        elif ch == '#' and i + 1 < len(s) and s[i+1].isalpha():
-            # Typst function call like #text(...), keep as-is
-            result.append(ch)
-        elif ch == '<':
-            result.append('\\<')
-        elif ch == '>':
-            result.append('\\>')
-        elif ch == '@':
-            result.append('\\@')
-        else:
-            result.append(ch)
-        i += 1
-    return ''.join(result)
-
-
 def escape_typst(s: str) -> str:
     """完全转义 Typst 特殊字符（用于错误消息等纯文本）"""
     s = s.replace('\\', '\\\\')
@@ -255,442 +159,91 @@ def escape_raw_content(s: str) -> str:
     return s.replace('```', '` ` `')
 
 
-# ── Markdown -> Typst 转换 ──
-def md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = "") -> str:
-    """将 Markdown 文本转换为 Typst 子集"""
-    lines = md_text.split('\n')
-    out = []
-    in_code = False
-    code_buf = []
-    code_lang = ""
-    in_math_block = False
-    math_buf = []
+def rel_path(path: str) -> str:
+    return path.replace('\\', '/')
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
 
-        # fenced code block
-        if line.strip().startswith('```') and not in_code:
-            lang_match = re.match(r'```(\w*)', line.strip())
-            code_lang = lang_match.group(1) if lang_match else ""
-            in_code = True
-            code_buf = []
-            i += 1
+def config_md_files(board: str | None = None) -> list[tuple[str, str, str]]:
+    """Return (board, group, repo-relative md path) entries from config."""
+    entries = []
+    boards = ['board2', 'board3'] if board is None else [board]
+    for board_name in boards:
+        for group in CONFIG[board_name]['groups']:
+            for fname in group['files']:
+                entries.append((board_name, group['name'], rel_path(fname)))
+    return entries
+
+
+def all_config_md_paths() -> set[str]:
+    return {path for _, _, path in config_md_files()}
+
+
+def validate_config() -> list[str]:
+    errors = []
+
+    template = CONFIG.get('board1', {}).get('template')
+    if not template or not os.path.isfile(os.path.join(ROOT, template)):
+        errors.append(f'board1.template 不存在: {template}')
+
+    folders = CONFIG.get('board1', {}).get('folders', [])
+    if not isinstance(folders, list) or not folders:
+        errors.append('board1.folders 必须是非空列表')
+    for folder in folders:
+        if not os.path.isdir(os.path.join(ROOT, folder)):
+            errors.append(f'board1.folders 目录不存在: {folder}')
+
+    seen = set()
+    for board_name in ('board2', 'board3'):
+        groups = CONFIG.get(board_name, {}).get('groups', [])
+        if not isinstance(groups, list):
+            errors.append(f'{board_name}.groups 必须是列表')
             continue
-        if line.strip().startswith('```') and in_code:
-            in_code = False
-            content = escape_raw_content('\n'.join(code_buf))
-            if code_lang:
-                out.append(f'```{code_lang}')
-            else:
-                out.append('```')
-            out.append(content)
-            out.append('```')
-            out.append('')
-            i += 1
-            continue
-        if in_code:
-            code_buf.append(line)
-            i += 1
-            continue
+        for group in groups:
+            name = group.get('name')
+            files = group.get('files')
+            if not name:
+                errors.append(f'{board_name}.groups 存在缺失 name 的分组')
+            if not isinstance(files, list):
+                errors.append(f'{board_name}.{name}.files 必须是列表')
+                continue
+            for fname in files:
+                path = rel_path(fname)
+                key = (board_name, path)
+                if key in seen:
+                    errors.append(f'{board_name} 重复收录: {path}')
+                seen.add(key)
+                if not path.endswith('.md'):
+                    errors.append(f'{board_name} 非 .md 文件: {path}')
+                if not os.path.isfile(os.path.join(ROOT, path)):
+                    errors.append(f'{board_name} 文件不存在: {path}')
 
-        # $$ block math
-        # Single-line $$...$$
-        single_math = re.match(r'^\s*\$\$(.+?)\$\$\s*$', line)
-        if single_math and not in_math_block:
-            raw_latex = single_math.group(1).strip()
-            math_content = convert_latex_to_typst_math(raw_latex)
-            math_lines = [l for l in math_content.split('\n') if l.strip()]
-            math_clean = '\n'.join(math_lines)
-            out.append('')
-            if validate_typst_math(math_clean):
-                out.append(f'${math_clean}$')
-            else:
-                out.append(f'#raw("$$ {raw_latex} $$", block: true)')
-            out.append('')
-            i += 1
-            continue
-        # Multi-line $$ ... $$
-        if line.strip() == '$$' and not in_math_block:
-            in_math_block = True
-            math_buf = []
-            i += 1
-            continue
-        if line.strip() == '$$' and in_math_block:
-            in_math_block = False
-            raw_latex = '\n'.join(math_buf).strip()
-            math_content = convert_latex_to_typst_math(raw_latex)
-            math_lines = [l for l in math_content.split('\n') if l.strip()]
-            math_clean = '\n'.join(math_lines)
-            out.append('')
-            if validate_typst_math(math_clean):
-                out.append(f'${math_clean}$')
-            else:
-                out.append(f'```\n{raw_latex}\n```')
-            out.append('')
-            i += 1
-            continue
-        if in_math_block:
-            math_buf.append(line)
-            i += 1
-            continue
+    for img in CONFIG.get('board2', {}).get('reference_images', []):
+        if not os.path.isfile(os.path.join(ROOT, img)):
+            errors.append(f'board2.reference_images 文件不存在: {img}')
 
-        # \[ ... \] block math (single or multi-line)
-        if line.strip().startswith('\\['):
-            raw_start = line.strip()[2:]
-            if '\\]' in raw_start:
-                raw_latex = raw_start[:raw_start.index('\\]')]
-                math_content = convert_latex_to_typst_math(raw_latex).strip()
-                math_lines = [l for l in math_content.split('\n') if l.strip()]
-                math_clean = '\n'.join(math_lines)
-                out.append('')
-                if validate_typst_math(math_clean):
-                    out.append(f'${math_clean}$')
-                else:
-                    out.append(f'```\n{raw_latex}\n```')
-                out.append('')
-            else:
-                mbuf = [raw_start]
-                i += 1
-                while i < len(lines):
-                    if '\\]' in lines[i]:
-                        mbuf.append(lines[i][:lines[i].index('\\]')])
-                        break
-                    mbuf.append(lines[i])
-                    i += 1
-                raw_latex = '\n'.join(mbuf).strip()
-                math_content = convert_latex_to_typst_math(raw_latex)
-                math_lines = [l for l in math_content.split('\n') if l.strip()]
-                math_clean = '\n'.join(math_lines)
-                out.append('')
-                if validate_typst_math(math_clean):
-                    out.append(f'${math_clean}$')
-                else:
-                    out.append(f'```\n{raw_latex}\n```')
-                out.append('')
-            i += 1
-            continue
-
-        # headings
-        hm = re.match(r'^(#{1,6})\s+(.*)', line)
-        if hm:
-            level = len(hm.group(1)) + heading_offset
-            title = hm.group(2).strip()
-            title = convert_inline_math(title)
-            title = convert_inline_formatting(title)
-            title = escape_typst_text(title)
-            eq_signs = '=' * level
-            out.append(f'{eq_signs} {title}')
-            out.append('')
-            i += 1
-            continue
-
-        # horizontal rule
-        if re.match(r'^---+\s*$', line):
-            out.append('#line(length: 100%, stroke: 0.5pt + luma(180))')
-            out.append('')
-            i += 1
-            continue
-
-        # image
-        img_match = re.match(r'!\[([^\]]*)\]\(([^)]+)\)', line.strip())
-        if img_match:
-            alt = img_match.group(1)
-            src = img_match.group(2)
-            # 解析相对路径
-            if img_base and not src.startswith(('http://', 'https://', '/')):
-                full_path = os.path.normpath(os.path.join(img_base, src))
-                if os.path.exists(full_path):
-                    src_escaped = full_path.replace('\\', '/')
-                    out.append(f'#image("{src_escaped}", width: 90%)')
-                else:
-                    out.append(f'#text(fill: red)[图片缺失: {escape_typst(src)}]')
-            else:
-                out.append(f'// 图片引用: {src}')
-                out.append(f'#text(fill: red)[图片: {escape_typst(src)}]')
-            out.append('')
-            i += 1
-            continue
-
-        # unordered list
-        lm = re.match(r'^(\s*)[-*]\s+(.*)', line)
-        if lm:
-            indent_level = len(lm.group(1)) // 2
-            content = convert_inline_math(lm.group(2))
-            content = convert_inline_formatting(content)
-            content = escape_typst_text(content)
-            prefix = '  ' * indent_level
-            out.append(f'{prefix}- {content}')
-            i += 1
-            continue
-
-        # ordered list
-        olm = re.match(r'^(\s*)\d+\.\s+(.*)', line)
-        if olm:
-            indent_level = len(olm.group(1)) // 2
-            content = convert_inline_math(olm.group(2))
-            content = convert_inline_formatting(content)
-            content = escape_typst_text(content)
-            prefix = '  ' * indent_level
-            out.append(f'{prefix}+ {content}')
-            i += 1
-            continue
-
-        # blockquote
-        bq = re.match(r'^>\s*(.*)', line)
-        if bq:
-            content = convert_inline_math(bq.group(1))
-            content = convert_inline_formatting(content)
-            content = escape_typst_text(content)
-            out.append(f'#block(inset: (left: 12pt), stroke: (left: 2pt + luma(180)))[{content}]')
-            i += 1
-            continue
-
-        # normal paragraph line
-        converted = convert_inline_math(line)
-        converted = convert_inline_formatting(converted)
-        converted = escape_typst_text(converted)
-        out.append(converted)
-        i += 1
-
-    return '\n'.join(out)
-
-
-def convert_latex_to_typst_math(latex: str) -> str:
-    """将 LaTeX 数学转换为 Typst 数学（尽力而为）"""
-    s = latex.strip()
-
-    # environments
-    s = re.sub(r'\\begin\{cases\}', '', s)
-    s = re.sub(r'\\end\{cases\}', '', s)
-    s = re.sub(r'\\begin\{aligned\}', '', s)
-    s = re.sub(r'\\end\{aligned\}', '', s)
-    s = re.sub(r'\\begin\{pmatrix\}', 'mat(', s)
-    s = re.sub(r'\\end\{pmatrix\}', ')', s)
-
-    # \frac and \dfrac (handle nested braces simply)
-    for _ in range(5):  # multiple passes for nested fracs
-        s = re.sub(r'\\d?frac\{([^{}]+)\}\{([^{}]+)\}', r'(\1)/(\2)', s)
-
-    # floor/ceil
-    s = s.replace('\\lfloor', 'floor(')
-    s = s.replace('\\rfloor', ')')
-    s = s.replace('\\lceil', 'ceil(')
-    s = s.replace('\\rceil', ')')
-
-    # big operators
-    s = re.sub(r'\\sum_\{([^{}]+)\}\^\{([^{}]+)\}', r'sum_(\1)^(\2)', s)
-    s = re.sub(r'\\sum_\{([^{}]+)\}', r'sum_(\1)', s)
-    s = re.sub(r'\\sum', 'sum', s)
-    s = re.sub(r'\\prod_\{([^{}]+)\}\^\{([^{}]+)\}', r'product_(\1)^(\2)', s)
-    s = re.sub(r'\\prod_\{([^{}]+)\}', r'product_(\1)', s)
-    s = re.sub(r'\\prod', 'product', s)
-    s = re.sub(r'\\bigcup', 'union.big', s)
-    s = re.sub(r'\\bigcap', 'sect.big', s)
-
-    # \text{...} \mathrm{...} \textbf{...}
-    s = re.sub(r'\\text\{([^{}]+)\}', lambda m: f'upright("{m.group(1)}")', s)
-    s = re.sub(r'\\mathrm\{([^{}]+)\}', lambda m: f'upright("{m.group(1)}")', s)
-    s = re.sub(r'\\textbf\{([^{}]+)\}', lambda m: f'bold("{m.group(1)}")', s)
-    s = re.sub(r'\\mathbf\{([^{}]+)\}', lambda m: f'bold("{m.group(1)}")', s)
-
-    # \pmod{p} -> (mod p)
-    s = re.sub(r'\\pmod\{([^{}]+)\}', r'(mod \1)', s)
-
-    # Greek letters — explicit mapping for ones that differ
-    GREEK_MAP = {
-        '\\varphi': 'phi.alt',
-        '\\varepsilon': 'epsilon.alt',
-        '\\phi': 'phi',
-        '\\epsilon': 'epsilon',
-        '\\alpha': 'alpha',
-        '\\beta': 'beta',
-        '\\gamma': 'gamma',
-        '\\delta': 'delta',
-        '\\Delta': 'Delta',
-        '\\lambda': 'lambda',
-        '\\Lambda': 'Lambda',
-        '\\mu': 'mu',
-        '\\nu': 'nu',
-        '\\pi': 'pi',
-        '\\Pi': 'Pi',
-        '\\sigma': 'sigma',
-        '\\Sigma': 'Sigma',
-        '\\tau': 'tau',
-        '\\theta': 'theta',
-        '\\omega': 'omega',
-        '\\Omega': 'Omega',
-        '\\rho': 'rho',
-        '\\xi': 'xi',
-        '\\zeta': 'zeta',
-        '\\eta': 'eta',
-        '\\kappa': 'kappa',
-        '\\chi': 'chi',
-        '\\psi': 'psi',
-        '\\Psi': 'Psi',
+    source_dirs = CONFIG.get('board1', {}).get('folders', [])
+    actual_md = {
+        rel_path(os.path.relpath(path, ROOT))
+        for folder in source_dirs
+        for path in glob.glob(os.path.join(ROOT, folder, '**', '*.md'), recursive=True)
     }
-    for latex_cmd, typst_sym in GREEK_MAP.items():
-        s = s.replace(latex_cmd, typst_sym)
+    configured_md = all_config_md_paths()
+    for path in sorted(actual_md - configured_md):
+        errors.append(f'发现未收录 .md: {path}')
+    for path in sorted(configured_md - actual_md):
+        errors.append(f'配置中的 .md 不在源码目录扫描结果中: {path}')
 
-    # Symbols
-    s = s.replace('\\infty', 'infinity')
-    s = s.replace('\\cdots', 'dots.c')
-    s = s.replace('\\cdot', 'dot.c')
-    s = s.replace('\\ldots', 'dots')
-    s = s.replace('\\dots', 'dots')
-    s = s.replace('\\times', 'times')
-    s = s.replace('\\div', 'div')
-    s = s.replace('\\pm', 'plus.minus')
-    s = s.replace('\\mp', 'minus.plus')
-
-    # Relations
-    s = s.replace('\\equiv', 'equiv')
-    s = s.replace('\\neq', 'eq.not')
-    s = s.replace('\\leq', 'lt.eq')
-    s = s.replace('\\geq', 'gt.eq')
-    s = s.replace('\\ll', 'lt.double')
-    s = s.replace('\\gg', 'gt.double')
-    s = s.replace('\\approx', 'approx')
-    s = s.replace('\\sim', 'tilde')
-    s = s.replace('\\propto', 'prop')
-
-    # Set/logic
-    s = s.replace('\\cup', 'union')
-    s = s.replace('\\cap', 'sect')
-    s = s.replace('\\subset', 'subset')
-    s = s.replace('\\subseteq', 'subset.eq')
-    s = s.replace('\\supset', 'supset')
-    s = s.replace('\\supseteq', 'supset.eq')
-    s = s.replace('\\in', 'in')
-    s = s.replace('\\notin', 'in.not')
-    s = s.replace('\\emptyset', 'nothing')
-    s = s.replace('\\forall', 'forall')
-    s = s.replace('\\exists', 'exists')
-    s = s.replace('\\neg', 'not')
-
-    # Logic/bitwise
-    s = s.replace('\\wedge', 'and.big')
-    s = s.replace('\\vee', 'or.big')
-    s = s.replace('\\oplus', 'xor')
-    s = s.replace('\\land', 'and')
-    s = s.replace('\\lor', 'or')
-
-    # Arrows
-    s = s.replace('\\Rightarrow', 'arrow.r.double')
-    s = s.replace('\\Leftarrow', 'arrow.l.double')
-    s = s.replace('\\Leftrightarrow', 'arrow.l.r.double')
-    s = s.replace('\\rightarrow', 'arrow.r')
-    s = s.replace('\\leftarrow', 'arrow.l')
-    s = s.replace('\\leftrightarrow', 'arrow.l.r')
-    s = s.replace('\\implies', 'arrow.r.double')
-    s = s.replace('\\iff', 'arrow.l.r.double')
-    s = s.replace('\\to', 'arrow.r')
-    s = s.replace('\\mapsto', 'arrow.r.bar')
-
-    # Misc
-    s = s.replace('\\quad', 'quad')
-    s = s.replace('\\qquad', 'quad quad')
-    s = s.replace('\\star', 'star')
-    s = s.replace('\\circ', 'circle.small')
-    s = s.replace('\\langle', 'angle.l')
-    s = s.replace('\\rangle', 'angle.r')
-    s = s.replace('\\mid', 'mid')
-    s = s.replace('\\nmid', 'divides.not')
-    s = s.replace('\\binom', 'binom')
-    s = s.replace('\\sqrt', 'sqrt')
-    s = s.replace('\\overline', 'overline')
-
-    # \left \right (remove, Typst auto-sizes)
-    s = s.replace('\\left', '')
-    s = s.replace('\\right', '')
-
-    # ^{...} -> ^(...)
-    s = re.sub(r'\^\{([^{}]+)\}', r'^(\1)', s)
-    # _{...} -> _(...)
-    s = re.sub(r'_\{([^{}]+)\}', r'_(\1)', s)
-
-    # \\ -> line break in math
-    s = s.replace('\\\\', '\\\n')
-    # \ (space) -> space
-    s = re.sub(r'\\\s', ' ', s)
-
-    # remaining \command -> just strip backslash (best effort)
-    s = re.sub(r'\\([a-zA-Z]+)', r'\1', s)
-
-    # Typst math: multi-char lowercase sequences like "mn" need spaces -> "m n"
-    # In LaTeX, "mn" means m*n, but in Typst "mn" is a single variable.
-    # Insert spaces between adjacent single lowercase letters (not part of known keywords).
-    TYPST_KEYWORDS = {
-        'sum', 'product', 'infinity', 'alpha', 'beta', 'gamma', 'delta', 'epsilon',
-        'zeta', 'eta', 'theta', 'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi',
-        'pi', 'rho', 'sigma', 'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega',
-        'Delta', 'Gamma', 'Lambda', 'Sigma', 'Pi', 'Omega', 'Psi', 'Phi',
-        'equiv', 'quad', 'times', 'div', 'mod', 'gcd', 'lcm', 'max', 'min',
-        'log', 'ln', 'exp', 'sin', 'cos', 'tan', 'lim', 'sup', 'inf',
-        'det', 'dim', 'ker', 'deg', 'arg', 'floor', 'ceil', 'sqrt', 'not',
-        'and', 'or', 'xor', 'in', 'dots', 'tilde', 'hat', 'overline', 'bold',
-        'upright', 'forall', 'exists', 'nothing', 'union', 'sect', 'subset',
-        'supset', 'approx', 'prop', 'star', 'mid', 'binom', 'cases', 'mat',
-        'arrow', 'angle', 'lt', 'gt', 'eq', 'plus', 'minus', 'circle', 'divides',
-        'implies', 'iff', 'therefore', 'because', 'where', 'with',
-    }
-
-    def split_multichar(m):
-        word = m.group(0)
-        # Don't split known Typst keywords or dotted names
-        if word in TYPST_KEYWORDS or '.' in word:
-            return word
-        # Only split very short sequences (2-3 chars) that look like variable products
-        # Longer words are likely function names or text
-        if len(word) <= 3 and word.isalpha() and word.islower() and word not in TYPST_KEYWORDS:
-            return ' '.join(word)
-        return word
-
-    # Match word-like sequences not preceded by # or .
-    s = re.sub(r'(?<![.#\w])[a-z]{2,}(?![.\w])', split_multichar, s)
-
-    return s
+    return errors
 
 
-def convert_inline_math(line: str) -> str:
-    r"""转换行内数学 \(...\) 和 $...$ 中的 LaTeX -> Typst math"""
-    # \( ... \) -> $...$
-    def repl_inline(m):
-        raw = m.group(1)
-        content = convert_latex_to_typst_math(raw)
-        if validate_typst_math(content):
-            return f'${content}$'
-        return f'`\\({raw}\\)`'
-    line = re.sub(r'\\\((.+?)\\\)', repl_inline, line)
-
-    # $...$ inline math (LaTeX) -> $...$ (Typst math)
-    def repl_dollar_math(m):
-        raw = m.group(1)
-        content = raw
-        if '\\' in content or '_{' in content or '^{' in content:
-            content = convert_latex_to_typst_math(content)
-        if validate_typst_math(content):
-            return f'${content}$'
-        return f'`${raw}$`'
-    # 匹配 $...$ 但不匹配 $$
-    line = re.sub(r'(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)', repl_dollar_math, line)
-    return line
-
-
-def convert_inline_formatting(line: str) -> str:
-    """转换 Markdown 行内格式"""
-    # Handle embedded $$...$$ (inline display math) before bold conversion
-    def repl_embedded_display(m):
-        raw = m.group(1)
-        content = convert_latex_to_typst_math(raw)
-        if validate_typst_math(content):
-            return f'${content}$'
-        return f'`$${raw}$$`'
-    line = re.sub(r'\$\$(.+?)\$\$', repl_embedded_display, line)
-    # **bold** -> *bold* (Typst bold)
-    line = re.sub(r'\*\*(.+?)\*\*', r'*\1*', line)
-    return line
+def check_config_or_exit() -> None:
+    errors = validate_config()
+    if errors:
+        print('配置检查失败:')
+        for err in errors:
+            print(f'  - {err}')
+        sys.exit(1)
+    print('配置检查通过')
 
 
 # ══════════════════════════════════════════════
@@ -702,7 +255,7 @@ def generate_board1() -> tuple[str, list]:
     parts = []
 
     # cpp模板.cpp 放在最前面
-    cpp_template = os.path.join(ROOT, "板子", "cpp模板.cpp")
+    cpp_template = os.path.join(ROOT, CONFIG["board1"]["template"])
     if os.path.exists(cpp_template):
         with open(cpp_template, 'r', encoding='utf-8', errors='ignore') as f:
             code = f.read().strip()
@@ -715,7 +268,7 @@ def generate_board1() -> tuple[str, list]:
             'has_usage': False, 'has_tail': False,
         })
 
-    for folder in BOARD1_FOLDERS:
+    for folder in CONFIG["board1"]["folders"]:
         folder_path = os.path.join(ROOT, folder)
         if not os.path.isdir(folder_path):
             continue
@@ -774,12 +327,20 @@ def generate_board1() -> tuple[str, list]:
 # ══════════════════════════════════════════════
 # Board 2: 数论板
 # ══════════════════════════════════════════════
-def pandoc_md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = '') -> str:
+def pandoc_md_to_typst(md_text: str, source_path: str, heading_offset: int = 2, img_base: str = '') -> str:
     """用 Pandoc 将 Markdown 转为 Typst，并调整标题层级"""
+    md_text = re.sub(
+        r'(?m)^---\s*$',
+        '```{=typst}\n#horizontalrule\n```',
+        md_text,
+    )
     result = subprocess.run(
-        ['pandoc', '-f', 'markdown', '-t', 'typst', '--wrap=none'],
+        ['pandoc', '-f', 'markdown-yaml_metadata_block', '-t', 'typst', '--wrap=none'],
         input=md_text, capture_output=True, text=True, encoding='utf-8'
     )
+    if result.returncode != 0:
+        raise RuntimeError(f'Pandoc 转换失败: {source_path}\n{result.stderr.strip()}')
+
     typst_text = result.stdout
     # 调整标题层级：Pandoc 输出的 = 是一级，我们需要降级
     def adjust_heading(m):
@@ -814,10 +375,12 @@ def pandoc_md_to_typst(md_text: str, heading_offset: int = 2, img_base: str = ''
         raw_latex = raw_latex.replace('\\_', '_')
         # 尝试用 Pandoc 单独转换这段数学
         inner_result = subprocess.run(
-            ['pandoc', '-f', 'markdown', '-t', 'typst', '--wrap=none'],
+            ['pandoc', '-f', 'markdown-yaml_metadata_block', '-t', 'typst', '--wrap=none'],
             input=f'$$\n{raw_latex}\n$$',
             capture_output=True, text=True, encoding='utf-8'
         )
+        if inner_result.returncode != 0:
+            return f'```\n{raw_latex}\n```'
         inner = inner_result.stdout.strip()
         if inner and not inner.startswith('\\$'):
             return inner
@@ -861,27 +424,29 @@ def generate_board2() -> tuple[str, list]:
     """生成数论板 Typst 正文（使用 Pandoc 转换）"""
     manifest = []
     parts = []
-    nt_dir = os.path.join(ROOT, "数论")
 
     # 参考图表放在最前面
-    ref_images = ['表.jpg', '图.png']
+    ref_images = CONFIG["board2"].get("reference_images", [])
     has_refs = [os.path.exists(os.path.join(ROOT, img)) for img in ref_images]
     if any(has_refs):
         parts.append('= 参考图表\n')
         for img, exists in zip(ref_images, has_refs):
             if exists:
-                rel_path = os.path.relpath(
+                image_rel_path = os.path.relpath(
                     os.path.join(ROOT, img), GEN_DIR
                 ).replace('\\', '/')
                 title = os.path.splitext(img)[0]
                 parts.append(f'== {title}\n')
-                parts.append(f'#image("{rel_path}", width: 100%)\n')
+                parts.append(f'#image("{image_rel_path}", width: 100%)\n')
 
-    for group_name, files in BOARD2_GROUPS.items():
+    for group in CONFIG["board2"]["groups"]:
+        group_name = group["name"]
+        files = group["files"]
         parts.append(f'= {group_name}\n')
 
         for fname in files:
-            fpath = os.path.join(nt_dir, fname)
+            fname = rel_path(fname)
+            fpath = os.path.join(ROOT, fname)
             title = os.path.splitext(fname)[0]
 
             entry = {
@@ -905,7 +470,7 @@ def generate_board2() -> tuple[str, list]:
             manifest.append(entry)
             parts.append(f'== {title}\n')
             img_base = os.path.dirname(fpath)
-            converted = pandoc_md_to_typst(md_text, heading_offset=2, img_base=img_base)
+            converted = pandoc_md_to_typst(md_text, fname, heading_offset=2, img_base=img_base)
             parts.append(converted)
             parts.append('')
 
@@ -920,17 +485,20 @@ def generate_board3() -> tuple[str, list]:
     manifest = []
     parts = []
 
-    for group_name, file_list in BOARD3_GROUPS.items():
+    for group in CONFIG["board3"]["groups"]:
+        group_name = group["name"]
+        file_list = group["files"]
         parts.append(f'= {group_name}\n')
 
-        for folder, fname in file_list:
-            fpath = os.path.join(ROOT, folder, fname)
+        for fname in file_list:
+            fname = rel_path(fname)
+            fpath = os.path.join(ROOT, fname)
             title = os.path.splitext(fname)[0]
 
             entry = {
                 'board': 'board3',
                 'group': group_name,
-                'file': f'{folder}/{fname}',
+                'file': fname,
                 'title': title,
                 'warnings': [],
             }
@@ -948,7 +516,7 @@ def generate_board3() -> tuple[str, list]:
             manifest.append(entry)
             parts.append(f'== {title}\n')
             img_base = os.path.dirname(fpath)
-            converted = pandoc_md_to_typst(md_text, heading_offset=2, img_base=img_base)
+            converted = pandoc_md_to_typst(md_text, fname, heading_offset=2, img_base=img_base)
             parts.append(converted)
             parts.append('')
 
@@ -959,6 +527,11 @@ def generate_board3() -> tuple[str, list]:
 # Main
 # ══════════════════════════════════════════════
 def main():
+    if '--check' in sys.argv:
+        check_config_or_exit()
+        return
+
+    check_config_or_exit()
     all_manifest = []
 
     # Board 1
@@ -987,26 +560,28 @@ def main():
         json.dump(all_manifest, f, ensure_ascii=False, indent=2)
     print(f"Manifest: {len(all_manifest)} 条记录")
 
-    # 编译 PDF
     try:
         import typst
-        typst_dir = os.path.join(ROOT, "板子", "typst")
-        out_dir = os.path.join(ROOT, "板子", "output")
-        os.makedirs(out_dir, exist_ok=True)
-        boards = ['board1-algorithms', 'board2-number-theory', 'board3-misc']
-        for name in boards:
-            src = os.path.join(typst_dir, f'{name}.typ')
-            dst = os.path.join(out_dir, f'{name}.pdf')
-            pdf = typst.compile(src, root=ROOT)
-            with open(dst, 'wb') as f:
-                f.write(pdf)
-            print(f"  -> {name}.pdf ({len(pdf)//1024}KB)")
-        print("PDF 编译完成")
-    except ImportError:
-        print("typst 未安装，跳过 PDF 编译。请手动运行 typst compile")
-    except Exception as e:
-        print(f"PDF 编译失败: {e}")
+    except ImportError as exc:
+        raise RuntimeError("typst 未安装，无法编译 PDF") from exc
+
+    typst_dir = os.path.join(ROOT, "板子", "typst")
+    out_dir = os.path.join(ROOT, "板子", "output")
+    os.makedirs(out_dir, exist_ok=True)
+    boards = ['board1-algorithms', 'board2-number-theory', 'board3-misc']
+    for name in boards:
+        src = os.path.join(typst_dir, f'{name}.typ')
+        dst = os.path.join(out_dir, f'{name}.pdf')
+        pdf = typst.compile(src, root=ROOT)
+        with open(dst, 'wb') as f:
+            f.write(pdf)
+        print(f"  -> {name}.pdf ({len(pdf)//1024}KB)")
+    print("PDF 编译完成")
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as exc:
+        print(f"生成失败: {exc}", file=sys.stderr)
+        sys.exit(1)

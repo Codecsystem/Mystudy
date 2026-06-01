@@ -10,9 +10,9 @@
 
 | 板子 | 内容 | 入口文件 | PDF |
 |------|------|----------|-----|
-| Board 1 算法模板 | `数据结构/`、`图论/`、`字符串/`、`哈希/`、`动态规划/`、`数论/`、`计算几何/`、`博弈论/`、`其他/` 下的 `.cpp` 模板 | `typst/board1-algorithms.typ` | `output/board1-algorithms.pdf` |
+| Board 1 算法模板 | `数据结构/`、`图论/`、`字符串/`、`动态规划/`、`数论/`、`计算几何/`、`博弈论/`、`其他/` 下的 `.cpp` 模板 | `typst/board1-algorithms.typ` | `output/board1-algorithms.pdf` |
 | Board 2 数论 | `数论/数论笔记部分/` 与 `数论/Trick/` 下的数论笔记 `.md` | `typst/board2-number-theory.typ` | `output/board2-number-theory.pdf` |
-| Board 3 杂项 | `动态规划/dp笔记/`、`图论/Trick/`、`图论/图论笔记/`、`博弈论/`、`其他/Trick/` 下的杂项笔记 `.md` | `typst/board3-misc.typ` | `output/board3-misc.pdf` |
+| Board 3 杂项 | `数据结构/数据结构笔记/`、`动态规划/`、`动态规划/dp笔记/`、`图论/Trick/`、`图论/图论笔记/`、`博弈论/`、`其他/Trick/`、`字符串/笔记/` 下的杂项笔记 `.md` | `typst/board3-misc.typ` | `output/board3-misc.pdf` |
 
 ### 一键重建
 
@@ -20,7 +20,10 @@
 # 1. 先修复 .md 格式（幂等，可反复运行）
 python 板子/fix_md_math.py
 
-# 2. 生成 Typst 并编译 PDF
+# 2. 校验收录配置（检查缺失文件、未收录 .md 等）
+python 板子/generate_typst.py --check
+
+# 3. 生成 Typst 并编译 PDF
 python 板子/generate_typst.py
 ```
 
@@ -40,7 +43,10 @@ python 板子/generate_typst.py
 # 1. 先修复 .md 格式（幂等，可反复运行）
 python 板子/fix_md_math.py
 
-# 2. 生成 Typst 并编译 PDF
+# 2. 校验收录配置
+python 板子/generate_typst.py --check
+
+# 3. 生成 Typst 并编译 PDF
 python 板子/generate_typst.py
 ```
 
@@ -63,6 +69,7 @@ python 板子/generate_typst.py
 
 **保留文件（不可删除）**：
 - `AGENTS.md`、`generate_typst.py`、`fix_md_math.py`、`cpp模板.cpp`
+- `board_config.json`
 - `generated/board*.typ`、`generated/manifest.json`
 - `output/board*.pdf`
 - `typst/*.typ`
@@ -98,8 +105,8 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 |----------|----------|
 | `fix_md_math.py` 新增/修改规则 | 更新「fix_md_math.py 修复规则」表格 |
 | `generate_typst.py` 新增后处理 | 更新「generate_typst.py 后处理规则」表格 |
-| 新增/删除笔记分组 | 更新「数据源与收录规则」中的分组表格 |
-| 新增/删除源目录 | 更新 Board 1 目录列表 |
+| `board_config.json` 新增/删除笔记分组 | 更新「数据源与收录规则」中的分组表格 |
+| `board_config.json` 新增/删除源目录 | 更新 Board 1 目录列表 |
 | 发现新的 .md 格式要求 | 更新「.md 源文件格式要求」 |
 | 新增依赖或工具 | 更新「依赖」表格 |
 | 发现新的已知限制 | 更新「已知限制」列表 |
@@ -111,31 +118,32 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 
 **触发时机**：每次维护会话开始时。
 
-**原因**：用户可能在两次会话之间重命名文件夹、新增/删除目录或移动文件，本文件中记录的目录结构和 `generate_typst.py` 中的硬编码路径可能已过时。
+**原因**：用户可能在两次会话之间重命名文件夹、新增/删除目录或移动文件，本文件中记录的目录结构和 `board_config.json` 中的收录路径可能已过时。
 
 **操作步骤**：
 
 1. **扫描仓库根目录**：`ls` 列出所有一级子目录，与本文件「Board 1 数据源」中的目录列表对比
 2. **递归扫描各目录下的所有文件**：对每个算法目录（`数据结构/`、`图论/` 等）递归列出所有 `.cpp` 和 `.md` 文件（包括所有子目录层级），检查是否有新增/删除/重命名。仅扫描一级目录会漏掉子目录中的文件。
-3. **比对脚本中的硬编码**：
-   - `generate_typst.py` → `BOARD1_FOLDERS`、`BOARD2_GROUPS`、`BOARD3_GROUPS`
-   - `fix_md_math.py` → `dirs` 列表
+3. **比对外部配置**：`板子/board_config.json`
+   - `board1.folders`：Board 1 算法模板目录顺序
+   - `board2.groups`：Board 2 数论笔记分组，文件路径使用仓库根目录相对路径
+   - `board3.groups`：Board 3 杂项笔记分组，文件路径使用仓库根目录相对路径
 4. **发现差异时**：
-   - 向用户报告变更（如「发现新目录 `xxx/`，是否加入 Board 1？」）
-   - 用户确认后更新脚本和本文件
-   - **如果仓库已统一改为中文目录名，应同步更新脚本中的旧英文目录硬编码**
+   - 直接修补 `板子/board_config.json`，必要时同步更新本文件
+   - `generate_typst.py` 和 `fix_md_math.py` 不应再为收录目录/分组新增硬编码
+   - **如果仓库已统一改为中文目录名，应同步更新 `board_config.json` 中的旧英文目录**
    - 不要静默忽略新文件或已删除的文件
 
 **示例差异**：
 ```
 ⚠ 目录变更:
-  + 新增目录: 线段树/          → 建议加入 Board 1 BOARD1_FOLDERS
-  - 目录已删除: hash/          → 需从 BOARD1_FOLDERS 移除
-  ~ 重命名: string/ → 字符串/  → 需更新 BOARD1_FOLDERS
+  + 新增目录: 线段树/          → 建议加入 board_config.json 的 board1.folders
+  - 目录已删除: hash/          → 需从 board1.folders 移除
+  ~ 重命名: string/ → 字符串/  → 需更新 board1.folders
 
 ⚠ 文件变更:
-  + 数论/数论笔记部分/数论笔记(新主题).md   → 建议加入 Board 2 BOARD2_GROUPS
-  - 图论/Trick/图相关trick.md 已删除       → 需从 Board 3 BOARD3_GROUPS 移除
+  + 数论/数论笔记部分/数论笔记(新主题).md   → 建议加入 board2.groups
+  - 图论/Trick/图相关trick.md 已删除       → 需从 board3.groups 移除
 ```
 
 ---
@@ -147,6 +155,7 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 ├── AGENTS.md                 # 本文件（维护指南）
 ├── generate_typst.py         # 主生成脚本
 ├── fix_md_math.py            # .md 格式修复脚本（预处理）
+├── board_config.json         # 板子收录范围与分组配置
 ├── cpp模板.cpp               # C++ 通用模板（Board 1 首页）
 ├── typst/
 │   ├── common.typ            # 公共样式（页面、字体、目录、代码块）
@@ -170,7 +179,9 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 
 ### Board 1：算法模板
 
-**数据源**：以下目录中的 `.cpp` 文件（按此顺序排列）：
+**配置位置**：`板子/board_config.json` → `board1.folders`
+
+**数据源**：以下目录中的 `.cpp` 文件（按配置顺序排列）：
 
 1. `数据结构/`
 2. `图论/`
@@ -192,6 +203,8 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 
 ### Board 2：数论笔记
 
+**配置位置**：`板子/board_config.json` → `board2.reference_images`、`board2.groups`
+
 **数据源**：`数论/` 下的 `.md` 文件，当前实际分布在以下位置，并按主题分组：
 
 | 分组 | 文件 |
@@ -200,7 +213,7 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 | 卷积与反演 | `数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1).md`、`数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2).md`、`数论/数论笔记部分/数论笔记(炫酷反演魔术).md`、`数论/数论笔记部分/数论笔记(和式变换).md` |
 | 组合与生成函数 | `数论/数论笔记部分/数论笔记(排列组合).md`、`数论/数论笔记部分/数论笔记(排列组合进阶).md`、`数论/数论笔记部分/数论笔记(生成函数).md` |
 | 变换与多项式 | `数论/数论笔记部分/FFT笔记.md`、`数论/数论笔记部分/数论笔记(sosdp&fmt&fwt).md`、`数论/数论笔记部分/数论笔记(阶,原根与ntt).md` |
-| Trick 与杂项 | `数论/Trick/数学相关trick.md`、`数论/数论笔记部分/数论笔记(杂项).md` |
+| Trick 与杂项 | `数论/Trick/数学相关trick.md`、`数论/数论笔记部分/数论笔记(杂项).md`、`数论/数论笔记部分/数学笔记(矩阵半环).md` |
 
 **特殊条目**：
 - `表.jpg` 和 `图.png`（注意：原 `图.jpg` 实际是 PNG 格式，已复制为 `图.png`）放在最前面（"参考图表" 分组）
@@ -209,11 +222,14 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 
 ### Board 3：杂项笔记
 
+**配置位置**：`板子/board_config.json` → `board3.groups`
+
 **数据源**：非数论的笔记 `.md`，当前实际分布在以下位置，并按主题分组：
 
 | 分组 | 文件 |
 |------|------|
 | 动态规划 | `动态规划/对dp的一些思考.md`、`动态规划/dp笔记/数位dp笔记.md`、`动态规划/dp笔记/普通dp常见状态.md`、`动态规划/dp笔记/状压dp常见状态.md` |
+| 数据结构 | `数据结构/数据结构笔记/数据结构trick.md` |
 | 图论 | `图论/Trick/图相关trick.md`、`图论/图论笔记/图论笔记(几类特殊图).md` |
 | 博弈论 | `博弈论/nim游戏 SG函数.md` |
 | 通用 Trick 与杂项 | `其他/Trick/杂项相关trick.md` |
@@ -239,7 +255,7 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 | `\bmod` → `\mod` | 同上 | |
 | `(mod \ X)` → `\pmod{X}` | 修复 mod 记号避免 Pandoc 把 `\(` 当成 inline math | `(mod \ m)` → `\pmod{m}` |
 
-**扫描目录**：`数论/`、`数论/Trick/`、`数论/数论笔记部分/`、`动态规划/`、`动态规划/dp笔记/`、`图论/`、`图论/Trick/`、`图论/图论笔记/`、`博弈论/`、`其他/`、`其他/Trick/`、`字符串/笔记/`
+**扫描文件来源**：`板子/board_config.json` → `board2.groups` 与 `board3.groups` 中列出的所有 `.md` 文件。不要再单独维护扫描目录列表。
 
 ### generate_typst.py 后处理规则（Pandoc 输出修复）
 
@@ -251,6 +267,8 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 | `,)` → `)` | 修复 Pandoc 生成的尾随逗号，避免 Typst `unexpected comma` |
 | 缺失图片注释 → 红字占位文本 | 避免在 `figure(...)` 参数位置插入注释导致语法错误 |
 | 图片相对路径按当前 `.md` 所在目录解析 | 修复 `md.img/...` 这类资源在子目录笔记中的引用失效 |
+| Pandoc 使用 `markdown-yaml_metadata_block` | 禁用 YAML metadata block，避免正文中的 `---` 被误判为 metadata 边界 |
+| 独占行 `---` → raw Typst `#horizontalrule` | 送入 Pandoc 前转换，避免 `---` 与后续正文被误解析为窄表格 |
 
 ### .md 源文件格式要求
 
@@ -267,27 +285,28 @@ find 板子/ -maxdepth 1 -name '_*' -delete
 ### 新增算法模板
 
 1. 将 `.cpp` 文件放入对应目录（如 `数据结构/新算法.cpp`）
-2. 如新增目录，先同步更新 `generate_typst.py` 的 `BOARD1_FOLDERS` 与本文件
+2. 如新增目录，先同步更新 `板子/board_config.json` 的 `board1.folders` 与本文件
 3. 运行 `python 板子/generate_typst.py`
 4. 新模板会自动出现在 Board 1 对应分组中
 
 ### 新增/修改笔记
 
 1. 编辑或新增 `.md` 文件
-2. 如果是新文件、新分组或新子目录，先同步更新 `generate_typst.py` 的 `BOARD2_GROUPS` / `BOARD3_GROUPS`、`fix_md_math.py` 的 `dirs` 以及本文件
+2. 如果是新文件或新分组，先同步更新 `板子/board_config.json` 的 `board2.groups` / `board3.groups` 以及本文件。文件路径统一写成仓库根目录相对路径。
 3. 运行 `python 板子/fix_md_math.py` 修复格式
-4. 运行 `python 板子/generate_typst.py` 重新生成
+4. 运行 `python 板子/generate_typst.py --check` 校验配置
+5. 运行 `python 板子/generate_typst.py` 重新生成
 
 ### 新增笔记目录/分组
 
-1. 更新 `generate_typst.py` 中对应的 `BOARD2_GROUPS` 或 `BOARD3_GROUPS`
-2. 如果新增目录中含 `.md`，同步更新 `fix_md_math.py` 的 `dirs`
-3. 更新本文件中的数据源与扫描目录说明
+1. 更新 `板子/board_config.json` 中对应的 `board2.groups` 或 `board3.groups`
+2. 更新本文件中的数据源说明
+3. 运行 `python 板子/generate_typst.py --check`
 4. 重新生成并验证 PDF
 
 ### 编译失败排查
 
-1. **Pandoc WARNING**：通常是 `.md` 中有 Pandoc 不支持的 LaTeX 命令。在 `fix_md_math.py` 的规则 7 中添加替换。运行 `pandoc -f markdown -t typst 问题文件.md` 可看到具体警告。
+1. **Pandoc WARNING/ERROR**：通常是 `.md` 中有 Pandoc 不支持的 LaTeX 命令，或 Markdown 语法被误判。在 `fix_md_math.py` 中添加替换。排查时优先运行 `pandoc -f markdown-yaml_metadata_block -t typst 问题文件.md`，保持与生成脚本一致。
 2. **Typst 编译错误**：
    - `unknown variable: horizontalrule` → `common.typ` 中已定义，检查 `#import` 是否正确
    - `failed to decode image` → 检查图片实际格式是否与扩展名匹配（如 `.jpg` 实际是 PNG）

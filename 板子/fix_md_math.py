@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""
+r"""
 fix_md_math.py — 批量修复 .md 文件中的数学公式格式
 使其对 Pandoc md→typst 转换友好
 
@@ -10,9 +10,21 @@ fix_md_math.py — 批量修复 .md 文件中的数学公式格式
 4. 修复不规范的行内/行间混用
 """
 
-import re, os, sys
+import json, re, os, sys
 
 CJK_RE = re.compile(r'[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]')
+
+
+def load_md_files(root: str) -> list[str]:
+    config_path = os.path.join(root, '板子', 'board_config.json')
+    with open(config_path, 'r', encoding='utf-8') as f:
+        config = json.load(f)
+    md_files = []
+    for board_name in ('board2', 'board3'):
+        for group in config[board_name]['groups']:
+            for fname in group['files']:
+                md_files.append(os.path.join(root, fname))
+    return sorted(set(md_files))
 
 
 def fix_spaced_inline_math(line: str) -> str:
@@ -150,27 +162,7 @@ def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     dry_run = '--dry-run' in sys.argv
 
-    dirs = [
-        '数论',
-        os.path.join('数论', 'Trick'),
-        os.path.join('数论', '数论笔记部分'),
-        '动态规划',
-        os.path.join('动态规划', 'dp笔记'),
-        '图论',
-        os.path.join('图论', 'Trick'),
-        os.path.join('图论', '图论笔记'),
-        '博弈论',
-        '其他',
-        os.path.join('其他', 'Trick'),
-        os.path.join('字符串', '笔记'),
-    ]
-    md_files = []
-    for d in dirs:
-        dpath = os.path.join(root, d)
-        if os.path.isdir(dpath):
-            for f in os.listdir(dpath):
-                if f.endswith('.md'):
-                    md_files.append(os.path.join(dpath, f))
+    md_files = load_md_files(root)
 
     print(f"扫描到 {len(md_files)} 个 .md 文件")
     changed = 0
