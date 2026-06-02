@@ -29,6 +29,8 @@
 #include <vector>
 // 特殊头：PBDS/gp_hash_table 需要，普通题可删
 #include <ext/pb_ds/assoc_container.hpp>
+// 万能头
+#include <bits/stdc++.h>
 
 // C++23 注意：this auto&& 递归 lambda 需要 C++23，不是头文件能解决的问题。
 // 若目标是 C++17/20，请把对应代码改成普通递归 lambda / std::function。
@@ -45,3 +47,6 @@ signed main()
     
     return 0;
 }
+//编译指令：
+// g++ -std=c++23 -O2 -Wall "-Wl,--stack=1073741824" a.cpp -o a (win)
+// g++ -std=c++23 -O2 -Wall a.cpp -o a (linux)

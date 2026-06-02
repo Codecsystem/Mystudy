@@ -36,7 +36,7 @@ $ phi ( n ) & = product_(i = 1)^s phi ( p_i^(alpha_i) )\
  & = n times frac(p_1 - 1, p_1) times frac(p_2 - 1, p_2) times dots.h.c times frac(p_s - 1, p_s) $
 
 #quote(block: true)[
-欧拉函数仅由 $n$ 和质因子决定，与次数无关。
+欧拉函数可以写成 $n product_(p \| n) ( 1 - 1 / p )$；乘上的修正因子只和出现过的不同质因子有关，但整体值仍然含有 $n$，因此仍会随质因子的次数变化。
 ]
 
 #strong[例];：$phi ( 12 ) = 12 times frac(2 - 1, 2) times frac(3 - 1, 3) = 4$
@@ -308,7 +308,7 @@ $ mu \[ m \] = 0 $
 <on-求阶乘和阶乘逆元>
 ==== 推导目标
 <推导目标>
-给定质数 $p$，我们希望在线性时间内计算 $1$ 到 $n$ 的所有数在模 $p$ 意义下的乘法逆元，即：
+给定质数 $p$ 和满足 $1 lt.eq n < p$ 的 $n$，我们希望在线性时间内计算 $1$ 到 $n$ 的所有数在模 $p$ 意义下的乘法逆元，即：
 
 $ upright("求 ") forall 1 lt.eq i lt.eq n \, quad upright("使得 ") r_i dot.op i equiv 1 med (mod p) upright(" 的 ") r_i $
 
@@ -318,7 +318,7 @@ $ upright("求 ") forall 1 lt.eq i lt.eq n \, quad upright("使得 ") r_i dot.op
 我们设 $r_i = i^(- 1) #h(0em) mod med p$，有：
 
 - $r_1 = 1$
-- 对于 $i > 1$，我们可以利用如下递推式求出 $r_i$：
+- 对于 $1 < i lt.eq n < p$，我们可以利用如下递推式求出 $r_i$：
 
 $ r_i = ( p - ⌊p / i⌋ ) dot.op r_(p #h(0em) mod med i) #h(0em) mod med p $
 
@@ -439,11 +439,15 @@ $ a x equiv b med (mod m) $
 
 $ a x + m k = b $
 
+令
+
+$ d = g c d ( a \, m ) $
+
 于是我们先求解不定方程
 
-$ a x + m k = g c d ( a \, m ) $
+$ a x + m k = d $
 
-若gcd(a,m)!=1则无解，否则得到解
+若 $d divides.not b$ 则无解，否则得到解
 
 $ x = x_0 $
 
@@ -451,23 +455,25 @@ $ k = k_0 $
 
 于是我们得到原方程的解为
 
-$ x_1 = x_0 \* b \/ g c d ( a \, m ) $
+$ x_1 = x_0 \* b \/ d $
 
-$ k_1 = k_0 \* b \/ g c d ( a \, m ) $
+$ k_1 = k_0 \* b \/ d $
 
 方程的任意解(对任意整数t成立)为
 
-$ x = x_1 + m t $
+$ x = x_1 + m / d t $
 
-$ k = k_1 - a t $
+$ k = k_1 - a / d t $
 
-求最小的正整数解
+求最小的非负整数解
 
 $ x = ( x_1 #h(0em) mod med t + t ) #h(0em) mod med t $
 
 其中
 
 $ t = m \/ g c d ( a \, m ) $
+
+如果要求最小正整数解，并且上式得到 $x = 0$，则取 $x = t$。
 
 为何？
 
@@ -514,7 +520,7 @@ $ M = m_1 \* m_2 \* . . . \* m_k $
 
 $ M_i = M \/ m_i $
 
-$ M_i^(- 1) equiv 1 med (mod m_i) $
+$ M_i \* M_i^(- 1) equiv 1 med (mod m_i) $
 
 $ c_i = M_i^(- 1) \* M_i $
 
@@ -582,17 +588,17 @@ $ a_1 + k_1 \* m_1 = a_2 + k_2 \* m_2 $
 
 于是我们得到了一个不定方程
 
-$ k_1 \* m_1 + - k_2 \* m_2 = a_2 - a_1 $
+$ k_1 \* m_1 - k_2 \* m_2 = a_2 - a_1 $
 
 可通过exgcd求解
 
-$ K_1 \* m_1 + - K_2 \* m_2 = g c d ( m_1 \, m_2 ) $
+$ K_1 \* m_1 - K_2 \* m_2 = g c d ( m_1 \, m_2 ) $
 
 于是
 
 $ k_1 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 $
 
-$ k_2 = frac(a_1 - a_2, g c d ( m_1 \, m_2 )) \* K_2 $
+$ k_2 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_2 $
 
 得到x的一个解
 
@@ -642,7 +648,7 @@ $upright("gcd")$ 的重要恒等式： $upright("gcd") ( x_1 \, x_2 \, dots.h \,
 
 对于一个前缀 $upright("gcd")$ 序列 $g_i = upright("gcd") ( a_1 \, dots.h \, a_i )$，这个序列 $g_1 \, g_2 \, dots.h \, g_n$ 的不同取值最多只有 $O ( log V )$ 个。 因为下降是$l o g$的
 
-gcd(x,y)=x xor y-\>gcd(x,y)=y-x
+gcd(x,y)=x xor y -\> gcd(x,y)=|x-y|
 
 gcd(x,y)=x+y -\> gcd(x,y)=max(x,y)。
 
@@ -916,7 +922,7 @@ $ ( phi \* 1 ) ( n ) = sum_(d \| n) phi ( d ) dot.op 1 (n / d) = sum_(d \| n) ph
 <mu-id-varphi>
 $ ( mu \* i d ) ( n ) = sum_(d \| n) mu ( d ) dot.op i d (n / d) = sum_(d \| n) mu ( d ) dot.op n / d = phi ( n ) $
 
-$ mu \* i d = mu \* phi \* 1 = ( phi \* 1 \* mu ) = epsilon.alt \* mu = phi $
+$ mu \* i d = mu \* ( phi \* 1 ) = ( mu \* 1 ) \* phi = epsilon.alt \* phi = phi $
 
 ==== 4. $f \* epsilon.alt = f$
 <f-epsilon-f>
@@ -1277,7 +1283,7 @@ $ f ( m ) = sum_(i = m)^n binom(i, m) g ( i ) quad arrow.r.double quad g ( m ) =
 
 $ f ( n ) = sum_(i = 0)^n binom(n, i) g ( i ) arrow.l.r.double f ( S ) = sum_(T subset.eq S) g ( T ) $
 
-$ g ( S ) = sum_(S subset.eq T) ( - 1 )^(\| T \| - \| S \|) f ( T ) $
+$ g ( S ) = sum_(T subset.eq S) ( - 1 )^(\| S \| - \| T \|) f ( T ) $
 
 我们只关心大小，所以把大小为i的集合合并
 
@@ -1402,9 +1408,9 @@ $ min_(i in S) zws_k x_i = sum_(T subset.eq S \, T eq.not nothing) ( - 1 )^(\| T
 
 其实 #strong[min\_max 容斥] 在期望意义下也满足：
 
-$ E ( max_(i in S) zws_k x_i ) = sum_(T subset.eq S) ( - 1 )^(\| T \| - k) binom(\| T \| - 1, k - 1) E ( min_(j in T) x_j ) $
+$ E ( max_(i in S) zws_k x_i ) = sum_(T subset.eq S \, T eq.not nothing) ( - 1 )^(\| T \| - k) binom(\| T \| - 1, k - 1) E ( min_(j in T) x_j ) $
 
-$ E ( min_(i in S) zws_k x_i ) = sum_(T subset.eq S) ( - 1 )^(\| T \| - k) binom(\| T \| - 1, k - 1) E ( max_(j in T) x_j ) $
+$ E ( min_(i in S) zws_k x_i ) = sum_(T subset.eq S \, T eq.not nothing) ( - 1 )^(\| T \| - k) binom(\| T \| - 1, k - 1) E ( max_(j in T) x_j ) $
 
 由期望线性性可知。
 
@@ -2647,7 +2653,7 @@ $ hat(F) ( x ) = sum_(n gt.eq 0) frac(p^n x^n, n !) = upright(e)^(p x) $
 <指数生成函数可以用来解决多重集排列数问题>
 HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个，问取 $m$ 个物品的排列数？
 
-多重集排列数 设从每种物品中取 $b_i$ 个，$0 lt.eq b_i lt.eq a_i$，$m = sum_(i = 1)^n b_i$，对于一组选定的 $b_i$ 进行排列的方案数为 $frac(m !, b_1 ! b_2 ! dots.h.c b_n !)$。若 $m$ 个物品互不相同，其排列数为 $m !$，分母就是对每种相同物品的排列数去重。 例如，取3个A、1个B的排列数为 $frac(4 !, 3 ! 1 !) = 24 / 6 = 4$，即 {AAAA, AABA, ABAA, BAAA}。
+多重集排列数 设从每种物品中取 $b_i$ 个，$0 lt.eq b_i lt.eq a_i$，$m = sum_(i = 1)^n b_i$，对于一组选定的 $b_i$ 进行排列的方案数为 $frac(m !, b_1 ! b_2 ! dots.h.c b_n !)$。若 $m$ 个物品互不相同，其排列数为 $m !$，分母就是对每种相同物品的排列数去重。 例如，取3个A、1个B的排列数为 $frac(4 !, 3 ! 1 !) = 24 / 6 = 4$，即 {AAAB, AABA, ABAA, BAAA}。
 
 取2个A、2个B的排列数为 $frac(4 !, 2 ! 2 !) = 24 / 4 = 6$，即 {AABB, ABAB, ABBA, BAAB. BABA, BBAA}。 那么，所有满足 $b_1 + b_2 + dots.h.c + b_n = m$ 的排列数之和，即答案。
 
@@ -3044,8 +3050,8 @@ IFWT对反解上述过程即可
 
 同理 我们可以推导
 
-==== and卷积的FWT
-<and卷积的fwt>
+==== or卷积的FWT
+<or卷积的fwt>
 $ F W T ( A )_k = sum_(i subset.eq k) A_i $
 
 假设数组 $A$ 长度为 $2^n$。我们将 $A$ 一分为二，同样可以推导 正变换:
@@ -3058,8 +3064,8 @@ A'_(r i g h t) = A'_0 + A'_1 $
 $ {A'_0 = A'_(l e f t)\
 A'_1 = A'_(r i g h t) - A'_(l e f t) $
 
-==== or卷积的FWT
-<or卷积的fwt>
+==== and卷积的FWT
+<and卷积的fwt>
 $ F W T ( A )_k = sum_(k subset.eq i) A_i $
 
 正变换:
@@ -3159,7 +3165,7 @@ $ m = 2 \, 4 \, p^alpha \, 2 p^alpha $
 <ntt>
 ==== 2.1 性质
 <性质>
-考虑单位根和原根所构造的单位根的相似性，有如下四点性质: 1. 周期性 FFT（复数域）： $omega_n^n = e^(2 pi i) = 1$。转了一圈回到 $1$。 NTT（模 $p$ 域）： 考虑NTT的模数是$p = c dot.op 2^k + 1$的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^(p - 1) equiv 1 med (mod p)$。 考虑\$n = 2^t $\, 令$g\_n g^{} p$（ 单 位 根 ） ， 那 么$(g\_n)^n (g#super[{})];n g^{p-1} p\$
+考虑单位根和原根所构造的单位根的相似性，有如下四点性质: 1. 周期性 FFT（复数域）： $omega_n^n = e^(2 pi i) = 1$。转了一圈回到 $1$。 NTT（模 $p$ 域）： 考虑NTT的模数是质数 $p = c dot.op 2^k + 1$ 的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^(p - 1) equiv 1 med (mod p)$。 考虑块长$n = 2^t$ 且 $n \| ( p - 1 )$，令$g_n equiv g^(frac(p - 1, n)) med (mod p)$（单位根），那么$( g_n )^n equiv (g^(frac(p - 1, n)))^n equiv g^(p - 1) equiv 1 med (mod p)$
 
 #quote(block: true)[
 对比FFT，可以发现此处的$2^t$正好是块长。 2. 互异性 FFT（复数域）： $omega_n^0 \, omega_n^1 \, dots.h \, omega_n^(n - 1)$ 在复平面上均匀分布，互不相等。这样代入多项式才能得到 $n$ 个独立的点值。 NTT（模 $p$ 域）： $g_n^0 \, g_n^1 \, dots.h \, g_n^(n - 1)$ 模 $p$ 下互不相同，此处由原根的性质保证。 3. 折半引理 FFT（复数域）： $omega_(2 n)^2 = omega_n$。这是 FFT 能把偶数项和奇数项拆开递归的核心。 NTT（模 $p$ 域）：注意：
@@ -3169,7 +3175,7 @@ $ g_(2 n)^2 equiv (g^(frac(p - 1, 2 n)))^2 equiv g^(frac(p - 1, n)) equiv g_n me
 
 #block[
 #set enum(numbering: "1.", start: 4)
-+ 求和引理 FFT（复数域）： 对于任意不为 $0$ 的整数 $k$（且 $k$ 不是 $n$ 的倍数），$sum_(j = 0)^(n - 1) ( omega_n^k )^j = 0$。这是把点值转回系数的关键。 NTT（模 $p$ 域）： 这是一个等比数列求和：
++ 求和引理 FFT（复数域）： 对于任意不为 $0$ 的整数 $k$（且 $k$ 不是 $n$ 的倍数），$sum_(j = 0)^(n - 1) ( omega_n^k )^j = 0$。这是把点值转回系数的关键。 NTT（模 $p$ 域）： 当 $n divides.not k$ 时，$g_n^k equiv.not 1 med (mod p)$，这是一个等比数列求和：
 ]
 
 $ sum_(j = 0)^(n - 1) ( g_n^k )^j equiv frac(1 - ( g_n^k )^n, 1 - g_n^k) med (mod p) $
@@ -3399,7 +3405,7 @@ $ C_(i \, j) = max_k ( A_(i \, k) + B_(k \, j) ) $
   + 某些 dp 转移
 
 #quote(block: true)[
-此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 max，无边设为 $0$。
+此处，邻接矩阵 $A$ 中的元素 $A_(i \, j)$ 表示节点 $i$ 到节点 $j$ 的所有边权的 max，无边设为 $- oo$；单位矩阵的对角线为 $0$。
 ]
 
 ==== 3.1. max-min 矩阵乘法

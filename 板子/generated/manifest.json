@@ -74,17 +74,17 @@
   {
     "board": "board1",
     "folder": "数据结构",
-    "file": "st表(1-based).cpp",
-    "title": "st表(1-based)",
-    "has_usage": true,
+    "file": "st表(0-based).cpp",
+    "title": "st表(0-based)",
+    "has_usage": false,
     "has_tail": false
   },
   {
     "board": "board1",
     "folder": "数据结构",
-    "file": "st表.cpp",
-    "title": "st表",
-    "has_usage": false,
+    "file": "st表(1-based).cpp",
+    "title": "st表(1-based)",
+    "has_usage": true,
     "has_tail": false
   },
   {
@@ -106,24 +106,8 @@
   {
     "board": "board1",
     "folder": "数据结构",
-    "file": "可删改堆.cpp",
-    "title": "可删改堆",
-    "has_usage": true,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
     "file": "回撤并查集&可持久化并查集(离线).cpp",
     "title": "回撤并查集&可持久化并查集(离线)",
-    "has_usage": true,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "数据结构",
-    "file": "手写堆.cpp",
-    "title": "手写堆",
     "has_usage": true,
     "has_tail": false
   },
@@ -802,8 +786,16 @@
   {
     "board": "board1",
     "folder": "其他",
-    "file": "动态bitset.cpp",
-    "title": "动态bitset",
+    "file": "动态bitset(0base).cpp",
+    "title": "动态bitset(0base)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "其他",
+    "file": "动态bitset(1base).cpp",
+    "title": "动态bitset(1base)",
     "has_usage": false,
     "has_tail": false
   },

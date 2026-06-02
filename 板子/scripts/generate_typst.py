@@ -164,7 +164,12 @@ def escape_typst(s: str) -> str:
 
 def escape_raw_content(s: str) -> str:
     """确保 raw block 内容不含 ``` 序列"""
-    return s.replace('```', '` ` `')
+    return s.expandtabs(4).replace('```', '` ` `')
+
+
+def clean_generated_content(s: str) -> str:
+    """Normalize generated Typst text before writing it to disk."""
+    return '\n'.join(line.rstrip() for line in s.replace('\r', '').split('\n'))
 
 
 def rel_path(path: str) -> str:
@@ -561,21 +566,21 @@ def main():
     # Board 1
     content1, m1 = generate_board1()
     with open(os.path.join(GEN_DIR, 'board1-algorithms.typ'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write(content1.replace('\r', ''))
+        f.write(clean_generated_content(content1))
     all_manifest.extend(m1)
     print(f"Board 1: {len(m1)} 个算法模板")
 
     # Board 2 (Pandoc)
     content2, m2 = generate_board2()
     with open(os.path.join(GEN_DIR, 'board2-number-theory.typ'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write(content2.replace('\r', ''))
+        f.write(clean_generated_content(content2))
     all_manifest.extend(m2)
     print(f"Board 2: {len(m2)} 个数论笔记")
 
     # Board 3 (Pandoc)
     content3, m3 = generate_board3()
     with open(os.path.join(GEN_DIR, 'board3-misc.typ'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write(content3.replace('\r', ''))
+        f.write(clean_generated_content(content3))
     all_manifest.extend(m3)
     print(f"Board 3: {len(m3)} 个杂项笔记")
 
