@@ -28,7 +28,8 @@ class basic{
     basic(vector<int> a,int bit):
     num(a),bit(bit),cnt(0),n(a.size()){
         gauss();
-        //usually bit=32/64
+        //usually bit=30/60
+        //注意数据范围
     }
     void gauss(){
         for(int i=bit-1;i>=0;i--){

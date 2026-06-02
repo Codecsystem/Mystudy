@@ -140,12 +140,13 @@ class FHQTreap{
             merge(rt,a,b);//将a,b合并为root
         }
 
-        //对>=lim的节点进行加值操作
+        //对>=lim的节点进行加值操作，需保证加完后仍满足左半区<=右半区
         void range_add(ll lim,ll add){
             int x,y;
             split(rt,x,y,lim-1); 
             if(y){
                 tr[y].val+=add;
+                tr[y].sum+=add*tr[y].sz;
                 tr[y].tag+=add;
             }
             merge(rt,x,y);

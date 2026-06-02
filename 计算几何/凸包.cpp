@@ -51,6 +51,7 @@ bool cmp(const pit& a,const pit& b){
 double cross(pit a,pit b,pit c){
     return (b-a)*(c-a);
 }
+//要求输入至少能形成非退化凸包；单点/两点/全共线需先特判
 pair<double,vector<pit>> Andrew(vector<pit> p)
 {
     sort(p.begin(),p.end(),cmp);

@@ -50,14 +50,14 @@ class HierholzerD{
             if(!((cnts==0&&cntt==0)||(cnts==1&&cntt==1))) return {};
             if(s==-1) s=1;
             vector<int> res;
-            auto dfs=[&](this auto&& dfs,int u)->void{
+            auto dfs=[&](auto&& dfs,int u)->void{
                 for(int &i=del[u];i<mp[u].size();){
                     int v=mp[u][i++];
-                    dfs(v);
+                    dfs(dfs,v);
                 }
                 res.push_back(u);
             };
-            dfs(s);
+            dfs(dfs,s);
             reverse(res.begin(),res.end());
             return res;
         }
@@ -86,16 +86,16 @@ class HierholzerN{
             if(!(odd==0||odd==2)) return {};
             if(s==-1) s=1;
             vector<int> res;
-            auto dfs=[&](this auto&& dfs,int u)->void{
+            auto dfs=[&](auto&& dfs,int u)->void{
                 for(int &i=del[u];i<mp[u].size();){
                     auto [v,id]=mp[u][i++];
                     if(vis[id]) continue;
                     vis[id]=vis[id^1]=1;
-                    dfs(v);
+                    dfs(dfs,v);
                 }
                 res.push_back(u);
             };
-            dfs(s);
+            dfs(dfs,s);
             reverse(res.begin(),res.end());
             return res;
         }

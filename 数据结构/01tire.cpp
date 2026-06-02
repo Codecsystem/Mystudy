@@ -14,6 +14,7 @@
 #include <vector>
 #include <array>
 #include <unordered_map>
+#include <cstdint>
 using namespace std;
 class O1Tire{
     public:
@@ -27,7 +28,7 @@ class O1Tire{
         int tot,root;
         O1Tire(int len):trie(len+5),tot(0),root(0){}
 		//len:节点数,此处一般是32*n
-        void set(int x,int t)//从高到低建树
+        void set(uint32_t x,int t)//从高到低建树
         {
             int p=root;
             for(int i=31;i>=0;i--)
@@ -39,15 +40,15 @@ class O1Tire{
                 p=trie[p].ch[d];
             }
         }
-        int findMax(int x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
+        uint32_t findMax(uint32_t x)//从高到低找,贪心选择,求解x对tire中所有数的最大异或值
         {
             int p=root;
-            int res=0;
+            uint32_t res=0;
             for(int i=31;i>=0;i--)
             {
                 int d=(x>>i)&1;
                 if(trie[p].ch[d^1]&&trie[trie[p].ch[d^1]].cnt)
-                    p=trie[p].ch[d^1],res+=(1<<i);
+                    p=trie[p].ch[d^1],res+=(1u<<i);
                 else
                     p=trie[p].ch[d];
                 if(!p)
@@ -56,7 +57,7 @@ class O1Tire{
             return res;
         }
 		//求解x对tire中所有数的xor中<=k的个数
-		int qry(int x,int k){
+		int qry(uint32_t x,uint32_t k){
             int res=0,p=root;
             for(int i=31;i>=0;i--)
             {
@@ -84,8 +85,8 @@ int main()
 	int t;cin>>t;
 	while(t--)
 	{
-	    int n,k;cin>>n>>k;
-	    vector<int> a(n);
+	    int n;uint32_t k;cin>>n>>k;
+	    vector<uint32_t> a(n);
 	    for(int i=0;i<n;i++)
 	        cin>>a[i];
 		O1Tire tire(n*32);

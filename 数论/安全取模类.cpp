@@ -18,6 +18,7 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
+#include <cstdint>
 #define int long long //赫赫 要不要龙龙呢
 using namespace std;
 const int mod=998244353;

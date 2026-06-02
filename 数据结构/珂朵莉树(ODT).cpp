@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <bitset>
 #include <cmath>
 #include <cstdio>
@@ -28,14 +29,17 @@ class ODT{
             }
         };
         set<node> s;
+        int n;
         //0-based
-        ODT(vector<int> &a){
+        ODT(vector<int> &a):n(a.size()){
             for(int i=0;i<a.size();i++){
                 s.insert(node(i,i,a[i]));
             }
         }
         //把[l,r]区间分割成[l,mid)和[mid,r]两个区间
         auto split(int pos){
+            assert(pos>=0);
+            if(pos>=n) return s.end();
             auto it=s.lower_bound(node(pos,0,0));
             if(it!=s.end()&&it->l==pos) return it;
             --it;
@@ -46,6 +50,7 @@ class ODT{
         }
         //把[l,r]区间赋值为val
         void assign(int l,int r,int val){
+            assert(0<=l&&l<=r&&r<n);
             auto itr=split(r+1),itl=split(l);
             s.erase(itl,itr);
             s.insert(node(l,r,val));
@@ -53,6 +58,7 @@ class ODT{
         //对区间操作
         void perform(int l,int r)
         {
+            assert(0<=l&&l<=r&&r<n);
             auto itr=split(r+1),itl=split(l);
             for(auto it=itl;it!=itr;++it)
             {

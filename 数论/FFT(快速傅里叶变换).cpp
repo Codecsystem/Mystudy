@@ -51,6 +51,7 @@ class FFT{
             }
         }
     }
+    //普通 double FFT 有精度边界，大系数整数卷积请用 NTT/CRT/拆系数
     vector<int> calc(vector<int> a,vector<int> b){
         int n=a.size(),m=b.size();
         int len=1;
@@ -63,7 +64,7 @@ class FFT{
         for(int i=0;i<len;i++) fa[i]=fa[i]*fb[i];
         fft(fa,len,-1);
         vector<int> ans(n+m-1);
-        for(int i=0;i<n+m-1;i++) ans[i]=(int)(fa[i].real()/len+0.5);
+        for(int i=0;i<n+m-1;i++) ans[i]=llround(fa[i].real()/len);
         return ans;
     }
 };

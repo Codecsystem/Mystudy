@@ -51,7 +51,7 @@ class AC{
             }
         }
     }
-    //统计主串中有多少个模式串
+    //统计主串中出现过多少个不同模式串；会修改cnt，不能重复query
     int query(string s){
         int ans=0;
         for(int k=0,i=0;k<s.size();k++){

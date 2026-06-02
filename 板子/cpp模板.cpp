@@ -1,26 +1,41 @@
 #include <algorithm>
+#include <array>
+#include <assert.h>
 #include <bitset>
+#include <cassert>
+#include <chrono>
+#include <climits>
 #include <cmath>
+#include <complex>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <deque>
-#include <map>
-#include <iostream>
-#include <queue>
-#include <set>
-#include <stack>
-#include <vector>
-#include <array>
-#include <unordered_map>
-#include <numeric>
 #include <functional>
 #include <iomanip>
+#include <iostream>
+#include <limits>
+#include <map>
+#include <numeric>
+#include <queue>
 #include <random>
+#include <ranges> // C++20
+#include <set>
+#include <stack>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+// 特殊头：PBDS/gp_hash_table 需要，普通题可删
+#include <ext/pb_ds/assoc_container.hpp>
+
+// C++23 注意：this auto&& 递归 lambda 需要 C++23，不是头文件能解决的问题。
+// 若目标是 C++17/20，请把对应代码改成普通递归 lambda / std::function。
 //#define int long long //赫赫 要不要龙龙呢
 using ll=long long;
 using namespace std;
+using namespace __gnu_pbds;
 
 signed main()
 {

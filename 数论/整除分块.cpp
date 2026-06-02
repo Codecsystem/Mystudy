@@ -12,6 +12,7 @@
 #include <set>
 #include <stack>
 #include <vector>
+#include <cassert>
 #define int long long 
 using namespace std;
 struct blocknode{
@@ -30,9 +31,12 @@ public:
     };
     int s,e;
     vector<node> a;
-    divb(int s,int e):s(s),e(e){}
+    divb(int s,int e):s(s),e(e){
+        assert(s>=1);
+    }
     void b1(int n,int m){
-        for(int l=s,r;l<=e;l=r+1)
+        int lim=min(e,min(n,m));
+        for(int l=s,r;l<=lim;l=r+1)
         {
             r=min(n/(n/l),m/(m/l));
             a.push_back({l,r,n/l,m/l});
@@ -40,7 +44,8 @@ public:
     }
     void b2(int n)
     {
-        for(int l=s,r;l<=e;l=r+1)
+        int lim=min(e,n);
+        for(int l=s,r;l<=lim;l=r+1)
         {
             r=n/(n/l);
             a.push_back({l,r,n/l,0});

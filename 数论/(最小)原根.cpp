@@ -65,8 +65,8 @@ public:
                 else phi[m]=phi[i]*(primes[j]-1);
             }
         }
-        assert(n>=4);
-        ex[2]=ex[4]=1;
+        if(n>=2) ex[2]=1;
+        if(n>=4) ex[4]=1;
         for(auto p:primes){
             if(p&1){
                 ll tp=p;
@@ -81,6 +81,7 @@ public:
     }
     //O(m^1/4*logm^2) 求最小原根
     int getr(int m){
+        assert(1<=m&&m<=n);//查询值不能超过预处理上限
         if(!ex[m]) return -1;
         vector<int> now;
         int tp=phi[m];
@@ -100,9 +101,11 @@ public:
             }
             if(flag) return j;
         }
+        return -1;
     }
     //O(phi(m)*log phi(m)) 求m的所有原根
     vector<int> getar(int m){
+        assert(1<=m&&m<=n);//查询值不能超过预处理上限
         vector<int> ans;
         int mi=getr(m);
         if(mi==-1) return ans;

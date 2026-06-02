@@ -133,6 +133,7 @@ bool isConvex(vector<pit> p,pit a)
 }
 //双指针/多指针在凸包上找最优->旋转卡壳 形如一个游标卡尺绕着凸包旋转
 //旋转卡壳,用叉积可以找离一条线垂直最高或最低，用点积可以找离一条线水平最左或最右的点（点积的几何意义是b在a的投影长度)
+//要求传入非退化凸包，点数至少为3；单点/两点/全共线需先特判
 pair<double,vector<pit>> rot(vector<pit> p)
 {
     double ans=1e14;vector<pit> fin(4);

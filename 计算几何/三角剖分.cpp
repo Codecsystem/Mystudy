@@ -28,11 +28,10 @@ const double eps=1e-8;
 const double pi=acos(-1);
 double R;
 struct pit;
-pit CO;//圆心 
 struct vec{
     double x,y;
     vec(double x=0,double y=0):x(x),y(y){}
-    vec(pit a) {x=a.x;y=a.y;}//点转向量(OA向量)
+    vec(pit a);//点转向量(OA向量)
     vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
     vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
     vec operator/(const double& o)const{return vec(x/o,y/o);} //数除
@@ -49,6 +48,8 @@ struct pit
     pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
     pit operator/(const double& o)const{return pit(x/o,y/o);}
 };
+inline vec::vec(pit a) { x=a.x; y=a.y; }
+pit CO;//圆心 
 double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
 double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 //向量逆时针旋转theta弧度
@@ -101,14 +102,37 @@ pit getNode(pit a,vec u,pit c,vec v){
 }
 //计算线段ab与圆的交点和距离(此处的距离是有意义的距离 即线段离圆心的距离)
 double getDP2(pit a,pit b,pit& pa,pit &pb){
-    pit e=getNode(a,b-a,CO,rotate(b-a,pi/2));
-    //圆心到线段的垂足
-    double d=dis(e,CO);
-    if(!onSeg(a,b,e)) d=min(dis(a,CO),dis(b,CO)); //垂足不在线段上
+    vec u=b-a;
+    double len2=u&u;
+    if(len2<=eps){
+        pa=pb=a;
+        return dis(a,CO);
+    }
+    double t=((CO-a)&u)/len2;
+    t=max(0.0,min(1.0,t));
+    pit e=a+u*t;
+    double d=dis(e,CO); //线段到圆心的最短距离
     if(R-d<=-eps) return d; //线段在圆外 0个交点
-    double h=sqrt(max(0.0,R*R-d*d));
-    pa=e+norm(a-b)*h;
-    pb=e+norm(b-a)*h;//计算两个交点
+    vector<pair<double,pit>> its;
+    vec ac=a-CO;
+    double A=len2,B=2*(ac&u),C=(ac&ac)-R*R;
+    double delta=B*B-4*A*C;
+    auto add=[&](double t){
+        if(t<-eps||t>1+eps) return;
+        t=max(0.0,min(1.0,t));
+        pit p=a+u*t;
+        if(its.empty()||dis(its.back().second,p)>eps) its.push_back({t,p});
+    };
+    if(delta>=-eps){
+        delta=max(0.0,delta);
+        double sq=sqrt(delta);
+        add((-B-sq)/(2*A));
+        add((-B+sq)/(2*A));
+    }
+    sort(its.begin(),its.end(),[](auto x,auto y){return x.first<y.first;});
+    if(its.empty()) pa=pb=e;
+    else if(its.size()==1) pa=pb=its[0].second;
+    else pa=its[0].second,pb=its[1].second;//按 a->b 顺序保存交点
     return d;
 }
 //计算线段ab与圆心构成的三角形与圆的面积交

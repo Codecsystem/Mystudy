@@ -76,8 +76,8 @@ $$
 考虑单位根和原根所构造的单位根的相似性，有如下四点性质:
 1. 周期性
 FFT（复数域）： $\omega_n^n = e^{2\pi i} = 1$。转了一圈回到 $1$。
-NTT（模 $p$ 域）： 考虑NTT的模数是$p = c \cdot 2^k + 1$的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^{p-1} \equiv 1 \pmod p$。
-考虑$n = 2^t $,令$g_n \equiv g^{\frac{p-1}{n}} \pmod p$（单位根），那么$(g_n)^n \equiv \left(g^{\frac{p-1}{n}}\right)^n \equiv g^{p-1} \equiv 1 \pmod p$
+NTT（模 $p$ 域）： 考虑NTT的模数是质数 $p = c \cdot 2^k + 1$ 的形式，考虑$g$是模$p$的原根，根据欧拉定理和上述定义，我们知道 $g^{p-1} \equiv 1 \pmod p$。
+考虑块长$n = 2^t$ 且 $n | (p-1)$，令$g_n \equiv g^{\frac{p-1}{n}} \pmod p$（单位根），那么$(g_n)^n \equiv \left(g^{\frac{p-1}{n}}\right)^n \equiv g^{p-1} \equiv 1 \pmod p$
 
 > 对比FFT，可以发现此处的$2^t$正好是块长。
 2. 互异性
@@ -93,7 +93,7 @@ $$
 
 4. 求和引理
 FFT（复数域）： 对于任意不为 $0$ 的整数 $k$（且 $k$ 不是 $n$ 的倍数），$\sum_{j=0}^{n-1} (\omega_n^k)^j = 0$。这是把点值转回系数的关键。
-NTT（模 $p$ 域）： 这是一个等比数列求和：
+NTT（模 $p$ 域）： 当 $n \nmid k$ 时，$g_n^k \not\equiv 1 \pmod p$，这是一个等比数列求和：
 
 $$
 \sum_{j=0}^{n-1} (g_n^k)^j \equiv \frac{1 - (g_n^k)^n}{1 - g_n^k} \pmod p

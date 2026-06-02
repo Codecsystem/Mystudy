@@ -85,7 +85,7 @@ class exCRT{
         }
         int CRT()
         {
-            int mul=accumulate(m.begin(),m.end(),1LL,
+            int mul=accumulate(m.begin(),m.end(),(__int128)1,
             [](int a,int b){return a*b;}),ans=0;
             for(int i=0;i<n;i++)
             {

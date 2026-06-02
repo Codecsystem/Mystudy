@@ -18,6 +18,7 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
+#include <cassert>
 #define int long long //赫赫 要不要龙龙呢
 using namespace std;
 class Pre{
@@ -74,6 +75,7 @@ public:
     //O(n)求0-n的阶乘和阶乘逆元
     void preC()
     {
+        assert(n<mod);//逆元递推要求 mod 为质数且 1..n 均可逆
         inv[1]=1;
         for(int i=2;i<=n;i++)
         {

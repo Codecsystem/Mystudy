@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <bitset>
 #include <cmath>
 #include <cstdio>
@@ -60,6 +61,7 @@ class SegTree{
         pushup(p);
     }
     void upd(int p,int l,int r,int x,int y,const Tag &v){
+        if(r<x||y<l||x>y) return;
         if(x<=l&&r<=y){
             apply(p,l,r,v);
             return;
@@ -82,6 +84,7 @@ class SegTree{
         pushup(p);
     }
     Info qry(int p,int l,int r,int x,int y){
+        if(r<x||y<l||x>y) return Info();
         if(x<=l&&r<=y) return info[p];
         pushdown(p,l,r);
         int m=(l+r)>>1;
@@ -157,34 +160,41 @@ class SegTree{
             return _findlast(lc(p),l,m,x,y,chk);
     }
     void upd(int l,int r,const Tag &v){
+        assert(1<=l&&l<=r&&r<=n);
         upd(1,1,n,l,r,v);
     }
     void mdf(int x,const Info &v){
+        assert(1<=x&&x<=n);
         mdf(1,1,n,x,v);
     }
     Info qry(int l,int r){
+        assert(1<=l&&l<=r&&r<=n);
         return qry(1,1,n,l,r);
     }
     //寻找在[l,r]的第一个[l,k] 满足Info{l,k}满足chk e.g.[1,4]的[1,2]满足sum(1,2)<10
     //异常值: n+1
     int findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        assert(1<=l&&l<=r&&r<=n);
         Info tp=Info();
         return findfirst(1,1,n,l,r,tp,chk);
     }
     //寻找在[l,r]的最后一个[k,r] 满足Info{k,r}满足chk e.g.[1,4]的[3,4]满足sum(3,4)<10
     //异常值: 0
     int findlast(int l,int r,const function<bool(const Info&)> &chk){
+        assert(1<=l&&l<=r&&r<=n);
         Info tp=Info();
         return findlast(1,1,n,l,r,tp,chk);
     }
     //寻找在[l,r]的第一个k 满足Info k满足chk e.g.[1,4]的第一个k=2满足info k<10
     //异常值: n+1
     int _findfirst(int l,int r,const function<bool(const Info&)> &chk){
+        assert(1<=l&&l<=r&&r<=n);
         return _findfirst(1,1,n,l,r,chk);
     }
     //寻找在[l,r]的最后一个k 满足Info k满足chk e.g.[1,4]的最后一个k=3满足info k<10
     //异常值: 0
     int _findlast(int l,int r,const function<bool(const Info&)> &chk){
+        assert(1<=l&&l<=r&&r<=n);
         return _findlast(1,1,n,l,r,chk);
     }
 };

@@ -113,14 +113,14 @@ vector<vector<int>> johnson(vector<vector<pair<int,int>>>& mp,int n)
         }
     }
     //4.对每个节点i，使用Dijkstra算法计算从i到所有节点的最短路径
-    vector<vector<int>> dis(n+1,vector<int>(n+1,1e9));
+    vector<vector<int>> dis(n+1,vector<int>(n+1,1e18));
     for(int i=1;i<=n;i++)
     {
         dis[i]=dijkstra(n,mp,i);
         for(int j=1;j<=n;j++)
         {
-            dis[i][j]-=h[i]-h[j];
-            if(dis[i][j]>=1e8) dis[i][j]=1e9;
+            if(dis[i][j]==1e18) dis[i][j]=1e9;
+            else dis[i][j]-=h[i]-h[j];
         }
     }
     //5.更新所有边的权重

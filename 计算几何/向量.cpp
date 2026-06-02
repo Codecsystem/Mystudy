@@ -80,8 +80,13 @@ bool lcross(pit a,pit b,pit c,pit d){
 }
 //case2:线段ab与线段cd
 bool scross(pit a,pit b,pit c,pit d){
-    if(cross(a,b,c)*cross(a,b,d)>0||cross(c,d,a)*cross(c,d,b)>0) return 0;//c,d在ab 或 a,b在cd 的同一侧 无交点
-    return 1; //有交点
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    //共线时还要判断投影是否落在线段上
+    if(c1==0&&onSeg(a,b,c)) return 1;
+    if(c2==0&&onSeg(a,b,d)) return 1;
+    if(c3==0&&onSeg(c,d,a)) return 1;
+    if(c4==0&&onSeg(c,d,b)) return 1;
+    return c1*c2<0&&c3*c4<0; //严格跨立 有交点
 }
 //case3:直线ab与直线cd
 bool pcross(pit a,pit b,pit c,pit d){

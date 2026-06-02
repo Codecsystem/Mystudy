@@ -117,16 +117,24 @@ def extract_cpp_content(filepath: str) -> dict:
         if not is_empty_main(main_body):
             # 提取 main 中非 boilerplate 行
             in_body = False
-            for l in main_body:
+            stripped_outer_open = False
+            last_line = len(main_body) - 1
+            for idx, l in enumerate(main_body):
                 s = l.strip()
                 if s.startswith('signed main') or s.startswith('int main'):
                     in_body = True
+                    stripped_outer_open = ('{' in s)
                     continue
                 if not in_body:
                     continue
                 if is_boilerplate_line(l):
                     continue
-                if s in ('{', '}', 'return 0;', ''):
+                if idx == last_line and s == '}':
+                    continue
+                if not stripped_outer_open and s == '{':
+                    stripped_outer_open = True
+                    continue
+                if s in ('return 0;', ''):
                     continue
                 usage_lines.append(l.rstrip())
 

@@ -321,7 +321,7 @@ $$
 
 同理 我们可以推导
 
-##### and卷积的FWT
+##### or卷积的FWT
 
 $$
 FWT(A)_k = \sum_{i \subseteq k} A_i
@@ -346,7 +346,7 @@ A'_1 = A'_{right} - A'_{left}
 \end{cases}
 $$
 
-##### or卷积的FWT
+##### and卷积的FWT
 
 $$
 FWT(A)_k = \sum_{k \subseteq i} A_i

@@ -19,14 +19,15 @@ class st{
     public:
         vector<vector<int>> dp;
         int inf(int a,int b){return max(a,b);}
+        //0-based ST表，输入数组为 a[0..n-1]，查询区间为 [l,r]
         void init(vector<int>& a,int n)
         {
             if(!n) return;
             int len=__lg(n)+1;
-            dp.assign(len,vector<int>(n+1));
-            for(int i=1;i<=n;i++) dp[0][i]=a[i];
+            dp.assign(len,vector<int>(n));
+            for(int i=0;i<n;i++) dp[0][i]=a[i];
             for(int j=1;j<len;j++)
-                for(int i=1;i+(1<<j)-1<=n;i++)
+                for(int i=0;i+(1<<j)<=n;i++)
                     dp[j][i]=inf(dp[j-1][i],dp[j-1][i+(1<<(j-1))]);
         }
         int query(int l,int r)

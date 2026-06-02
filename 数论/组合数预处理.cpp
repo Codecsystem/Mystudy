@@ -18,6 +18,8 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
+#include <cstdint>
+#include <cassert>
 //#define int long long //赫赫 要不要龙龙呢
 using namespace std;
 const int mod=1e9+7;
@@ -135,6 +137,7 @@ class Pre{
     }
     void preC()
     {
+        assert(n<mod);//逆元递推要求 mod 为质数且 1..n 均可逆
         fac.resize(n+1);
         invfac.resize(n+1);
         inv.resize(n+1);
@@ -152,7 +155,9 @@ class Pre{
     }
     void preD(){
         d.resize(n+1);
-        d[1]=0,d[2]=1;
+        d[0]=1;
+        if(n>=1) d[1]=0;
+        if(n>=2) d[2]=1;
         for(int i=3;i<=n;i++){
             d[i]=(i-1)*(d[i-1]+d[i-2]);
         }
@@ -199,7 +204,7 @@ class Pre{
     Z D(int n,int m)
     {
         if(n<0||m<0||n<m)return 0;
-        return d[n]*C(n,m);
+        return d[m]*C(n,m);
     }
 };
 signed main()

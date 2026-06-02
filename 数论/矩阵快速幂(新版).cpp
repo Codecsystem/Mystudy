@@ -106,6 +106,8 @@ struct Mat
                 T tmp=(*this)[i][k];
                 if(tmp==Op::zero()) continue;
                 for(int j=0;j<r.m;j++){
+                    //跳过右侧零元，避免 INF/-INF 参与 mul 出现溢出风险
+                    if(r[k][j]==Op::zero()) continue;
                     res[i][j]=Op::add(res[i][j],Op::mul(tmp,r[k][j]));
                 }
             }

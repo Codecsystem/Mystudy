@@ -82,7 +82,7 @@ public:
 	}
 	void add(int x1,int y1,int x2,int y2,int id){
 		if(x1==x2){
-			int y=max(y1,y2);
+			int y=cmp(y1,y2)?y1:y2;
 			ins(rt,L,R,x1,x1,Line(0,y,id));
 		}else{
 			if(x1>x2)swap(x1,x2),swap(y1,y2);

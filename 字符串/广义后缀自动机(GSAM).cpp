@@ -26,14 +26,16 @@ using namespace std;
 class Trie{
     public:
     vector<array<int,26>> ch;
+    vector<int> cnt;
     int tot;
     // len:预估最大节点数
-    Trie(int len):ch(len+5,array<int,26>{}),tot(0){}
+    Trie(int len):ch(len+5,array<int,26>{}),cnt(len+5,0),tot(0){}
     void insert(string s){
         int p=0;
         for(auto c:s){
             if(!ch[p][c-'a']) ch[p][c-'a']=++tot;
             p=ch[p][c-'a'];
+            cnt[p]++;//共享前缀要按经过次数计入出现次数
         }
     }
 };
@@ -43,10 +45,10 @@ class GSAM{
     vector<array<int,26>> ch;
     vector<vector<int>> tree;
     int tot;
-    vector<int> len,fa,sz,id;
+    vector<int> len,fa,sz,id,pos;
     // n为Trie节点数，GSAM最多2n个节点
     GSAM(int n):ch(2*n+5,array<int,26>{}),tree(2*n+5),
-                len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),id(2*n+5,0),tot(0){
+                len(2*n+5,0),fa(2*n+5,0),sz(2*n+5,0),id(2*n+5,0),pos(n+5,0),tot(0){
         fa[0]=-1;
     }
     int extend(int c,int last){
@@ -62,7 +64,7 @@ class GSAM{
         }
         //如果转移边不存在的情况，与普通sam一致
         int np=++tot,p=last;
-        len[np]=len[p]+1,sz[np]=1;
+        len[np]=len[p]+1;
         for(;~p&&!ch[p][c];p=fa[p]) ch[p][c]=np;
         if(!~p) fa[np]=0;
         else{
@@ -83,10 +85,17 @@ class GSAM{
     void insert(const Trie& tr){
         queue<pair<int,int>> q;
         q.push({0,0});
+        pos[0]=0;
         while(!q.empty()){
             auto [tu,su]=q.front();q.pop();
-            for(int c=0;c<26;c++)
-                if(tr.ch[tu][c]) q.push({tr.ch[tu][c],extend(c,su)});
+            for(int c=0;c<26;c++){
+                if(tr.ch[tu][c]){
+                    int tv=tr.ch[tu][c],sv=extend(c,su);
+                    pos[tv]=sv;
+                    sz[sv]+=tr.cnt[tv];//每个Trie节点按经过次数累加到对应SAM状态
+                    q.push({tv,sv});
+                }
+            }
         }
     }
     void build(){

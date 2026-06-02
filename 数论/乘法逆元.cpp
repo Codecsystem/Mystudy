@@ -13,6 +13,7 @@
 #include <stack>
 #include <vector>
 #include <array>
+#include <cassert>
 using namespace std;
 int ModQpow(int a,int b,int m)//快速幂
 {
@@ -42,7 +43,8 @@ int exgcd(int a,int b,int &x,int &y)//扩展欧几里得
 int invMod2(int a,int m)//a在模m意义下的逆元（扩展欧几里得）
 {
     int x,y;
-    exgcd(a,m,x,y);
+    int d=exgcd(a,m,x,y);
+    assert(d==1);//逆元存在当且仅当 gcd(a,m)=1
     return (x%m+m)%m;
 }
 int main()

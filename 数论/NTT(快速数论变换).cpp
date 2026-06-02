@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cassert>
 #include <bitset>
 #include <cmath>
 #include <cstdio>
@@ -138,6 +139,8 @@ public:
         init(n); 
     }
     void init(int n){
+        // 998244353 = 119 * 2^23 + 1, NTT length must not exceed 2^23.
+        assert(n<=(1<<23));
         if(rt.empty()) rt={0,1};
         if(rt.size()>=n) return;
         for(int i=rt.size();i<n;i<<=1){

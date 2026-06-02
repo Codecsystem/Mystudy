@@ -89,7 +89,7 @@ bool isBinGraph(int n,int mid)
 int main()
 {
     int T_start=clock();
-    freopen("in.txt","r",stdin);
+    // freopen("in.txt","r",stdin);
     // freopen("out.txt","w",stdout);
     int n=read(),m=read();
     for(int i=0;i<m;i++)

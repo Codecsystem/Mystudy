@@ -19,9 +19,12 @@
 #include <ranges>
 #include <iomanip>
 #include <chrono>
+#include <cstdint>
+#include <cassert>
 //#define int long long //赫赫 要不要龙龙呢
 using namespace std;
-struct DyBitset
+//1-based: 有效下标 [1,n]
+struct DyBitset1Base
 {
     using ull=uint64_t;
     int n; vector<ull> a;
@@ -38,7 +41,8 @@ struct DyBitset
         operator bool() const { return block&st; }
     };
     
-    DyBitset(int _n):n(_n){
+    DyBitset1Base(int _n):n(_n){
+        assert(n>=0);
         a.resize((n+64)/64,0);
     }
     void sant(){
@@ -48,34 +52,35 @@ struct DyBitset
         }
     }
     
-    void set(int i){ a[i>>6]|=(1ull<<(i&63)); } //置1
-    void reset(int i){ a[i>>6]&=~(1ull<<(i&63)); } //置0
+    void set(int i){ assert(1<=i&&i<=n); a[i>>6]|=(1ull<<(i&63)); } //置1
+    void reset(int i){ assert(1<=i&&i<=n); a[i>>6]&=~(1ull<<(i&63)); } //置0
     void clear(){ fill(a.begin(),a.end(),0); } //清空
-    bool test(int i) const{ return (a[i>>6]>>(i&63))&1; } //查询
+    bool test(int i) const{ assert(1<=i&&i<=n); return (a[i>>6]>>(i&63))&1; } //查询
     bool operator[](int i) const{ return test(i); } //下标访问
-    ref operator[](int i){ return {a[i>>6],1ull<<(i&63)}; } //下标修改
+    ref operator[](int i){ assert(1<=i&&i<=n); return {a[i>>6],1ull<<(i&63)}; } //下标修改
     int count() const{
         int res=0;
         for(auto x:a) res+=__builtin_popcountll(x);
         return res;
     }
-    DyBitset operator~() const {
-        DyBitset res(n);
+    DyBitset1Base operator~() const {
+        DyBitset1Base res(n);
         for(int i=0;i<a.size();i++){
             res.a[i]=~a[i];
         }
         res.sant(); 
         return res;
     }
-    DyBitset operator&(const DyBitset& rhs) const{
-        DyBitset res(max(n,rhs.n));
+    DyBitset1Base operator&(const DyBitset1Base& rhs) const{
+        DyBitset1Base res(max(n,rhs.n));
         for(int i=0;i<min(a.size(),rhs.a.size());i++){
             res.a[i]=a[i]&rhs.a[i];
         }
+        res.sant();
         return res;
     }
-    DyBitset operator|(const DyBitset& rhs) const{
-        DyBitset res(max(n,rhs.n));
+    DyBitset1Base operator|(const DyBitset1Base& rhs) const{
+        DyBitset1Base res(max(n,rhs.n));
         for(int i=0;i<min(a.size(),rhs.a.size());i++){
             res.a[i]=a[i]|rhs.a[i];
         }
@@ -86,8 +91,8 @@ struct DyBitset
         res.sant();
         return res;
     }
-    DyBitset operator^(const DyBitset& rhs) const{
-        DyBitset res(max(n,rhs.n));
+    DyBitset1Base operator^(const DyBitset1Base& rhs) const{
+        DyBitset1Base res(max(n,rhs.n));
         for(int i=0;i<min(a.size(),rhs.a.size());i++){
             res.a[i]=a[i]^rhs.a[i];
         }
@@ -98,16 +103,22 @@ struct DyBitset
         res.sant();
         return res;
     }
-    bool operator==(const DyBitset& rhs) const{
+    bool operator==(const DyBitset1Base& rhs) const{
         if(n!=rhs.n) return false;
         return a==rhs.a;
     }
-    bool operator!=(const DyBitset& rhs) const{
+    bool operator!=(const DyBitset1Base& rhs) const{
         return !(*this==rhs);
     }
-    bool operator<(const DyBitset& rhs) const{
-        if(n!=rhs.n) return n<rhs.n;
-        return a<rhs.a;
+    bool operator<(const DyBitset1Base& rhs) const{
+        //按高位到低位比较数值大小，数值相同时再按长度排序
+        int sz=max(a.size(),rhs.a.size());
+        for(int i=sz-1;i>=0;i--){
+            ull x=(i<a.size()?a[i]:0);
+            ull y=(i<rhs.a.size()?rhs.a[i]:0);
+            if(x!=y) return x<y;
+        }
+        return n<rhs.n;
     }
     int ctz() const{
         for(int i=0;i<a.size();i++){

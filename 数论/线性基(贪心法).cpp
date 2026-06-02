@@ -18,32 +18,38 @@
 #include <functional>
 #include <ranges>
 #include <iomanip>
+#include <cstdint>
+#include <cassert>
 #define int long long //赫赫 要不要龙龙呢
 using namespace std;
 class basic{
     public:
+    using u64=uint64_t;
     struct node
     {
-        int val;
+        u64 val;
         int inf;
     };
-    vector<node> bas; int tot;
-    basic(int bit):bas(bit,{0,0}),tot(0){}
-    void ins(node x)
+    vector<node> bas; int bit,tot;
+    basic(int bit=64):bas(bit,{0,0}),bit(bit),tot(0){
+        assert(1<=bit&&bit<=64);
+    }
+    bool ins(node x)
     {
-        tot++;
-        for(int i=63;i>=0;i--)
+        for(int i=bit-1;i>=0;i--)
         {
             if(x.val>>i&1)
             {
                 if(bas[i].val==0)
                 {
                     bas[i]=x;
-                    return;
+                    tot++;
+                    return true;
                 }
                 else x.val^=bas[i].val;
             }
         }
+        return false;
     }
 };
 signed main()
@@ -53,18 +59,14 @@ signed main()
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
     int n;cin>>n;
-    vector<pair<int,int>> a(n);
+    vector<basic::node> a(n);
     for(auto& [x,y]:a) cin>>x>>y;
-    sort(a.begin(),a.end(),[](auto& x,auto& y){return x.second>y.second;});
+    sort(a.begin(),a.end(),[](auto& x,auto& y){return x.inf>y.inf;});
     basic b(64);
+    int ans=0;
     for(auto& [x,y]:a)
     {
-        b.ins({x,y});
-    }
-    int ans=0;
-    for(auto [x,y]:b.bas)
-    {
-        ans+=y;
+        if(b.ins({x,y})) ans+=y;
     }
     cout<<ans<<endl;
     return 0;

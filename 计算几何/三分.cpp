@@ -100,7 +100,7 @@ pit getNode(pit a,vec u,pit c,vec v){
 signed main()
 {
     int T_start=clock();
-    freopen("in.txt","r",stdin);
+    //freopen("in.txt","r",stdin);
     //freopen("out.txt","w",stdout);
     //ios::sync_with_stdio(false),cin.tie(0),cout.tie(0);
     int t;cin>>t;

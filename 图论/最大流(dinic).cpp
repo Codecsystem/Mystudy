@@ -20,6 +20,7 @@ using namespace std;
 #define int long long
 class maxflow{
     public:
+        const int INF=1e18;
         struct node
         {
             int to,cap,id;
@@ -79,7 +80,7 @@ class maxflow{
         int dinic(){
             int res=0;
             while(bfs()){
-                res+=dfs(s,INT_MAX);
+                res+=dfs(s,INF);
             }
             return res;
         }

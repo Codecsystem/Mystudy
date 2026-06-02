@@ -79,7 +79,7 @@ public:
             }
         }
     }
-    //返回c作为结果 a,b 0-based
+    //返回c作为结果 a,b 0-based；会把传入的 a,b 长度扩到2的幂
     vector<Z> conv(vector<Z> &a,vector<Z> &b,int op){
         int n=max(a.size(),b.size());
         int len=1;

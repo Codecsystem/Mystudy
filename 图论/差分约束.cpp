@@ -49,7 +49,7 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
     vector<int> vis(n+1,0);
     vector<int> cnt(n+1,0);
     dis[s]=0;queue<int> q;
-    q.push(s);vis[s]=1;cnt[s]=1;
+    q.push(s);vis[s]=1;cnt[s]=0;
     while(!q.empty())
     {
         int u=q.front();

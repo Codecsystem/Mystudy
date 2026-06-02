@@ -20,6 +20,7 @@
 #include <iomanip>
 //#define int long long //赫赫 要不要龙龙呢
 using namespace std;
+//积性函数线性筛骨架：这里只返回 primes，f 的递推需按题目补全
 vector<int> primes(int n)
 {
     //积性函数gcd(a,b)=1,f(ab)=f(a)f(b)
