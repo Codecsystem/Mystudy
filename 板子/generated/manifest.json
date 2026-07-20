@@ -114,6 +114,14 @@
   {
     "board": "board1",
     "folder": "数据结构",
+    "file": "平板电视Set(含多重).cpp",
+    "title": "平板电视Set(含多重)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数据结构",
     "file": "普通莫队.cpp",
     "title": "普通莫队",
     "has_usage": true,
