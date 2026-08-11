@@ -26,6 +26,8 @@ using ull=unsigned long long;
 using ui128=__uint128_t;
 using namespace std;
 class SHASH{
+    //特别注意:传入的字符串应该是>=0的 如果传入负数会导致hash值在模数外
+    //如果多开hash类 底数在外面生成。
     public:
         ull b;
         vector<ull> h,p;

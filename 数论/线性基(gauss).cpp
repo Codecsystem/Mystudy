@@ -65,6 +65,17 @@ class basic{
         }
         return ans;
     }
+    //求不去重的所有非空子序列异或和的第k小 k:1base
+    int kth_dup(ll k){
+        if(n<=60&&k>=(1ull<<n)) return -1;
+        int z=n-cnt;
+        ll rk=z>60?0:k>>z;
+        int ans=0;
+        for(int i=0;i<cnt;i++){
+            if(rk>>i&1) ans^=bas[cnt-1-i];
+        }
+        return ans;
+    }
     //求一个数用一个数列异或得到的方案数
     //约简为0的向量是不必要的 于是可以任选
     ll count(int x){

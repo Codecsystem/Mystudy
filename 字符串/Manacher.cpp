@@ -26,15 +26,15 @@ class Manacher{
     vector<int> d;
     int k,n;
     Manacher(int n):d(2*n+5,0),s(2*n+5){}
-    void manacher(string str){
-        k=0,n=str.size();
-        str="x"+str;
+    void manacher(const string& str){
+        //str 1-base 
+        k=0,n=str.size()-1;
         s[0]='$',s[++k]='#';
         for(int i=1;i<=n;i++){
             s[++k]=str[i],s[++k]='#';
         }
         d[1]=1;
-        for(int i=2,l,r=1;i<=k;i++){
+        for(int i=2,l=1,r=1;i<=k;i++){
             if(i<=r) d[i]=min(d[r-i+l],r-i+1);
             while(s[i+d[i]]==s[i-d[i]]) d[i]++;
             if(i+d[i]-1>r) l=i-d[i]+1,r=i+d[i]-1;
