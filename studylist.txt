@@ -14,6 +14,9 @@ fan's problems list 进度0
 ARC58-ARC90的后两题 进度62/90
 25江苏省赛
 
+观看：
+https://www.luogu.com.cn/article/pl73yj93
+
 
 马上想学的知识点：
 多项式科技/gf
@@ -32,6 +35,7 @@ ARC58-ARC90的后两题 进度62/90
 --扫描线 矩形面积并                   ....2025/12/2
 --线段树分治                          ....2025/12/23
 --可撤销并查集                        ....2025/12/23
+--zkw线段树                          ...2026/8.11
 --把主席树写成info的形式
 --动态开点线段树
 --线段树二分/**合并**/分裂          https://www.luogu.com.cn/problem/P2824
@@ -42,7 +46,6 @@ ARC58-ARC90的后两题 进度62/90
 --二维线段树
 --LCT
 --带修/回滚莫队
---zkw线段树
 
 图论
 --最短路                            ... 2025/3/8
@@ -94,18 +97,18 @@ dp
 --**ntt**                       ...2026/3/31
 https://codeforces.com/contest/2169/problem/F 注意有on解
 https://atcoder.jp/contests/abc436/tasks/abc436_g
+--**拉插**                      ...2026/8/30
 --**杜教筛**
---**拉插**
 --**卢卡斯定理**
 --**高斯消元**
+--**类欧**  https://atcoder.jp/contests/abc443/tasks/abc443_g
+解决形如 ax+by<=h的整数解问题
 --多项式科技
 --高斯整数
 --剩余系，二次剩余
 --BSGS/exgBSGS
 --威尔逊定理
 --Montgomery 模乘,ntt的实现
-
---类欧  https://atcoder.jp/contests/abc443/tasks/abc443_g
 --浮点数分子分母表示
 
 
@@ -118,6 +121,7 @@ https://atcoder.jp/contests/abc436/tasks/abc436_g
 --**凸包交（闵和）**
 --**三维的向量**
 --**半平面交**
+--**点在多边形能判断**
 --平面最近点对
 --最小圆覆盖
 
@@ -125,7 +129,7 @@ https://atcoder.jp/contests/abc436/tasks/abc436_g
 字符串
 --tire tree                        ...2025/2/1
 --回文树/PAM                       ...2026/8/4  
---SA  SA https://atcoder.jp/contests/abc433/tasks/abc433_g
+--SA https://atcoder.jp/contests/abc433/tasks/abc433_g
 
 trick
 --整体二分       ...2025/12/27

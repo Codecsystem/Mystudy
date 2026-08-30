@@ -5,11 +5,6 @@
 
 数数题 最重要的思想是按什么东西进行分类，是好做的，而且能做到不重不漏
 
-gcd(k,n)=1->gcd(n-k,n)=1 simga [gcd(i,n)=1]*i=phi(n)*n/2
-https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&returnHomeType=1&uid=719203876
-
-原来aj*2>ai的时候aj一定不整除ai
-https://ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
 
 考虑算[l,r]中被p整除的数，一个好的实现是先算[1,r]中被p整除的数，再减去[1,l-1]中被p整除的数。
 
@@ -25,4 +20,23 @@ ntt如果有多次intt，有可能可以不用先intt然后答案相加，而是
 
 筛积性函数的时候 这个积性函数在质数和质数幂时候的值是好算的话 这样他的值是好求的。
 
-Raney 引理：如果一个整数序列 $x_1, x_2, \dots, x_m$ 的每一项都不超过 $1$，且总和为 $S > 0$，那么在这个序列的 $m$ 个循环移位中，恰好有 $S$ 个移位满足“所有非空前缀和都严格大于 $0$”。
+维护多项式，我们如果想要动态加点/点集不变，多次查询，这样的式子，我们可以把拉插式子中无关x的项提出来，这样可以快速维护
+$$P(x)=\sum_{i=1}^n y_i \prod_{j \neq i} \frac{x-x_j}{x_i-x_j}$$
+令：
+$\ell(x) = \prod_{i=1}^n (x - x_i)$
+$w_i = \frac{1}{\prod_{j \neq i} (x_i - x_j)}$
+那么
+$$P(x) = \ell(x) \sum_{i=1}^n \frac{y_i}{(x - x_i) \prod_{j \neq i} (x_i - x_j)}$$
+$$P(x) = \ell(x) \sum_{i=1}^n \frac{w_i y_i}{x - x_i}$$
+
+多项式的前缀和(对x而言)是更高一次的多项式->积分
+多项式的一阶差分(对x而言)是低一次的多项式->微分
+
+处理逆元不存在的方法总列：
+考虑前后缀积处理
+考虑处理乘0的个数
+阶乘考虑列让德公式
+考虑卢卡斯定理
+考虑特殊性质，如k是9的倍数，要求k/9 mod mod 那么可以先求k%9mod然后/9然后%mod
+
+快速算(a+bx)^n这样的事情可以考虑多项式启发式卷积,就是用过线段树向上合并的过程来描述，不过实现上队列就能做到。
