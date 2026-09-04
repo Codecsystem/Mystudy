@@ -48,6 +48,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 } 
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -81,11 +82,13 @@ bool pcross(pit a,pit b,pit c,pit d){
     if(fabs((b-a)*(d-c))<=eps) return 0; 
     return 1; 
 }
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     double t=((c-a)*v)/(u*v);
     return a+u*t;

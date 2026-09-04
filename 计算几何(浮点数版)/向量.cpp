@@ -49,7 +49,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 } 
-//向量单位化
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -93,7 +93,7 @@ bool pcross(pit a,pit b,pit c,pit d){
     if(fabs((b-a)*(d-c))<=eps) return 0; //平行 无交点
     return 1; //有交点
 }
-//求两直线ab,cd的交点(两点式)
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps);
@@ -101,12 +101,20 @@ pit getNode(pit a,pit b,pit c,pit d){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps);
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
     double t=((c-a)*v)/(u*v);
     return a+u*t;
+}
+//返回点p到闭线段ab的最短距离
+double disPtSeg(pit p,pit a,pit b){
+    vec ab=b-a,ap=p-a,bp=p-b;
+    if(len(ab)<=eps)return dis(p,a);
+    if((ab&ap)<=-eps)return dis(p,a);
+    if(((a-b)&bp)<=-eps)return dis(p,b);
+    return fabs(ab*ap)/len(ab);
 }
 signed main()
 {

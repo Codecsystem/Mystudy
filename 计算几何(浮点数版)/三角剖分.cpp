@@ -56,7 +56,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 } 
-//单位向量
+//单位向量；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -81,11 +81,10 @@ bool onSeg(pit a,pit b,pit p){
 }
 //OA OB扇形面积
 double sector(vec a,vec b){
-    double angle=acos((a&b)/len(a)/len(b)); //[0,pi]
-    if(a*b<=-eps) angle=-angle; 
+    double angle=atan2(a*b,a&b); //有向圆心角，范围为(-pi,pi]
     return angle*R*R/2;
 }
-//求两直线ab,cd的交点(两点式)
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps); //平行 无交点
@@ -93,7 +92,7 @@ pit getNode(pit a,pit b,pit c,pit d){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点

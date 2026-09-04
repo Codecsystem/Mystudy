@@ -48,6 +48,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 } 
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -81,18 +82,24 @@ bool pcross(pit a,pit b,pit c,pit d){
     if(fabs((b-a)*(d-c))<=eps) return 0; 
     return 1; 
 }
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//O(n+m) (逆时针)凸包闵和 
+//O(n+m)凸包闵和；要求a、b非空、为凸多边形、按逆时针排列且不带重复首点
+//同向边可能保留共线中间点；空输入会在后续访问a[0]或b[0]时崩溃
 vector<pit> minkowski(vector<pit> a,vector<pit> b){ 
-    auto cmp=[](const pit& p1,const pit& p2){return fabs(p1.y-p2.y)>eps?p1.y<p2.y:p1.x<p2.x;};
+    auto cmp=[](const pit& p1,const pit& p2){
+        if(p1.y!=p2.y)return p1.y<p2.y;
+        return p1.x<p2.x;
+    };
     rotate(a.begin(),min_element(a.begin(),a.end(),cmp),a.end());
     rotate(b.begin(),min_element(b.begin(),b.end(),cmp),b.end());//以最左下角的点为起点
     int n=a.size(),m=b.size();

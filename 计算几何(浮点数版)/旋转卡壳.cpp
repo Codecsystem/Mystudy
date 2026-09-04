@@ -46,7 +46,8 @@ struct pit
 double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
 double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 bool cmp(const pit& a,const pit& b){
-    return fabs(a.x-b.x)>=eps?a.x<b.x:a.y<b.y;
+    if(a.x!=b.x)return a.x<b.x;
+    return a.y<b.y;
 }
 //向量逆时针旋转theta弧度
 vec rotate(const vec& o,double theta){
@@ -60,6 +61,7 @@ double cross(pit a,pit b,pit c){
 double dot(pit a,pit b,pit c){
     return (b-a)&(c-a);
 }
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -110,30 +112,31 @@ bool isCon(pit a,pit b,pit c,pit p){
     return cross(a,b,p)>=-eps&&cross(b,c,p)>=-eps&&cross(c,a,p)>=-eps;
 }
 //二分判断点是否在凸包内O(logn)
-//需保证凸包逆时针
-bool isConvex(vector<pit> p,pit a)
+//需保证凸包逆时针，边界计入
+bool isConvex(const vector<pit>& p,pit a)
 {
     int n=p.size();
     if(n<3) return false;
-    if((p[1]-p[0])*(a-p[0])<=-eps) return false;
-    if((p[n-1]-p[0])*(a-p[0])>=eps) return false;
-    int l=1,r=n-1,idx=-1;
-    while(l<=r)
+    double c1=(p[1]-p[0])*(a-p[0]);
+    double c2=(p[n-1]-p[0])*(a-p[0]);
+    if(c1<-eps||c2>eps) return false;
+    if(fabs(c1)<=eps) return ((p[0]-a)&(p[1]-a))<=eps;
+    if(fabs(c2)<=eps) return ((p[0]-a)&(p[n-1]-a))<=eps;
+    int l=1,r=n-1;
+    while(r-l>1)
     {
         int mid=(l+r)>>1;
         if((p[mid]-p[0])*(a-p[0])>=-eps)
         {
-            idx=mid;
-            l=mid+1;
+            l=mid;
         }
-        else r=mid-1;
+        else r=mid;
     }
-    if(idx==-1||idx>=n-1) return false;
-    return isCon(p[0],p[idx],p[idx+1],a);
+    return isCon(p[0],p[l],p[r],a);
 }
 //双指针/多指针在凸包上找最优->旋转卡壳 形如一个游标卡尺绕着凸包旋转
 //旋转卡壳,用叉积可以找离一条线垂直最高或最低，用点积可以找离一条线水平最左或最右的点（点积的几何意义是b在a的投影长度)
-//要求传入非退化凸包，点数至少为3；单点/两点/全共线需先特判
+//要求传入非退化逆时针凸包，点数至少为3；单点/两点/全共线需先特判
 pair<double,vector<pit>> rot(vector<pit> p)
 {
     double ans=1e14;vector<pit> fin(4);
