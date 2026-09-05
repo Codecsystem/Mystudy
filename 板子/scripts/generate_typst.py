@@ -29,6 +29,7 @@ CONFIG = load_config()
 BOILERPLATE_PATTERNS = [
     re.compile(r'^\s*#include\s*<'),
     re.compile(r'^\s*using\s+namespace\s+std'),
+    re.compile(r'^\s*using\s+namespace\s+__gnu_pbds'),
     re.compile(r'^\s*using\s+ll\s*=\s*long\s+long'),
     re.compile(r'^\s*//#define\s+int\s+long\s+long'),
     re.compile(r'^\s*//freopen'),
@@ -314,13 +315,12 @@ def generate_board1() -> tuple[str, list]:
 
             parts.append(f'== {title}\n')
 
-            # 尾部注释作为说明放在代码前
+            # 尾部注释放在独立代码块中，避免以 Typst `//` 注释输出后不可见。
             if result['tail_comments']:
-                for cline in result['tail_comments'].split('\n'):
-                    c = cline.strip().lstrip('/').strip()
-                    if c:
-                        parts.append(f'// {c}\n')
-                parts.append('')
+                tail_escaped = escape_raw_content(result['tail_comments'])
+                parts.append('```cpp')
+                parts.append(tail_escaped)
+                parts.append('```\n')
 
             # 算法主体代码
             if result['algo'].strip():

@@ -50,6 +50,14 @@
   {
     "board": "board1",
     "folder": "数据结构",
+    "file": "FHQTreap(Info+Tag+Key版).cpp",
+    "title": "FHQTreap(Info+Tag+Key版)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数据结构",
     "file": "FHQTreap(无旋平衡树).cpp",
     "title": "FHQTreap(无旋平衡树)",
     "has_usage": true,
@@ -90,6 +98,14 @@
   {
     "board": "board1",
     "folder": "数据结构",
+    "file": "zkw线段树(单点修区间查).cpp",
+    "title": "zkw线段树(单点修区间查)",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数据结构",
     "file": "主席树(例2).cpp",
     "title": "主席树(例2)",
     "has_usage": true,
@@ -100,6 +116,14 @@
     "folder": "数据结构",
     "file": "主席树.cpp",
     "title": "主席树",
+    "has_usage": true,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "数据结构",
+    "file": "可并堆(平板电视).cpp",
+    "title": "可并堆(平板电视)",
     "has_usage": true,
     "has_tail": true
   },
@@ -178,14 +202,6 @@
   {
     "board": "board1",
     "folder": "图论",
-    "file": "BCC（点双连通分量，tarjan）.cpp",
-    "title": "BCC（点双连通分量，tarjan）",
-    "has_usage": true,
-    "has_tail": false
-  },
-  {
-    "board": "board1",
-    "folder": "图论",
     "file": "dfs&bfs.cpp",
     "title": "dfs&bfs",
     "has_usage": true,
@@ -202,8 +218,8 @@
   {
     "board": "board1",
     "folder": "图论",
-    "file": "EDCC (边双联通分量，tarjan）.cpp",
-    "title": "EDCC (边双联通分量，tarjan）",
+    "file": "eDCC (边双联通分量，tarjan）.cpp",
+    "title": "eDCC (边双联通分量，tarjan）",
     "has_usage": true,
     "has_tail": false
   },
@@ -253,7 +269,7 @@
     "file": "ShortestPath（dijkstra）.cpp",
     "title": "ShortestPath（dijkstra）",
     "has_usage": true,
-    "has_tail": false
+    "has_tail": true
   },
   {
     "board": "board1",
@@ -262,6 +278,22 @@
     "title": "ShortestPath（Floyed）",
     "has_usage": true,
     "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
+    "file": "vBCC（点双连通分量，tarjan.点划分）.cpp",
+    "title": "vBCC（点双连通分量，tarjan.点划分）",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
+    "file": "vBCC（点双连通分量，tarjan.边划分）.cpp",
+    "title": "vBCC（点双连通分量，tarjan.边划分）",
+    "has_usage": true,
+    "has_tail": false
   },
   {
     "board": "board1",
@@ -310,6 +342,14 @@
     "title": "拓扑排序",
     "has_usage": true,
     "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
+    "file": "无向图三元环计数.cpp",
+    "title": "无向图三元环计数",
+    "has_usage": true,
+    "has_tail": true
   },
   {
     "board": "board1",
@@ -562,6 +602,14 @@
   {
     "board": "board1",
     "folder": "字符串",
+    "file": "回文树(PAM,回文自动机).cpp",
+    "title": "回文树(PAM,回文自动机)",
+    "has_usage": false,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "字符串",
     "file": "广义后缀自动机(GSAM).cpp",
     "title": "广义后缀自动机(GSAM)",
     "has_usage": false,
@@ -674,6 +722,14 @@
   {
     "board": "board1",
     "folder": "数论",
+    "file": "拉格朗日插值.cpp",
+    "title": "拉格朗日插值",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "数论",
     "file": "数论预处理.cpp",
     "title": "数论预处理",
     "has_usage": false,
@@ -737,31 +793,55 @@
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(全整数版)",
     "file": "三分.cpp",
     "title": "三分",
-    "has_usage": true,
-    "has_tail": true
+    "has_usage": false,
+    "has_tail": false
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(全整数版)",
     "file": "三角剖分.cpp",
     "title": "三角剖分",
     "has_usage": false,
-    "has_tail": true
+    "has_tail": false
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(全整数版)",
+    "file": "三角剖分2.cpp",
+    "title": "三角剖分2",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(全整数版)",
     "file": "凸包.cpp",
     "title": "凸包",
     "has_usage": false,
-    "has_tail": true
+    "has_tail": false
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(全整数版)",
+    "file": "凸包闵和.cpp",
+    "title": "凸包闵和",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(全整数版)",
+    "file": "凸包面积并.cpp",
+    "title": "凸包面积并",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(全整数版)",
     "file": "向量.cpp",
     "title": "向量",
     "has_usage": false,
@@ -769,7 +849,87 @@
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(全整数版)",
+    "file": "旋转卡壳.cpp",
+    "title": "旋转卡壳",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(全整数版)",
+    "file": "极角排序.cpp",
+    "title": "极角排序",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(全整数版)",
+    "file": "点在多边形内判定.cpp",
+    "title": "点在多边形内判定",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "三分.cpp",
+    "title": "三分",
+    "has_usage": true,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "三角剖分.cpp",
+    "title": "三角剖分",
+    "has_usage": false,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "三角剖分2.cpp",
+    "title": "三角剖分2",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "凸包.cpp",
+    "title": "凸包",
+    "has_usage": false,
+    "has_tail": true
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "凸包闵和.cpp",
+    "title": "凸包闵和",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "凸包面积并.cpp",
+    "title": "凸包面积并",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
+    "file": "向量.cpp",
+    "title": "向量",
+    "has_usage": false,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "计算几何(浮点数版)",
     "file": "旋转卡壳.cpp",
     "title": "旋转卡壳",
     "has_usage": true,
@@ -777,7 +937,7 @@
   },
   {
     "board": "board1",
-    "folder": "计算几何",
+    "folder": "计算几何(浮点数版)",
     "file": "极角排序.cpp",
     "title": "极角排序",
     "has_usage": false,
@@ -847,8 +1007,8 @@
   {
     "board": "board2",
     "group": "基础与工具",
-    "file": "数论/数论笔记部分/数论小结论.md",
-    "title": "数论/数论笔记部分/数论小结论",
+    "file": "数论/Trick/数论小结论.md",
+    "title": "数论/Trick/数论小结论",
     "warnings": []
   },
   {
@@ -1003,6 +1163,13 @@
     "group": "通用 Trick 与杂项",
     "file": "其他/Trick/杂项相关trick.md",
     "title": "其他/Trick/杂项相关trick",
+    "warnings": []
+  },
+  {
+    "board": "board3",
+    "group": "通用 Trick 与杂项",
+    "file": "计算几何(浮点数版)/Trick/计算几何trick.md",
+    "title": "计算几何(浮点数版)/Trick/计算几何trick",
     "warnings": []
   },
   {

@@ -642,7 +642,7 @@ int _exCRT()
 ```
 
 
-== 数论/数论笔记部分/数论小结论
+== 数论/Trick/数论小结论
 
 $upright("gcd")$ 的重要恒等式： $upright("gcd") ( x_1 \, x_2 \, dots.h \, x_n ) = upright("gcd") ( x_1 \, x_2 - x_1 \, x_3 - x_2 \, dots.h \, x_n - x_(n - 1) )$。
 
@@ -652,9 +652,21 @@ gcd(x,y)=x xor y -\> gcd(x,y)=|x-y|
 
 gcd(x,y)=x+y -\> gcd(x,y)=max(x,y)。
 
-处理逆元不存在的方法总列： 考虑前后缀积处理 考虑处理乘0的个数 阶乘考虑列让德公式 考虑卢卡斯定理 考虑特殊性质，如k是9的倍数，要求k/9 mod mod 那么可以先求k%9mod然后/9然后%mod
+gcd(k,n)=1-\>gcd(n-k,n)=1 simga \[gcd(i,n)=1\]#emph[i=phi(n)];n/2 https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&returnHomeType=1&uid=719203876
+
+原来aj\*2\>ai的时候aj一定不整除ai https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
 
 c|ab 当仅当 (c/gcd(a,c))|b 考虑 ab=k#emph[c 令g=gcd(a,c),有 (a/g) ] b=k \*(c/g) 此时 a/g和c/g互质,其实含义就是(c/g)|b,反代得 (c/gcd(a,c))|b
+
+自然数k次和：
+
+$ sum_(i = 1)^n i^2 = frac(n ( n + 1 ) ( 2 n + 1 ), 6) $
+
+$ sum_(i = 1)^n i^3 = [frac(n ( n + 1 ), 2)]^2 = frac(n^2 ( n + 1 )^2, 4) $
+
+Raney 引理：如果一个整数序列 $x_1 \, x_2 \, dots.h \, x_m$ 的每一项都不超过 $1$，且总和为 $S > 0$，那么在这个序列的 $m$ 个循环移位中，恰好有 $S$ 个移位满足“所有非空前缀和都严格大于 $0$”。
+
+$ sum_(i = 1)^n ⌊n / i⌋ = 2 sum_(i = 1)^(floor.l sqrt(n) floor.r) ⌊n / i⌋ - floor.l sqrt(n) floor.r^2 $
 
 
 = 卷积与反演
@@ -1800,6 +1812,10 @@ $ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = k \] = sum_(i' = 1)^(floor.l n
 <交换求和次序>
 $ sum_(i = 1)^n sum_(j = 1)^m A ( i ) B ( j ) = sum_(j = 1)^m sum_(i = 1)^n A ( i ) B ( j ) $
 
+#quote(block: true)[
+一个比较好的方法是：列出变量的定义域，这样交换的时候可以通过定义域来推定别的变量，变量交换的目的是分离式子。
+]
+
 ==== 4. 分离变量
 <分离变量>
 $ sum_(i = 1)^n sum_(j = 1)^m A ( i ) B ( j ) = (sum_(i = 1)^n A ( i )) (sum_(j = 1)^m B ( j )) $
@@ -2834,6 +2850,10 @@ for (int j = 0; j < n; ++j) { // 枚举每一个维度（每一位）
 ```
 
 #quote(block: true)[
+精细实现可以做到$O ( n \* 2^(() n - 1 ) )$ 见杂项tirck
+]
+
+#quote(block: true)[
 我们追踪一下dp\[7(111)\]
 ]
 
@@ -3273,15 +3293,27 @@ $ a_i equiv c_i dot.op n^(- 1) med (mod p) $
 
 数数题 最重要的思想是按什么东西进行分类，是好做的，而且能做到不重不漏
 
-gcd(k,n)=1-\>gcd(n-k,n)=1 simga \[gcd(i,n)=1\]#emph[i=phi(n)];n/2 https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&returnHomeType=1&uid=719203876
-
-原来aj\*2\>ai的时候aj一定不整除ai https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
+考虑排序是否对答案无影响
 
 考虑算\[l,r\]中被p整除的数，一个好的实现是先算\[1,r\]中被p整除的数，再减去\[1,l-1\]中被p整除的数。
 
-常系数线性递推式可以用矩阵快速幂优化。 注意$d p \[ i \] = W \[ 1 \] d p \[ i - 1 \] + W \[ 2 \] d p \[ i - 2 \] + dots.h + W \[ d \] d p \[ i - d \]$。 构造的矩阵为第一行为系数矩阵，然后是从(2,1)开始的类似于单位矩阵的矩阵(d行d列)。 可以把$ ( d p \[ i - 1 \] \, d p \[ i - 2 \] \, dots.h \, d p \[ i - d \] ) $看作一个列向量，然后乘上构造的矩阵，就可以得到$ ( d p \[ i \] \, d p \[ i - 1 \] \, dots.h \, d p \[ i - d + 1 \] ) $。
+常系数线性递推式可以用矩阵快速幂优化。 注意$d p \[ i \] = W \[ 1 \] d p \[ i - 1 \] + W \[ 2 \] d p \[ i - 2 \] + dots.h + W \[ d \] d p \[ i - d \]$。 构造的矩阵为第一行为系数矩阵，然后是从(2,1)开始的类似于单位矩阵的矩阵(d行d列)。 可以把$ ( d p \[ i - 1 \] \, d p \[ i - 2 \] \, dots.h \, d p \[ i - d \] ) $看作一个列向量，然后乘上构造的矩阵，就可以得到$ ( d p \[ i \] \, d p \[ i - 1 \] \, dots.h \, d p \[ i - d + 1 \] ) $。 有些时候能把状态压缩成一个等价类，缩减矩阵的大小
 
 ntt如果有多次intt，有可能可以不用先intt然后答案相加，而是直接在ntt后把点值加起来，最后做一次intt就行
+
+质数间距是小的，根据x附近的质数密度是1/lnx，那么x附近的质数间距是lnx
+
+筛积性函数的时候 这个积性函数在质数和质数幂时候的值是好算的话 这样他的值是好求的。
+
+维护多项式，我们如果想要动态加点/点集不变，多次查询，这样的式子，我们可以把拉插式子中无关x的项提出来，这样可以快速维护 $ P ( x ) = sum_(i = 1)^n y_i product_(j eq.not i) frac(x - x_j, x_i - x_j) $ 令： $ell ( x ) = product_(i = 1)^n ( x - x_i )$ $w_i = frac(1, product_(j eq.not i) ( x_i - x_j ))$ 那么 $ P ( x ) = ell ( x ) sum_(i = 1)^n frac(y_i, ( x - x_i ) product_(j eq.not i) ( x_i - x_j )) $ $ P ( x ) = ell ( x ) sum_(i = 1)^n frac(w_i y_i, x - x_i) $
+
+多项式的前缀和(对x而言)是更高一次的多项式-\>积分 多项式的一阶差分(对x而言)是低一次的多项式-\>微分
+
+处理逆元不存在的方法总列： 考虑前后缀积处理 考虑处理乘0的个数 阶乘考虑列让德公式 考虑卢卡斯定理 考虑特殊性质，如k是9的倍数，要求k/9 mod mod 那么可以先求k%9mod然后/9然后%mod
+
+快速算(a+bx)^n这样的事情可以考虑多项式启发式卷积,就是用过线段树向上合并的过程来描述，不过实现上队列就能做到。
+
+有个事情就是 对%n来说 如果+dx gcd(dx,n)=1 那其实是遍历所有余数的 那gcd=2的话 那其实就变成两个不交同余类了
 
 
 == 数论/数论笔记部分/数论笔记(杂项)

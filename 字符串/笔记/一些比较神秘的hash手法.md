@@ -68,11 +68,14 @@ for(int i=1;i<=n;i++){
 
 ##### 5.1 有根树同构(树hash)
 
-$$H(u) = 1 + \sum_{v \in son(u)} f(H(v)) \pmod{2^{64}}$$
+$$
+H(u) = 1 + \sum_{v \in son(u)} f(H(v)) \pmod{2^{64}}
+$$
 
 其中 $f$ 是一个非线性映射函数，比如 $splitmix64$。
 
 使用例子：
+
 ```cpp
 Xhash64 H;
 ull h[N];
@@ -90,5 +93,4 @@ void dfs(int u,int fa){
 ##### 5.3 有标号图同构
 
 对每个标号随一个 $hash$ 值，然后每个标号的 $hash$ 值是他邻居的 $hash$ 值的和(自然溢出)，对每个标号检查即可。
-
 

@@ -34,6 +34,8 @@
 #include <vector>
 // 特殊头：PBDS/gp_hash_table 需要，普通题可删
 #include <ext/pb_ds/assoc_container.hpp>
+// PBDS priority_queue/pairing_heap 需要
+#include <ext/pb_ds/priority_queue.hpp>
 // PBDS tree/order statistics tree 需要
 #include <ext/pb_ds/tree_policy.hpp>
 // 万能头
@@ -375,20 +377,15 @@ class BIT{
 
 == BIT(树状数组,1base)
 
-// 进阶用法1.维护差分数组
-
-// 进阶用法2.把数组离散化后按照值域建树状数组，可以用来求逆序对(第K大)
-
-// e.g.val[1,16,9,10,3]->dis[1,5,3,4,2]->bit[1,1,1,1,1]
-
-// BIT bit(5);
-
-// //bit.update(1,1);bit.update(2,1);bit.update(3,1);bit.update(4,1);bit.update(5,1);
-
-// val_i[1,3]即更新为[1,0,1,0,1] 9即为第2大 即bit.query(1,3)=2
-
-// 求逆序对，how to do? 即[1,r]中比a[r]大的数的个数
-
+```cpp
+//进阶用法1.维护差分数组
+//进阶用法2.把数组离散化后按照值域建树状数组，可以用来求逆序对(第K大)
+//e.g.val[1,16,9,10,3]->dis[1,5,3,4,2]->bit[1,1,1,1,1]
+//    BIT bit(5);
+//    //bit.update(1,1);bit.update(2,1);bit.update(3,1);bit.update(4,1);bit.update(5,1);
+//    val_i[1,3]即更新为[1,0,1,0,1] 9即为第2大 即bit.query(1,3)=2
+//求逆序对，how to do? 即[1,r]中比a[r]大的数的个数
+```
 
 ```cpp
 class BIT{
@@ -508,6 +505,218 @@ class DSU{
 
 ```cpp
     srand(time(NULL));
+```
+
+== FHQTreap(Info+Tag+Key版)
+
+```cpp
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+template<class Key,class Info,class kTag,class iTag>
+class FHQTreap{
+    public:
+    struct Node{
+        Key key;
+        Info info;
+        kTag ktag;
+        iTag itag;
+        int sz,rnd,l,r,id;
+    };
+    vector<Node> tr;
+    int rt,tot;
+    FHQTreap(int n){
+        tr.resize(n+5);
+        tr[0]={Key(),Info(),kTag(),iTag(),0,0,0,0,0};
+        rt=tot=0;
+    }
+    int nw(Key kval,Info ival,int id=0){
+        tr[++tot]={kval,ival,kTag(),iTag(),1,(int)rng(),0,0,id};
+        return tot;
+    }
+    inline void pushup(int u){
+        tr[u].sz=1+tr[tr[u].l].sz+tr[tr[u].r].sz;
+        tr[u].key.pushup(tr[tr[u].l].key,tr[tr[u].r].key);
+        tr[u].info.pushup(tr[tr[u].l].info,tr[tr[u].r].info,tr[u].key);
+    }
+    inline void apply(int u,const kTag &kt,const iTag &it){
+        if(!u)return;
+        if(kt.has_tag()){
+            tr[u].key.apply(kt,tr[u].sz);
+            tr[u].ktag.apply(kt);
+        }
+        if(it.has_tag()){
+            tr[u].info.apply(it,tr[u].sz);
+            tr[u].itag.apply(it);
+        }
+    }
+    inline void pushdown(int u){
+        if(!tr[u].ktag.has_tag()&&!tr[u].itag.has_tag())return;
+        apply(tr[u].l,tr[u].ktag,tr[u].itag);
+        apply(tr[u].r,tr[u].ktag,tr[u].itag);
+        tr[u].ktag.clear();tr[u].itag.clear();
+    }
+    void merge(int &u,int a,int b){
+        if(!a||!b){u=a|b;return;}
+        pushdown(a);pushdown(b);
+        if(tr[a].rnd>tr[b].rnd){
+            u=a;merge(tr[a].r,tr[a].r,b);
+        }else{
+            u=b;merge(tr[b].l,a,tr[b].l);
+        }
+        pushup(u);
+    }
+    void split(int u,int &a,int &b,Key val,bool strict=false){
+        if(!u){a=b=0;return;}
+        pushdown(u);
+        bool go_right=strict?(tr[u].key<val):!(val<tr[u].key);
+        if(go_right){
+            a=u;split(tr[u].r,tr[a].r,b,val,strict);
+        }else{
+            b=u;split(tr[u].l,a,tr[b].l,val,strict);
+        }
+        pushup(u);
+    }
+    void insert(Key val,Info ival=Info(),int id=0){
+        int a,b;split(rt,a,b,val,false);
+        merge(a,a,nw(val,ival,id));
+        merge(rt,a,b);
+    }
+    void erase(Key val){
+        int a,b,c;
+        split(rt,a,b,val,false); // a存<=val
+        split(a,a,c,val,true);   // a存<val,c存==val
+        if(c){
+            merge(a,a,tr[c].r);
+            merge(a,a,tr[c].l);
+        }
+        merge(rt,a,b);
+    }
+    void range_add_key(Key lim,const kTag &t){
+        int x,y;split(rt,x,y,lim,true); // x存<lim, y存>=lim
+        if(y)apply(y,t,iTag());
+        merge(rt,x,y);
+    }
+    void range_add_info(Key l,Key r,const iTag &t){
+        int x,y,z;
+        split(rt,x,y,l,true); // x存<l
+        split(y,y,z,r,false); // y存[l,r], z存>r
+        if(y)apply(y,kTag(),t);
+        merge(y,y,z);merge(rt,x,y);
+    }
+    Key findMax(int u){
+        if(!u)return tr[0].key;
+        pushdown(u);
+        while(tr[u].r){u=tr[u].r;pushdown(u);}
+        return tr[u].key;
+    }
+    Key findMin(int u){
+        if(!u)return tr[0].key;
+        pushdown(u);
+        while(tr[u].l){u=tr[u].l;pushdown(u);}
+        return tr[u].key;
+    }
+    Key pre(Key val){
+        int a,b;split(rt,a,b,val,true); // 按<分裂
+        Key res=findMax(a);
+        merge(rt,a,b);return res;
+    }
+    Key next(Key val){
+        int a,b;split(rt,a,b,val,false); //按<=分裂，b中自然就是>的部分
+        Key res=findMin(b);
+        merge(rt,a,b);return res;
+    }
+    int rank(Key val){
+        int a,b;split(rt,a,b,val,true);
+        int res=(a?tr[a].sz:0)+1;
+        merge(rt,a,b);return res;
+    }
+    Key QueryKth(int k){return KthQuery(rt,k);}
+    Key KthQuery(int u,int k){
+        if(!u)return tr[0].key;
+        pushdown(u);
+        int lsz=tr[tr[u].l].sz;
+        if(k<=lsz)return KthQuery(tr[u].l,k);
+        if(k==lsz+1)return tr[u].key;
+        return KthQuery(tr[u].r,k-lsz-1);
+    }
+    bool find(Key val){
+        int a,b,c;
+        split(rt,a,b,val,false);
+        split(a,a,c,val,true);
+        bool res=(c!=0);
+        merge(a,a,c);merge(rt,a,b);
+        return res;
+    }
+    void get_ans(int u,vector<ll>& ans){
+        if(!u)return;
+        pushdown(u);
+        get_ans(tr[u].l,ans);
+        if(tr[u].id)ans[tr[u].id]=tr[u].key.val;
+        get_ans(tr[u].r,ans);
+    }
+    vector<ll> get_ans(){
+        vector<ll> ans(tot+1);
+        get_ans(rt,ans);return ans;
+    }
+};
+
+struct kTag{
+    ll add;
+    kTag():add(0){}
+    void apply(const kTag &v){add+=v.add;}
+    bool has_tag()const{return add!=0;}
+    void clear(){add=0;}
+};
+struct iTag{
+    ll add;
+    iTag():add(0){}
+    void apply(const iTag &v){add+=v.add;}
+    bool has_tag()const{return add!=0;}
+    void clear(){add=0;}
+};
+struct Key{
+    ll val,sum;
+    Key(ll v=0):val(v),sum(v){}
+    bool operator<(const Key &o)const{return val<o.val;}
+    void pushup(const Key &l,const Key &r){sum=val+l.sum+r.sum;}
+    void apply(const kTag &t,int sz){val+=t.add,sum+=t.add*sz;}
+};
+struct Info{
+    ll ex_val,ex_sum;
+    Info(ll v=0):ex_val(v),ex_sum(v){}
+    void pushup(const Info &l,const Info &r,const Key &k){
+        ex_sum=ex_val+l.ex_sum+r.ex_sum;
+    }
+    void apply(const iTag &t,int sz){
+        ex_val+=t.add,ex_sum+=t.add*sz;
+    }
+};
+//可以额外维护 key的sum,>=lim的key整体加正值(保证单调性)
+//以及 Key范围[l,r]内额外的Info区间加 info的子树和 之类的
+/*
+struct kTag{
+    void apply(const kTag &){}
+    bool has_tag()const{return false;}
+    void clear(){}
+};
+struct iTag{
+    void apply(const iTag &){}
+    bool has_tag()const{return false;}
+    void clear(){}
+};
+struct Info{
+    Info(ll v=0){}
+    void pushup(const Info &,const Info &,const Key &){}
+    void apply(const iTag &,int){}
+};
+struct Key{
+    ll val,sum;
+    Key(ll v=0):val(v),sum(v){}
+    bool operator<(const Key &o)const{return val<o.val;}
+    void pushup(const Key &l,const Key &r){sum=val+l.sum+r.sum;}
+    void apply(const kTag &,int){}
+};
+//只需维护key的模式（将其他结构体置空即可无缝套用）。
+*/
 ```
 
 == FHQTreap(无旋平衡树)
@@ -1198,12 +1407,62 @@ inline void write(int x)
     }
 ```
 
+== zkw线段树(单点修区间查)
+
+```cpp
+template<class Info>
+class zkw{
+    public:
+    int n,m;
+    vector<Info> info;
+    zkw(const vector<Info> &a):n(a.size()-1){
+        //a 1-Based
+        for(m=1;m<=n+1;m<<=1);
+        info.resize((m<<1)+5);
+        for(int i=1;i<=n;++i) info[m+i]=a[i];
+        for(int i=m-1;i;--i) pushup(i);
+    }
+    inline void pushup(int p){
+        info[p]=info[p<<1]+info[p<<1|1];
+    }
+    void mdf(int x,const Info &v){
+        for(info[x+=m]=v,x>>=1;x;x>>=1) pushup(x);
+    }
+    Info qry(int l,int r){
+        Info rl=Info(),rr=Info();
+        for(l+=m-1,r+=m+1;l^r^1;l>>=1,r>>=1){
+            if(~l&1) rl=rl+info[l^1];
+            if(r&1) rr=info[r^1]+rr;
+        }
+        return rl+rr;
+    }
+};
+// Info 结构体：定义节点信息
+// 需要实现:
+// 1. 成员变量: 存储节点维护的信息
+// 2. 默认构造函数: Info 的单位元 (例如求和的0, 求积的1, 最大值的-INF)
+// 3. operator+(const Info& other): 合并两个子节点的信息
+struct Info{
+    //...
+    int info;
+    Info():info(0){}
+    Info(int x):info(x){}
+};
+
+Info operator+(const Info &a,const Info &b){
+    //... (注意非交换律运算时，顺序为 左子节点+右子节点)
+    Info c;
+    c.info=a.info+b.info;
+    return c;
+}
+```
+
 == 主席树(例2)
 
-// https://codeforces.com/contest/893/problem/F
-
-// 主席树维护一个前缀结构 解决二维偏序
-
+```cpp
+//https://codeforces.com/contest/893/problem/F
+//主席树维护一个前缀结构 解决二维偏序
+```
 
 ```cpp
 #define lc(x) tr[x].l
@@ -1309,16 +1568,13 @@ class HJTree{
 
 == 主席树
 
-// 主席树 (静态区间第k小)
-
-// 利用权值线段树,维护a[1]-a[n] n次插入的历史版本
-
-// 于是可以利用前缀和思想,求出任意区间第k小
-
-// 时间复杂度qry(logn) 空间复杂度nlogn+2*n
-
-// 本质上是做了一个单点更新 保存历史版本 维护一个前缀结构 以此可以处理很多二维偏序问题
-
+```cpp
+//主席树 (静态区间第k小)
+//利用权值线段树,维护a[1]-a[n] n次插入的历史版本
+//于是可以利用前缀和思想,求出任意区间第k小
+//时间复杂度qry(logn) 空间复杂度nlogn+2*n
+//本质上是做了一个单点更新 保存历史版本 维护一个前缀结构 以此可以处理很多二维偏序问题
+```
 
 ```cpp
 #define lc(x) tr[x].l
@@ -1390,6 +1646,47 @@ class HJTree{
         int l,r,k;cin>>l>>r>>k;
         cout<<hjt.qry(l,r,k)<<'\n';
     }
+```
+
+== 可并堆(平板电视)
+
+```cpp
+//可并堆：pairing_heap_tag,配对堆 插入,合并均摊O(1),删除堆顶(logn)
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,q;cin>>n>>q;
+    vector<int> fa(n+1),dep(n+1,0),nfa(n+1),ndep(n+1,0);
+    for(int i=2;i<=n;i++){
+        int x;cin>>x;fa[i]=x,dep[i]=dep[x]+1;
+    }
+    auto cmp=[&](int x,int y){
+        return dep[x]<dep[y];
+    };
+    __gnu_pbds::priority_queue<int,decltype(cmp),__gnu_pbds::pairing_heap_tag> pq(cmp);
+    vector<__gnu_pbds::priority_queue<int,decltype(cmp),__gnu_pbds::pairing_heap_tag>> nq(n+1,pq);
+    for(int i=1;i<=q;i++){
+        int u,v;cin>>u>>v;
+        nq[u].push(v);
+    }
+    for(int i=n;i>=2;i--){
+        if(nq[i].empty()) nfa[i]=1;
+        else{
+            int d=nq[i].top();nq[i].pop();nfa[i]=d;
+            while(!nq[i].empty()&&nq[i].top()==d){
+                nq[i].pop();
+            }
+            nq[d].join(nq[i]);
+        }
+    }
+    ll ans=0;
+    for(int i=2;i<=n;i++){
+        ndep[i]=ndep[nfa[i]]+1;
+        ans+=ndep[i];
+    }
+    cout<<ans<<endl;
 ```
 
 == 回撤并查集&可持久化并查集(离线)
@@ -1481,7 +1778,6 @@ public:
 == 平板电视Set(含多重)
 
 ```cpp
-using namespace __gnu_pbds;
 template<typename T>
 //多重集
 class multiSet{
@@ -1700,18 +1996,14 @@ unordered_map<int,int> dis(vector<int> a)
 
 == 李超线段树
 
-// 李超线段树插入O(logDlogD)查询O(logD)
-
-// 解决：插入一条直线，查询某个点的最大/最小值
-
-// 插入先划分logn区间，再懒标记下放(logn)
-
-// 维护的是直线中点的最大/最小值
-
-// 证明，对每个局部，区间中值最大代表着这个局部最优，于是可以遍历获得全局最优
-
-// 空间复杂度O(nlogDlogD)
-
+```cpp
+//李超线段树插入O(logDlogD)查询O(logD)
+//解决：插入一条直线，查询某个点的最大/最小值
+//插入先划分logn区间，再懒标记下放(logn)
+//维护的是直线中点的最大/最小值
+//证明，对每个局部，区间中值最大代表着这个局部最优，于是可以遍历获得全局最优
+//空间复杂度O(nlogDlogD)
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -1795,16 +2087,13 @@ public:
 
 == 珂朵莉树(ODT)
 
-// ODT(珂朵莉树)
-
-// 处理区间查询后立即覆盖问题
-
-// 修改/查询的一次为O(logn) 一次查询m个区间 覆盖后最多产生3个区间，并减少m左右个区间
-
-// 一次操作的代价是随机变量di 那么q次操作的期望是 n乘一个小常数
-
-// 所以期望是 均摊O(nlogn)
-
+```cpp
+//ODT(珂朵莉树)
+//处理区间查询后立即覆盖问题
+//修改/查询的一次为O(logn) 一次查询m个区间 覆盖后最多产生3个区间，并减少m左右个区间
+//一次操作的代价是随机变量di 那么q次操作的期望是 n乘一个小常数
+//所以期望是 均摊O(nlogn)
+```
 
 ```cpp
 class ODT{
@@ -1904,12 +2193,11 @@ class DKRTr{
 
 == 线段树二分
 
-// e.g 区间mex->
-
-// 把询问离线，然后从左往右扫，每次把当前数最后一次出现下标加入权值线段树，然后处理每个[li,r]
-
-// 询问每个最小的x lastidx<l 维护min树即可
-
+```cpp
+//e.g 区间mex->
+//把询问离线，然后从左往右扫，每次把当前数最后一次出现下标加入权值线段树，然后处理每个[li,r]
+//询问每个最小的x lastidx<l 维护min树即可
+```
 
 ```cpp
 #define lc(p) (p<<1)
@@ -2156,10 +2444,10 @@ Info operator+(const Info &a,const Info &b){
 
 == 线段树分治
 
-// 线段树分治：把区间信息(一般是时间信息)挂到线段树的点上 然后dfs线段树，维护一些东西
-
-// 挂信息的复杂度是logn的
-
+```cpp
+//线段树分治：把区间信息(一般是时间信息)挂到线段树的点上 然后dfs线段树，维护一些东西
+//挂信息的复杂度是logn的
+```
 
 ```cpp
 #define lc(x) (x<<1)
@@ -2276,14 +2564,25 @@ public:
 
 == 2-sat
 
-// 2-sat
-
-// 处理n个命题变元的赋值问题，形式上判断形如(p->q) and (!p->q)是否可永真赋值
-
-// 即判断是否存在一种赋值使得p->q和!p->q同时为真
-
-// 很显然若p->q,q->p均成立,则p,q在一个scc里
-
+```cpp
+//2-sat
+//处理n个命题变元的赋值问题，形式上判断形如(p->q) and (!p->q)是否可永真赋值
+//即判断是否存在一种赋值使得p->q和!p->q同时为真
+//很显然若p->q,q->p均成立,则p,q在一个scc里
+//2026/8/22 什么狗屎注释 看都看不懂
+//2-sat处理这样的东西：考虑n个命题变元：0表示此命题为假，1表示此命题为真
+//然后点就是这个命题，边表示由此命题可以推出另外一个命题(即前命题成立，后命题一定成立），注意此时逆否命题也要搞，即p->q和!q->!p都要搞
+//然后跑tarjan，若一个命题和它的逆命题在一个scc里，则无解，否则有解，并且可以求出一种解法
+//我们直接选拓扑序靠后的节点作为答案即可
+//常见一阶逻辑
+//1. a or b= !a->b and !b->a (a,b至少发生一个)
+//2. !(a and b) =a->!b and b->!a (a,b不能同时发生)
+//3. a->b = a->b and !b->!a (a发生，b一定发生)
+//4. a=b = a->b and b->a and !a->!b and !b->!a(a,b要么一起发生，要么一起不发生)
+//5. a!=b = !a->b and !b->a and a->!b and b->!a (a,b一个发生，一个不发生)
+//6. a=True = !a->a (a一定发生)
+//7. a=False = a->!a (a一定不发生)
+```
 
 ```cpp
 pair<vector<int>,int> tarjan(vector<vector<int>> &mp,int n)
@@ -2372,103 +2671,11 @@ pair<vector<int>,int> tarjan(vector<vector<int>> &mp,int n)
     else cout<<"IMPOSSIBLE"<<endl;
 ```
 
-== BCC（点双连通分量，tarjan）
-
-```cpp
-vector<vector<int>> tarjan(vector<vector<int>> &mp,int n)
-{
-    //点双连通分量：无割点，且任意两点间至少有两条路径
-    vector<int> low(n+1,-1),dfn(n+1,-1);
-    //low:从当前点出发能到达的最早时间戳
-    //dfn:当前点的时间戳
-    vector<vector<int>> bccs;
-    stack<int> st;
-    int cnt=0;
-    auto dfs=[&](auto dfs,int u,int fa)->void{
-        int ch=0; //儿子数
-        dfn[u]=low[u]=++cnt;
-        st.push(u);
-        for(auto v:mp[u])
-        {
-            if(dfn[v]==-1)//case1:未访问
-            {
-                ch++;
-                dfs(dfs,v,u);
-                low[u]=min(low[u],low[v]);//更新low[u]
-                if((fa==-1&&ch>1)||(fa!=-1&&low[v]>=dfn[u]))//是割点,v以及他的被处理过的子树是一个bcc
-                {
-                    vector<int> bcc;
-                    while(1)
-                    {
-                        int x=st.top();st.pop();
-                        bcc.push_back(x);
-                        if(x==v)break;//处理到v
-                    }
-                    bcc.push_back(u);//把割点也加入bcc:割点有可能在多个bcc中
-                    bccs.push_back(bcc);
-                }
-            }
-            else if(v!=fa)//case2:已访问且不是父节点
-            {
-                low[u]=min(low[u],dfn[v]);//更新low[u]
-            }
-        }
-        // if(fa==-1&&ch==0) {
-        //  bccs.push_back({u});
-        // }
-    };
-    for(int i=1;i<=n;i++)
-    {
-        if(dfn[i]==-1)
-        {
-            dfs(dfs,i,-1);
-            //处理剩下的bcc
-            vector<int> bcc;
-            while(!st.empty())
-            {
-                int x=st.top();st.pop();
-                bcc.push_back(x);
-            }
-            if(!bcc.empty()) bccs.push_back(bcc);
-        }
-    }
-    return bccs;
-}
-//无向图中割点：删除该点后，图的bcc数增加
-//一个图中割点的判断
-//1.对于某个顶点 u，如果存在至少一个顶点 v（u 的儿子），使得low[v]>=dfn[u] ，即只能回到祖先（到不了dfn更早的点），那么 u 点为割点。
-//2.对于搜索的起始点，如果它的儿子数大于等于 2，那么它就是割点。
-```
-
-#text(size: 8pt, fill: gray)[用法示例:]
-
-```cpp
-    int n,m;cin>>n>>m;
-    vector<vector<int>> mp(n+1);
-    vector<int> val(n+1);
-    for(int i=0;i<m;i++)
-    {
-        int u,v;cin>>u>>v;
-        mp[u].push_back(v);
-        mp[v].push_back(u);
-    }
-    vector<vector<int>> bccs=tarjan(mp,n);
-    cout<<bccs.size()<<endl;
-    for(auto bcc: bccs)
-    {
-        cout<<bcc.size()<<' ';
-        for(auto x: bcc)
-        {
-            cout<<x<<" ";
-        }
-        cout<<endl;
-    }
-```
-
 == dfs&bfs
 
-// preview:2024.12.29 23:01
-
+```cpp
+//preview:2024.12.29 23:01
+```
 
 ```cpp
 vector <int> edge[100000+5];
@@ -2561,40 +2768,25 @@ int bfs(int x)
 
 == DSU on tree(树上启发式合并)
 
-// 树上启发式合并(dsu on tree)
-
-// 时间复杂度O(nlogn)
-
-// 考虑将树上的问题转化为集合合并信息的问题
-
-// 想到子树，就想到dsu on tree
-
-// 考虑把小集合合并到大集合里，这样小集合的大小至少变成原来的两倍，这样合并的次数就变少了
-
-// 当然可以不用dsu on tree 来暴力合并，不过要一些数据结构支持/时空复杂度会多一个log
-
-// 这边加上-撤销贡献的操作是为了保证空间复杂度
-
-// 同时保证了此时s数组是空的，所以不会影响后续的合并操作
-
-// 注意：这里撤销贡献的操作是必须的，如果不撤销贡献，空间复杂度会退化到O(n^2)
-
-// 考虑时间复杂度证明
-
-// 考虑一个节点被作为轻儿子做出贡献的次数
-
-// 实际上就转化为从该节点到根节点路径上的轻边数量
-
-// why?路径上有轻边意味着该节点作为轻儿子的子树被合并到该节点上
-
-// 撤销操作和合并操作是互反的
-
-// 所以轻边数量就是该节点被作为轻儿子做出贡献的次数
-
-// 根据HLD的结论：该节点到根节点路径上的轻边数量<logn
-
-// 所以时间复杂度是O(nlogn),Q.E.D
-
+```cpp
+//树上启发式合并(dsu on tree)
+//时间复杂度O(nlogn)
+//考虑将树上的问题转化为集合合并信息的问题
+//想到子树，就想到dsu on tree
+//考虑把小集合合并到大集合里，这样小集合的大小至少变成原来的两倍，这样合并的次数就变少了
+//当然可以不用dsu on tree 来暴力合并，不过要一些数据结构支持/时空复杂度会多一个log
+//这边加上-撤销贡献的操作是为了保证空间复杂度
+//同时保证了此时s数组是空的，所以不会影响后续的合并操作
+//注意：这里撤销贡献的操作是必须的，如果不撤销贡献，空间复杂度会退化到O(n^2)
+//考虑时间复杂度证明
+//考虑一个节点被作为轻儿子做出贡献的次数
+//实际上就转化为从该节点到根节点路径上的轻边数量
+//why?路径上有轻边意味着该节点作为轻儿子的子树被合并到该节点上
+//撤销操作和合并操作是互反的
+//所以轻边数量就是该节点被作为轻儿子做出贡献的次数
+//根据HLD的结论：该节点到根节点路径上的轻边数量<logn
+//所以时间复杂度是O(nlogn),Q.E.D
+```
 
 #text(size: 8pt, fill: gray)[用法示例:]
 
@@ -2663,7 +2855,7 @@ int bfs(int x)
     }
 ```
 
-== EDCC (边双联通分量，tarjan）
+== eDCC (边双联通分量，tarjan）
 
 ```cpp
 vector<vector<int>> tarjan(vector<vector<pair<int,int>>> &mp,int n)
@@ -2747,14 +2939,12 @@ vector<vector<int>> tarjan(vector<vector<pair<int,int>>> &mp,int n)
 
 == johnson最短路
 
-// johnson全源最短路算法：O(nmlogm)
-
-// 重新标记边权后,u-v两点的任意路径一定有hu-hv项，最短路不变
-
-// 由于三角形不等式，所以重新标记边权，边权一定非负
-
-// 所以重新标记边权后，可以使用Dijkstra算法求最短路
-
+```cpp
+//johnson全源最短路算法：O(nmlogm)
+//重新标记边权后,u-v两点的任意路径一定有hu-hv项，最短路不变
+//由于三角形不等式，所以重新标记边权，边权一定非负
+//所以重新标记边权后，可以使用Dijkstra算法求最短路
+```
 
 ```cpp
 #define int long long
@@ -3366,6 +3556,16 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
 == ShortestPath（dijkstra）
 
 ```cpp
+/*
+朴素dijk核心步骤
+初始化：dis 数组全设为无穷大，dis[S] = 0，vis 数组全为 0。
+迭代 $V$ 次（外层循环）：找最小值：遍历所有节点 $1 \dots V$，在所有 vis[i] == 0 的点中，找到 dis[i] 最小的节点 $u$。
+标记：将 $u$ 标记为已确定最短路，即 vis[u] = 1。
+松弛：遍历 $u$ 的所有出边（如果是邻接矩阵，则遍历所有节点 $v$），若 dis[v] > dis[u] + w(u, v)，则更新 dis[v]。
+*/
+```
+
+```cpp
 int read()
 {
     int s=0,f=1;
@@ -3447,12 +3647,11 @@ vector<int> dijkstra(int n,vector<vector<pair<int,int>>>mp,int s)
 
 == ShortestPath（Floyed）
 
-// Floyed 算法
-
-// 处理任意两点之间的最短路径(无负环）
-
-// 时间复杂度O(n^3)
-
+```cpp
+//Floyed 算法
+//处理任意两点之间的最短路径(无负环）
+//时间复杂度O(n^3)
+```
 
 ```cpp
 const int MAXN=1e4;
@@ -3514,54 +3713,181 @@ int dp[MAXN][MAXN];
     int T_end=clock();
 ```
 
+== vBCC（点双连通分量，tarjan.点划分）
+
+```cpp
+vector<vector<int>> tarjan(vector<vector<int>> &mp,int n)
+{
+    //点双连通分量：无割点，且任意两点间至少有两条路径
+    vector<int> low(n+1,-1),dfn(n+1,-1);
+    //low:从当前点出发能到达的最早时间戳
+    //dfn:当前点的时间戳
+    vector<vector<int>> bccs;
+    stack<int> st;
+    int cnt=0;
+    auto dfs=[&](auto dfs,int u,int fa)->void{
+        int ch=0; //儿子数
+        dfn[u]=low[u]=++cnt;
+        st.push(u);
+        for(auto v:mp[u])
+        {
+            if(dfn[v]==-1)//case1:未访问
+            {
+                ch++;
+                dfs(dfs,v,u);
+                low[u]=min(low[u],low[v]);//更新low[u]
+                if((fa==-1&&ch>1)||(fa!=-1&&low[v]>=dfn[u]))//是割点,v以及他的被处理过的子树是一个bcc
+                {
+                    vector<int> bcc;
+                    while(1)
+                    {
+                        int x=st.top();st.pop();
+                        bcc.push_back(x);
+                        if(x==v)break;//处理到v
+                    }
+                    bcc.push_back(u);//把割点也加入bcc:割点有可能在多个bcc中
+                    bccs.push_back(bcc);
+                }
+            }
+            else if(v!=fa)//case2:已访问且不是父节点
+            {
+                low[u]=min(low[u],dfn[v]);//更新low[u]
+            }
+        }
+        // if(fa==-1&&ch==0) {
+        //  bccs.push_back({u});
+        // }
+    };
+    for(int i=1;i<=n;i++)
+    {
+        if(dfn[i]==-1)
+        {
+            dfs(dfs,i,-1);
+            //处理剩下的bcc
+            vector<int> bcc;
+            while(!st.empty())
+            {
+                int x=st.top();st.pop();
+                bcc.push_back(x);
+            }
+            if(!bcc.empty()) bccs.push_back(bcc);
+        }
+    }
+    return bccs;
+}
+//无向图中割点：删除该点后，图的bcc数增加
+//一个图中割点的判断
+//1.对于某个顶点 u，如果存在至少一个顶点 v（u 的儿子），使得low[v]>=dfn[u] ，即只能回到祖先（到不了dfn更早的点），那么 u 点为割点。
+//2.对于搜索的起始点，如果它的儿子数大于等于 2，那么它就是割点。
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m;cin>>n>>m;
+    vector<vector<int>> mp(n+1);
+    vector<int> val(n+1);
+    for(int i=0;i<m;i++)
+    {
+        int u,v;cin>>u>>v;
+        mp[u].push_back(v);
+        mp[v].push_back(u);
+    }
+    vector<vector<int>> bccs=tarjan(mp,n);
+    cout<<bccs.size()<<endl;
+    for(auto bcc: bccs)
+    {
+        cout<<bcc.size()<<' ';
+        for(auto x: bcc)
+        {
+            cout<<x<<" ";
+        }
+        cout<<endl;
+    }
+```
+
+== vBCC（点双连通分量，tarjan.边划分）
+
+```cpp
+vector<vector<int>> tarjan(const vector<vector<array<int,2>>>&g,int n){
+    vector<int> dfn(n+1,0),low(n+1,0);
+    vector<vector<int>> bccs;
+    stack<int> st;int cnt=0;
+    auto dfs=[&](auto&& dfs,int u,int in)->void{
+        dfn[u]=low[u]=++cnt;
+        for(auto[v,id]:g[u]){
+            if(!dfn[v]){
+                st.push(id);
+                dfs(dfs,v,id);
+                low[u]=min(low[u],low[v]);
+                if(low[v]>=dfn[u]){
+                    vector<int> bcc;
+                    while(true){
+                        int e=st.top();st.pop();
+                        bcc.push_back(e);
+                        if(e==id)break;
+                    }
+                    bccs.push_back(bcc);
+                }
+            }else if(id!=in&&dfn[v]<dfn[u]){
+                st.push(id);
+                low[u]=min(low[u],dfn[v]);
+            }
+        }
+    };
+    for(int i=1;i<=n;i++){
+        if(!dfn[i]) dfs(dfs,i,0);
+    }
+    return bccs;
+}
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m;cin>>n>>m;
+    vector<vector<array<int,2>>> g(n+1);
+    for(int i=1;i<=m;i++){
+        int u,v;cin>>u>>v;
+        g[u].push_back({v,i});
+        g[v].push_back({u,i});
+    }
+    auto bccs=tarjan(g,n);
+    cout<<bccs.size()<<"\n";
+    for(const auto&bcc:bccs){
+        cout<<bcc.size()<<" ";
+        for(int id:bcc)cout<<id<<" ";
+        cout<<"\n";
+    }
+```
+
 == 二分图最大匹配
 
-// 二分图最大匹配 最大流O(n^1/2*m)
-
-// 二分图的划分可以用二分图染色进行
-
-// 二分图最大匹配：设有若干男生,若干女生,若干配对关系,求最大匹配,即求出最多的配对关系
-
-// 二分图最小点覆盖：在一张无向图中选择最少的顶点，满足每条边至少有一个端点被选
-
-// ->二分图中，最小点覆盖中的顶点数量等于最大匹配中的边数量。
-
-// 从网络流的角度看，最小点覆盖问题就是最小割问题：选择左部点，相当于切割它与源点的连边；选择右部点，相当于切割它与汇点的连边。
-
-// why?因为一条边被割掉，意味着原二分图上这个点的配对点无法跑一条流->最小割
-
-// [引] 最小割：把图分为s集和t集 s->t的边为割边，割边的最小权值和为最小割
-
-// 最大独立集问题：在一张无向图中选择最多的顶点，满足两两之间互不相邻。
-
-// ->二分图中，最大独立集中的顶点数量等于n-最小点覆盖中的顶点数量
-
-// [引理1] 图G(V,E)中v的子集s为点覆盖<=>v/s为独立集
-
-// 证明：s为点覆盖=>v/s为独立集 假设v/s不是独立集，则存在v1,v2∈v/s，v1,v2相邻，但是v1-v2这条边的两个端点都不在s中 ->矛盾
-
-// v/s为独立集=>s为点覆盖 要证 对所有u-v∈E，至少有一个端点在s中
-
-// 假设u-v都不在s中，则u,v都在v/s中 但此时v/s不是独立集 ->矛盾
-
-// [推论1] 图G(V,E)中v的子集s为最大点覆盖<=>v/s为最小独立集
-
-// 有向无环图最小路径覆盖：在一张有向图中，选择最少数量的简单路径，使得所有顶点都恰好出现在一条路径中。
-
-// ->有向无环图的最小路径覆盖数等于顶点数减去最大匹配数
-
-// 通过dag构造的二分图如下：
-
-// 将每个顶点拆成两个顶点，v_in v_out
-
-// 对于原图中的每条有向边u->v，在二分图中连边v_in-u_out
-
-// 此证明为构造性的：二分图的每个匹配对应这dag中不交的各个路径
-
-// 考虑最极端的平凡图 n个点 路径是n条 增加一个匹配->路径数减少1
-
-// Q.E.D
-
+```cpp
+//二分图最大匹配 最大流O(n^1/2*m)
+//二分图的划分可以用二分图染色进行
+//二分图最大匹配：设有若干男生,若干女生,若干配对关系,求最大匹配,即求出最多的配对关系
+//二分图最小点覆盖：在一张无向图中选择最少的顶点，满足每条边至少有一个端点被选
+//->二分图中，最小点覆盖中的顶点数量等于最大匹配中的边数量。
+//从网络流的角度看，最小点覆盖问题就是最小割问题：选择左部点，相当于切割它与源点的连边；选择右部点，相当于切割它与汇点的连边。
+//why?因为一条边被割掉，意味着原二分图上这个点的配对点无法跑一条流->最小割
+//[引] 最小割：把图分为s集和t集 s->t的边为割边，割边的最小权值和为最小割
+//最大独立集问题：在一张无向图中选择最多的顶点，满足两两之间互不相邻。
+//->二分图中，最大独立集中的顶点数量等于n-最小点覆盖中的顶点数量
+//[引理1] 图G(V,E)中v的子集s为点覆盖<=>v/s为独立集
+//证明：s为点覆盖=>v/s为独立集 假设v/s不是独立集，则存在v1,v2∈v/s，v1,v2相邻，但是v1-v2这条边的两个端点都不在s中 ->矛盾
+//v/s为独立集=>s为点覆盖 要证 对所有u-v∈E，至少有一个端点在s中
+//假设u-v都不在s中，则u,v都在v/s中 但此时v/s不是独立集 ->矛盾
+//[推论1] 图G(V,E)中v的子集s为最大点覆盖<=>v/s为最小独立集
+//有向无环图最小路径覆盖：在一张有向图中，选择最少数量的简单路径，使得所有顶点都恰好出现在一条路径中。
+//->有向无环图的最小路径覆盖数等于顶点数减去最大匹配数
+//通过dag构造的二分图如下：
+//将每个顶点拆成两个顶点，v_in v_out
+//对于原图中的每条有向边u->v，在二分图中连边v_in-u_out
+//此证明为构造性的：二分图的每个匹配对应这dag中不交的各个路径
+//考虑最极端的平凡图 n个点 路径是n条 增加一个匹配->路径数减少1
+//Q.E.D
+```
 
 ```cpp
 class maxflow{
@@ -3856,56 +4182,33 @@ int dij(vector<vector<pair<int,int>>>& mp,int s,int n,int t,int kk)
 
 == 差分约束
 
-// 对一个差分约束系统，判断是否存在一组解，使得所有约束条件都成立。
-
-// ex. x1-x2<=3
-
-// x2-x3<=-2
-
-// x1-x3<=1
-
-// 将xn看作超级源点（到所有点的权值为w=0）到n的最短路
-
-// 那么第一个式子的意义就是x1<=x2+3,0到1的最短路<=3+0到2的最短路
-
-// 在图上的意义就是建2->1的边权为3的边，0->1,0->2的边权为0的边
-
-// 0->1,0->2的边权为0的边也是添加了以下条件
-
-// x1-x0<=0
-
-// x2-x0<=0
-
-// x0=0
-
-// 那么整个系统就转化为了一张图
-
-// 求xn即求0到n的最短路，如果存在负环，则无解，否则有解
-
-// 负环还原的形式为
-
-// x1-x2<=-1...1
-
-// x2-x3<=-4...2
-
-// x3-x1<=-5...3
-
-// 1+2+3->0<=-10,不成立
-
-// 还有结论，设定w即求x1,x2..xn<=w的最大解
-
-// 如果差分约束系统换换不等号，求最长路，spfa改一下即可
-
-// 结论形式证明
-
-// 假设X0是定死的；X1到Xn在满足所有约束的情况下可以取到的最大值分别为M1、M2、……、Mn（当然我们不知道它们的值是多少）；解出的源点到每个点的最短路径长度为D1、D2、……、Dn。
-
-// 基本的Bellman-Ford算法是一开始初始化D1到Dn都是无穷大。然后检查所有的边对应的三角形不等式，一但发现有不满足三角形不等式的情况，则更新对应的D值。最后求出来的D1到Dn就是源点到每个点的最短路径长度。
-
-// 如果我们一开始初始化D1、D2、……、Dn的值分别为M1、M2、……、Mn，则由于它们全都满足三角形不等式（我们刚才已经假设M1到Mn是一组合法的解），则Bellman-Ford算法不会再更新任合D值，则最后得出的解就是M1、M2、……、Mn。
-
-// 好了，现在知道了，初始值无穷大时，算出来的是D1、D2、……、Dn；初始值比较小的时候算出来的则是M1、M2、……、Mn。大家用的是同样的算法，同样的计算过程，总不可能初始值大的算出来的结果反而小吧。所以D1、D2、……、Dn就是M1、M2、……、Mn。
-
+```cpp
+//对一个差分约束系统，判断是否存在一组解，使得所有约束条件都成立。
+//ex. x1-x2<=3
+//    x2-x3<=-2
+//    x1-x3<=1
+//将xn看作超级源点（到所有点的权值为w=0）到n的最短路
+//那么第一个式子的意义就是x1<=x2+3,0到1的最短路<=3+0到2的最短路
+//在图上的意义就是建2->1的边权为3的边，0->1,0->2的边权为0的边
+//0->1,0->2的边权为0的边也是添加了以下条件
+//x1-x0<=0
+//x2-x0<=0
+//x0=0
+//那么整个系统就转化为了一张图
+//求xn即求0到n的最短路，如果存在负环，则无解，否则有解
+//负环还原的形式为
+//x1-x2<=-1...1
+//x2-x3<=-4...2
+//x3-x1<=-5...3
+//1+2+3->0<=-10,不成立
+//还有结论，设定w即求x1,x2..xn<=w的最大解
+//如果差分约束系统换换不等号，求最长路，spfa改一下即可
+//结论形式证明
+//假设X0是定死的；X1到Xn在满足所有约束的情况下可以取到的最大值分别为M1、M2、……、Mn（当然我们不知道它们的值是多少）；解出的源点到每个点的最短路径长度为D1、D2、……、Dn。
+//基本的Bellman-Ford算法是一开始初始化D1到Dn都是无穷大。然后检查所有的边对应的三角形不等式，一但发现有不满足三角形不等式的情况，则更新对应的D值。最后求出来的D1到Dn就是源点到每个点的最短路径长度。
+//如果我们一开始初始化D1、D2、……、Dn的值分别为M1、M2、……、Mn，则由于它们全都满足三角形不等式（我们刚才已经假设M1到Mn是一组合法的解），则Bellman-Ford算法不会再更新任合D值，则最后得出的解就是M1、M2、……、Mn。
+//好了，现在知道了，初始值无穷大时，算出来的是D1、D2、……、Dn；初始值比较小的时候算出来的则是M1、M2、……、Mn。大家用的是同样的算法，同样的计算过程，总不可能初始值大的算出来的结果反而小吧。所以D1、D2、……、Dn就是M1、M2、……、Mn。
+```
 
 ```cpp
 int flag=0;
@@ -4002,12 +4305,11 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
 
 == 找环(topsort)
 
-// 无向图,跑完topsort后,度数>1的点一定在环上
-
-// 有向图只要把入度=0的入队,跑完topsort后,入度>0的点一定在环上
-
-// 同理topsort可以用来判环
-
+```cpp
+//无向图,跑完topsort后,度数>1的点一定在环上
+//有向图只要把入度=0的入队,跑完topsort后,入度>0的点一定在环上
+//同理topsort可以用来判环
+```
 
 #text(size: 8pt, fill: gray)[用法示例:]
 
@@ -4115,20 +4417,58 @@ inline void write(int x)
     write(res),putchar('\n');
 ```
 
+== 无向图三元环计数
+
+```cpp
+//无向图三元环计数 O(msqrt(m))
+//由 无向图把边定向：度数小的指向度数大的点，然后每个点的出度<=sqrt(2m) 保证
+//可用根号分治证明
+//至于不重不漏的原因，某个三元环定向后一定是算法所示的形态，按度数最小的分类就是对的
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,m;cin>>n>>m;
+    vector<vector<int>> mp(n+1);
+    vector<int> deg(n+1,0),vis(n+1,0);
+    for(int i=0;i<m;i++){
+        int u,v;cin>>u>>v;
+        mp[u].push_back(v);
+        mp[v].push_back(u);
+        deg[u]++,deg[v]++;
+    }
+    vector<vector<int>> g(n+1);
+    for(int u=1;u<=n;u++){
+        for(int v:mp[u]){
+            if(deg[u]>deg[v]||(deg[u]==deg[v]&&u<v)){
+                g[u].push_back(v);
+            }
+        }
+    }
+    int ans=0;
+    for(int u=1;u<=n;u++){
+        for(auto v:mp[u]) vis[v]=1;
+        for(auto v:g[u]){
+            for(auto w:g[v]){
+                if(vis[w]) ans++;
+            }
+        }
+        for(auto v:mp[u]) vis[v]=0;
+    }
+    cout<<ans<<endl;
+```
+
 == 最大流(dinic)
 
-// 最大流，解决从有向图源点到汇点的最大流量问题(假定源点流量无限)
-
-// dinic算法，时间复杂度O(n^2*m)
-
-// 增广路：是从源点到汇点的路径，其上所有边的残余容量均大于0
-
-// 初级思路：贪心选择所有增广路，然后更新边权，引入反向边进行反悔贪心
-
-// 基本思路：每次bfs把图变成一个带层数的DAG(限制dfs深度)
-
-// 然后找到极大增广流量，更新图，重复上述过程
-
+```cpp
+//最大流，解决从有向图源点到汇点的最大流量问题(假定源点流量无限)
+//dinic算法，时间复杂度O(n^2*m)
+//增广路：是从源点到汇点的路径，其上所有边的残余容量均大于0
+//初级思路：贪心选择所有增广路，然后更新边权，引入反向边进行反悔贪心
+//基本思路：每次bfs把图变成一个带层数的DAG(限制dfs深度)
+//然后找到极大增广流量，更新图，重复上述过程
+```
 
 ```cpp
 #define int long long
@@ -4348,10 +4688,10 @@ public:
 
 == 最小斯坦纳树
 
-// 最小斯坦纳树 给定一个图 和k个关键点 求一个包含所有关键点的最小生成树(可以用其他点)
-
-// 时间复杂度(n*3^k+2^k*mlogm)
-
+```cpp
+//最小斯坦纳树 给定一个图 和k个关键点 求一个包含所有关键点的最小生成树(可以用其他点)
+//时间复杂度(n*3^k+2^k*mlogm)
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -4408,8 +4748,9 @@ using namespace std;
 
 == 最小生成树（boruvka,标）
 
-// 比较标准的boruvka算法
-
+```cpp
+//比较标准的boruvka算法
+```
 
 ```cpp
 using ull=unsigned long long;
@@ -4537,16 +4878,13 @@ class DSU{
 
 == 最小生成树（boruvka）
 
-// boruvka算法
-
-// 考虑对多个联通块找最短的出边，然后合并，每次合并能使联通块个数/2，
-
-// 所以时间复杂度是O(nlogn*p),其中p是每次找出边的复杂度
-
-// 处理完全图好
-
-// 此处是对每一轮边合并边找，标准的写法是对每一轮先找出所有边，然后合并边（这个不容易有错）
-
+```cpp
+//boruvka算法
+//考虑对多个联通块找最短的出边，然后合并，每次合并能使联通块个数/2，
+//所以时间复杂度是O(nlogn*p),其中p是每次找出边的复杂度
+//处理完全图好
+//此处是对每一轮边合并边找，标准的写法是对每一轮先找出所有边，然后合并边（这个不容易有错）
+```
 
 ```cpp
 class DSU{
@@ -4824,14 +5162,12 @@ vector<int> prim(vector<vector<pair<int,int>>> &mp,int s,int n)
 
 == 最小费用最大流(dinic)
 
-// 最小费用最大流，O(nmf)
-
-// 基本思路：找到最短增广路，然后增广，直到找不到为止
-
-// 最短增广路：spfa(slf优化)，每次找到最短路径，然后更新，直到找不到为止
-
-// 增广：用dinic思路在最短路上多路增广
-
+```cpp
+//最小费用最大流，O(nmf)
+//基本思路：找到最短增广路，然后增广，直到找不到为止
+//最短增广路：spfa(slf优化)，每次找到最短路径，然后更新，直到找不到为止
+//增广：用dinic思路在最短路上多路增广
+```
 
 ```cpp
 #define int long long
@@ -4934,22 +5270,16 @@ public:
 
 == 最小费用最大流(dinic,浮点)
 
-// 最小费用最大流，O(nmf)
-
-// 基本思路：找到最短增广路，然后增广，直到找不到为止
-
-// 最短增广路：spfa(slf优化)，每次找到最短路径，然后更新，直到找不到为止
-
-// 增广：用dinic思路在最短路上多路增广
-
-// 浮点数比较
-
-// a==b->abs(a-b)<1e-10
-
-// a<b->a+eps<b
-
-// a>b->a>b+eps
-
+```cpp
+//最小费用最大流，O(nmf)
+//基本思路：找到最短增广路，然后增广，直到找不到为止
+//最短增广路：spfa(slf优化)，每次找到最短路径，然后更新，直到找不到为止
+//增广：用dinic思路在最短路上多路增广
+//浮点数比较
+//a==b->abs(a-b)<1e-10
+//a<b->a+eps<b
+//a>b->a>b+eps
+```
 
 ```cpp
 #define int long long
@@ -5079,10 +5409,10 @@ public:
 
 == 最小费用最大流(原始对偶)
 
-// Primal-Dual 原始对偶算法,O(F*E*logE)
-
-// 利用johnson最短路，将每条边的权值加上一个常数，使得每条边的权值非负，从而可以使用dijkstra算法
-
+```cpp
+//Primal-Dual 原始对偶算法,O(F*E*logE)
+//利用johnson最短路，将每条边的权值加上一个常数，使得每条边的权值非负，从而可以使用dijkstra算法
+```
 
 ```cpp
 #define int long long
@@ -5436,10 +5766,10 @@ int lca(int u,int v)
 
 == 最近公共祖先（LCA）(欧拉序&dfs序(O(1)))
 
-// O(nlogn)-O(1) lca 通过拍成欧拉序|dfs序然后st表得到
-
-// dfs序常数更小
-
+```cpp
+//O(nlogn)-O(1) lca 通过拍成欧拉序|dfs序然后st表得到
+//dfs序常数更小
+```
 
 ```cpp
 class StLca{
@@ -6206,12 +6536,11 @@ class HierholzerN{
 
 == 点分治
 
-// 淀粉质：把树上路径问题转化为子树分治问题
-
-// 把树按重心划分，那么树高（或树的大小）不超过n/2，递归深度不超过logn(最坏：退化为链），于是可以暴力处理子树
-
-// 根据实现方式的不同，时间复杂度可以做到O(nlogn)或O(nlog^2n)
-
+```cpp
+//淀粉质：把树上路径问题转化为子树分治问题
+//把树按重心划分，那么树高（或树的大小）不超过n/2，递归深度不超过logn(最坏：退化为链），于是可以暴力处理子树
+//根据实现方式的不同，时间复杂度可以做到O(nlogn)或O(nlog^2n)
+```
 
 #text(size: 8pt, fill: gray)[用法示例:]
 
@@ -6297,10 +6626,10 @@ class HierholzerN{
 
 == 线段树优化建图
 
-// 线段树优化建图：边数爆炸的时候可以用
-
-// 要求：存在点->区间/区间->点/区间->区间的关系
-
+```cpp
+//线段树优化建图：边数爆炸的时候可以用
+//要求：存在点->区间/区间->点/区间->区间的关系
+```
 
 ```cpp
 class SegGraph{
@@ -6437,24 +6766,17 @@ public:
 
 == 虚树(可拓展版)
 
-// 虚树，处理q次询问，每次询问给出k个关键点，答案只跟关键点有关的问题
-
-// 构建虚树：
-
-// 1.将关键点按dfn排序
-
-// 2.相邻的关键点的lca加入虚树
-
-// why?虚树的定义是关键点的集合和其两两lca构成的树
-
-// 考虑任意两个关键点，其lca一定把这两个关键点分成两个分支，
-
-// 而根据dfn的连续性，一定有某个相邻的关键点的lca是这个lca
-
-// Q.E.D
-
-// 3.按父子关系构建虚树
-
+```cpp
+//虚树，处理q次询问，每次询问给出k个关键点，答案只跟关键点有关的问题
+//构建虚树：
+//1.将关键点按dfn排序
+//2.相邻的关键点的lca加入虚树
+//why?虚树的定义是关键点的集合和其两两lca构成的树
+//考虑任意两个关键点，其lca一定把这两个关键点分成两个分支，
+//而根据dfn的连续性，一定有某个相邻的关键点的lca是这个lca
+//Q.E.D
+//3.按父子关系构建虚树
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -6571,26 +6893,18 @@ class vtree{
 
 == 虚树(带边权)
 
-// 虚树，处理q次询问，每次询问给出k个关键点，答案只跟关键点有关的问题
-
-// 构建虚树：
-
-// 1.将关键点按dfn排序
-
-// 2.相邻的关键点的lca加入虚树
-
-// why?虚树的定义是关键点的集合和其两两lca构成的树
-
-// 考虑任意两个关键点，其lca一定把这两个关键点分成两个分支，
-
-// 而根据dfn的连续性，一定有某个相邻的关键点的lca是这个lca
-
-// Q.E.D
-
-// 3.按父子关系构建虚树
-
-// 时间复杂度：O(nlogn)
-
+```cpp
+//虚树，处理q次询问，每次询问给出k个关键点，答案只跟关键点有关的问题
+//构建虚树：
+//1.将关键点按dfn排序
+//2.相邻的关键点的lca加入虚树
+//why?虚树的定义是关键点的集合和其两两lca构成的树
+//考虑任意两个关键点，其lca一定把这两个关键点分成两个分支，
+//而根据dfn的连续性，一定有某个相邻的关键点的lca是这个lca
+//Q.E.D
+//3.按父子关系构建虚树
+//时间复杂度：O(nlogn)
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -6714,28 +7028,19 @@ class vtree{
 
 == AC自动机(dp版)
 
-// AC自动机 处理多模式串匹配问题
-
-// 具体来说 就是给定多个模式串和一个文本串
-
-// 求文本串中有多少个模式串的出现
-
-// AC自动机是Trie树和KMP的结合
-
-// 时间复杂度构建：O(n+26n) n是模式串总长
-
-// 时间复杂度匹配：O(m) m是文本串长度
-
-// 时间复杂度查询：O(m*p) m是文本串长度 p是一个串的后缀串的数量
-
-// -->查询可以通过fail树上做树dp/拓扑排序达到O(n+m)的时间复杂度
-
-// ac自动机的结构其实就是一个 trans 函数，而构建好这个函数后，在匹配字符串的过程中，我们会舍弃部分前缀达到最低限度的匹配。
-
-// 本质上就是一个状态，接受一个输入，转移到另一个状态，
-
-// 注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
-
+```cpp
+//AC自动机 处理多模式串匹配问题
+//具体来说 就是给定多个模式串和一个文本串
+//求文本串中有多少个模式串的出现
+//AC自动机是Trie树和KMP的结合
+//时间复杂度构建：O(n+26n) n是模式串总长
+//时间复杂度匹配：O(m) m是文本串长度
+//时间复杂度查询：O(m*p) m是文本串长度 p是一个串的后缀串的数量
+//-->查询可以通过fail树上做树dp/拓扑排序达到O(n+m)的时间复杂度
+//ac自动机的结构其实就是一个 trans 函数，而构建好这个函数后，在匹配字符串的过程中，我们会舍弃部分前缀达到最低限度的匹配。
+//本质上就是一个状态，接受一个输入，转移到另一个状态，
+//注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
+```
 
 ```cpp
 class AC{
@@ -6834,30 +7139,20 @@ class AC{
 
 == AC自动机(可拓展版)
 
-// AC自动机 处理多模式串匹配问题
-
-// 具体来说 就是给定多个模式串和一个文本串
-
-// 求文本串中有多少个模式串的出现
-
-// AC自动机是Trie树和KMP的结合
-
-// 时间复杂度构建：O(n+26n) n是模式串总长
-
-// 时间复杂度匹配：O(m) m是文本串长度
-
-// 时间复杂度查询：O(m*p) m是文本串长度 p是一个串的后缀串的数量
-
-// -->查询可以通过fail树上做树dp/拓扑排序达到O(n+m)的时间复杂度
-
-// ac自动机的结构其实就是一个 trans 函数，而构建好这个函数后，在匹配字符串的过程中，我们会舍弃部分前缀达到最低限度的匹配。
-
-// 本质上就是一个状态，接受一个输入，转移到另一个状态，
-
-// 注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
-
-// 注意匹配到一个点其实就是匹配到这个点及其fail链上所有串。
-
+```cpp
+//AC自动机 处理多模式串匹配问题
+//具体来说 就是给定多个模式串和一个文本串
+//求文本串中有多少个模式串的出现
+//AC自动机是Trie树和KMP的结合
+//时间复杂度构建：O(n+26n) n是模式串总长
+//时间复杂度匹配：O(m) m是文本串长度
+//时间复杂度查询：O(m*p) m是文本串长度 p是一个串的后缀串的数量
+//-->查询可以通过fail树上做树dp/拓扑排序达到O(n+m)的时间复杂度
+//ac自动机的结构其实就是一个 trans 函数，而构建好这个函数后，在匹配字符串的过程中，我们会舍弃部分前缀达到最低限度的匹配。
+//本质上就是一个状态，接受一个输入，转移到另一个状态，
+//注意到fail链构成的图是一个DAG，所以fail链的长度是O(n)的，所以fail指针的构建是O(n)的。
+//注意匹配到一个点其实就是匹配到这个点及其fail链上所有串。
+```
 
 ```cpp
 class AC{
@@ -6921,16 +7216,13 @@ class AC{
 
 == exKMP
 
-// exkmp
-
-// z[i]表示s[i,len]与s[1,len]的最长公共前缀长度
-
-// 加速盒 右端点最靠右的LCP区间
-
-// p[i]表示s2[i,len]与s[1,len]的最长公共前缀长度
-
-// o(n)
-
+```cpp
+//exkmp
+//z[i]表示s[i,len]与s[1,len]的最长公共前缀长度
+//加速盒 右端点最靠右的LCP区间
+//p[i]表示s2[i,len]与s[1,len]的最长公共前缀长度
+//o(n)
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -7030,8 +7322,9 @@ void kmp(string s,string key)
 
 == Manacher
 
-// Manacher算法 求最长回文子串长度 O(n)
-
+```cpp
+//Manacher算法 求最长回文子串长度 O(n)
+```
 
 ```cpp
 class Manacher{
@@ -7040,15 +7333,15 @@ class Manacher{
     vector<int> d;
     int k,n;
     Manacher(int n):d(2*n+5,0),s(2*n+5){}
-    void manacher(string str){
-        k=0,n=str.size();
-        str="x"+str;
+    void manacher(const string& str){
+        //str 1-base
+        k=0,n=str.size()-1;
         s[0]='$',s[++k]='#';
         for(int i=1;i<=n;i++){
             s[++k]=str[i],s[++k]='#';
         }
         d[1]=1;
-        for(int i=2,l,r=1;i<=k;i++){
+        for(int i=2,l=1,r=1;i<=k;i++){
             if(i<=r) d[i]=min(d[r-i+l],r-i+1);
             while(s[i+d[i]]==s[i-d[i]]) d[i]++;
             if(i+d[i]-1>r) l=i-d[i]+1,r=i+d[i]-1;
@@ -7557,10 +7850,69 @@ class SAM{
     cout<<mx<<endl;
 ```
 
+== 回文树(PAM,回文自动机)
+
+```cpp
+//PAM 处理回文串结构的数据结构，时间复杂度O(n),通过势能分析能做到,不表。
+```
+
+```cpp
+class PAM{
+    public:
+    vector<vector<int>> ch;
+    vector<int> fail,len,cnt;
+    int sz,last,idx; string s;
+    //PAM(回文树/回文自动机)
+    //是这样的东西 0:偶根,代表偶数长度的回文串 1:奇根,代表奇数长度的回文串
+    //一个点代表的回文串是 从他出发到根，又回到他的路径上的所有字符(若是奇数长度的回文串,与根节点相邻的边只走一次)
+    //fail:节点代表串的最长真回文后缀
+    //len:节点代表串的长度
+    //cnt:节点代表串的出现次数(需要bulid一次统计)
+    //编号>=2的点是真实节点
+    PAM(int maxn):ch(maxn+5,vector<int>(26,0)),
+    fail(maxn+5,0),len(maxn+5,0),cnt(maxn+5,0){
+        sz=1,last=0,idx=0;
+        fail[0]=1,fail[1]=1;
+        len[0]=0,len[1]=-1;
+        s="$";
+    }
+    //找到一个形如 s[i-len[x]-1]+x+s[i] 的回文串
+    int get_fail(int x,int i){
+        while(s[i]!=s[i-len[x]-1]) x=fail[x];
+        return x;
+    }
+    void insert(string str){
+        //str 0-based
+        for(auto x:str){
+            s+=x;idx++;
+            int c=x-'a',p=get_fail(last,idx);
+            //没有这样的转移边,新建节点
+            if(!ch[p][c]){
+                //此处可以算某个本质不同回文串的首次出现下标
+                //或者以该下标结尾的回文串的个数(即该节点对应的fail树的深度),开个num,用fail[u]更新即可
+                int u=++sz;
+                fail[u]=ch[get_fail(fail[p],idx)][c];
+                len[u]=len[p]+2,ch[p][c]=u;
+            }
+            last=ch[p][c],cnt[last]++;
+            //记录当前本质不同回文串的出现次数
+        }
+    }
+    //构建/合并fail树上的信息(如统计所有回文子串的真实出现频次)
+    void build(){
+        //拓扑序直接按节点编号倒序即可，因为sz越大的节点一定越晚建立，深度越大
+        for(int i=sz;i>=2;i--){
+            cnt[fail[i]]+=cnt[i];
+        }
+    }
+};
+```
+
 == 广义后缀自动机(GSAM)
 
-// GSAM:描述tire的子串性质。此处的子串不一定从根节点开始，从任意节点开始的子串都满足性质
-
+```cpp
+//GSAM:描述tire的子串性质。此处的子串不一定从根节点开始，从任意节点开始的子串都满足性质
+```
 
 ```cpp
 class Trie{
@@ -7700,6 +8052,8 @@ using ull=unsigned long long;
 using ui128=__uint128_t;
 using namespace std;
 class SHASH{
+    //特别注意:传入的字符串应该是>=0的 如果传入负数会导致hash值在模数外
+    //如果多开hash类 底数在外面生成。
     public:
         ull b;
         vector<ull> h,p;
@@ -7763,10 +8117,11 @@ class SHASH{
 
 == 数位dp(例题1,数位和)
 
-// 数位dp 计算[l,r]内所有数的数位和
-
-// dfs 形参总结
-
+```cpp
+//数位dp 计算[l,r]内所有数的数位和
+//dfs 形参总结
+//
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -8014,16 +8369,13 @@ namespace _EX_CRT{
 
 == (ex)CRT((扩展)中国剩余定理)(旧版)
 
-// exCRT 求解同余方程组
-
-// 形式：x≡a1(mod m1),x≡a2(mod m2),...,x≡ak(mod mk)
-
-// 其中m1,m2,...,mk互质(CRT)
-
-// 其中m1,m2,...,mk不互质(_exCRT)
-
-// 时间复杂度：O(nln(amax))
-
+```cpp
+//exCRT 求解同余方程组
+//形式：x≡a1(mod m1),x≡a2(mod m2),...,x≡ak(mod mk)
+//其中m1,m2,...,mk互质(CRT)
+//其中m1,m2,...,mk不互质(_exCRT)
+//时间复杂度：O(nln(amax))
+```
 
 ```cpp
 #define int __int128
@@ -8761,6 +9113,78 @@ struct SMC {
 using Z=SMC<mod>;
 ```
 
+== 拉格朗日插值
+
+```cpp
+const int mod=1e9+7;
+template <int MOD>
+struct SMC {
+    int val;
+    SMC(ll v=0) : val(v%MOD) { if (val<0) val+=MOD; }
+    SMC& operator+=(const SMC &r) { val+=r.val; if (val>=MOD) val-=MOD; return *this; }
+    SMC& operator-=(const SMC &r) { val-=r.val; if (val<0) val+=MOD; return *this; }
+    SMC& operator*=(const SMC &r) { val=1LL*val*r.val%MOD; return *this; }
+    SMC& operator/=(const SMC &r) { return *this*=r.inv(); }
+    friend SMC operator+(SMC a,const SMC &b) { return a+=b; }
+    friend SMC operator-(SMC a,const SMC &b) { return a-=b; }
+    friend SMC operator*(SMC a,const SMC &b) { return a*=b; }
+    friend SMC operator/(SMC a,const SMC &b) { return a/=b; }
+    SMC pow(ll k) const {
+        SMC res=1,a=*this;
+        for (;k;k>>=1,a*=a) if(k&1) res*=a;
+        return res;
+    }
+    SMC inv() const { return pow(MOD-2); }
+    friend istream& operator>>(istream &in,SMC &a) { ll v; in>>v; a=v; return in; }
+    friend ostream& operator<<(ostream &out,const SMC &a) { return out<<a.val; }
+};
+using Z=SMC<mod>;
+//给定n个x不相同的点，求次数<=n-1,过这些点的函数f(x),求f(k)
+//$$P(x)=\sum_{i=1}^n y_i \prod_{j \neq i} \frac{x-x_j}{x_i-x_j}$$
+//O(n^2)
+Z clac(vector<array<int,2>> fun,int n,int k){
+    Z res=0;
+    for(int i=1;i<=n;i++){
+        Z now=fun[i][1];
+        for(int j=1;j<=n;j++){
+            if(i==j) continue;
+            now*=Z(k-fun[j][0])/(Z(fun[i][0]-fun[j][0]));
+        }
+        res+=now;
+    }
+    return res;
+};
+//连续点值优化：当xi是连续的，例如1,2,3,...n
+//可以用前缀积和后缀积来优化
+//$$P(x)=\sum_{i=1}^n y_i \frac{pre_{i-1} \cdot suf_{i+1}}{(i-1)! (n-i)! (-1)^{n-i}}$$
+//$$pre_i=\prod_{j=1}^i(x-j)$$,$$suf_i=\prod_{j=i}^n(x-j)$$
+//O(n),
+Z clac2(vector<array<Z,2>> fun,int n,int k){
+    vector<Z> pre(n+1,1),suf(n+2,1),inv(n+1,1),invfac(n+1,1);
+    for(int i=1;i<=n;i++) pre[i]=pre[i-1]*Z(k-i);
+    for(int i=n;i>=1;i--) suf[i]=suf[i+1]*Z(k-i);
+    for(int i=2;i<=n;i++) inv[i]=(mod-mod/i)*inv[mod%i];
+    for(int i=1;i<=n;i++) invfac[i]=invfac[i-1]*inv[i];
+    Z res=0;
+    for(int i=1;i<=n;i++){
+        res+=(((n-i)&1)?-1:1)*fun[i][1]*pre[i-1]*suf[i+1]*invfac[i-1]*invfac[n-i];
+    }
+    return res;
+}
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,k;cin>>n>>k;
+    vector<array<Z,2>> fun(k+3);
+    fun[0]={0,0};
+    for(int i=1;i<=k+2;i++){
+        fun[i]={i,Z(i).pow(k)+fun[i-1][1]};
+    }
+    cout<<clac2(fun,k+2,n)<<endl;
+```
+
 == 数论预处理
 
 ```cpp
@@ -9182,10 +9606,10 @@ struct Mat
 
 == 矩阵快速幂(旧板)
 
-// 矩阵快速幂：处理快速形式变换
-
-// 时间复杂度：O(n^3logk)
-
+```cpp
+//矩阵快速幂：处理快速形式变换
+//时间复杂度：O(n^3logk)
+```
 
 ```cpp
 const int mod=1e9+7;
@@ -9313,36 +9737,23 @@ vector<int> primes(int n)
 
 == 线性基(gauss)
 
-// 异或线性基 O(bit*n)
-
-// 异或线性基是原数列的一个基向量，
-
-// 意味这基向量的线性组合能构造出原数列的任意数
-
-// 意味着原数列线性组合构造出的数和线性基线性组合构造出的数是一样的
-
-// xor=mod 2+/GF(2)域
-
-// guass消元法给出的线性基是行最简式
-
-// 即形如
-
-// 01001
-
-// 00100
-
-// 00011
-
-// 00000
-
-// 满足三个性质：
-
-// 1.线性基中任意两个基向量的异或结果不会是0
-
-// 2.线性基每一个基向量的高位1在别的基向量中都是0
-
-// 3.基向量是从大到小存储的
-
+```cpp
+//异或线性基 O(bit*n)
+//异或线性基是原数列的一个基向量，
+//意味这基向量的线性组合能构造出原数列的任意数
+//意味着原数列线性组合构造出的数和线性基线性组合构造出的数是一样的
+//xor=mod 2+/GF(2)域
+//guass消元法给出的线性基是行最简式
+//即形如
+//01001
+//00100
+//00011
+//00000
+//满足三个性质：
+//1.线性基中任意两个基向量的异或结果不会是0
+//2.线性基每一个基向量的高位1在别的基向量中都是0
+//3.基向量是从大到小存储的
+```
 
 ```cpp
 class basic{
@@ -9386,6 +9797,17 @@ class basic{
         int ans=0;
         for(int i=0;i<cnt;i++){
             if(k>>i&1) ans^=bas[cnt-1-i];
+        }
+        return ans;
+    }
+    //求不去重的所有非空子序列异或和的第k小 k:1base
+    int kth_dup(ll k){
+        if(n<=60&&k>=(1ull<<n)) return -1;
+        int z=n-cnt;
+        ll rk=z>60?0:k>>z;
+        int ans=0;
+        for(int i=0;i<cnt;i++){
+            if(rk>>i&1) ans^=bas[cnt-1-i];
         }
         return ans;
     }
@@ -9439,10 +9861,10 @@ class basic{
 
 == 线性基(贪心法)
 
-// 贪心法构造的线性基：
-
-// 按照元素顺序构造，适用于依赖元素顺序的题
-
+```cpp
+//贪心法构造的线性基：
+//按照元素顺序构造，适用于依赖元素顺序的题
+```
 
 ```cpp
 #define int long long //赫赫 要不要龙龙呢
@@ -9685,80 +10107,1003 @@ class Pre{
 };
 ```
 
-= 计算几何
+= 计算几何(全整数版)
 
 == 三分
 
-// 注意我们通常不用浮点数三分 而是固定次数 t=100
+```cpp
+using i128=__int128_t;
+using ld=long double;
 
-// *
+//在闭整数区间上寻找单峰函数最优点；默认求最小值，求最大值传greater<>。
+template<class F,class Better=less<>>
+ll ternaryInt(ll l,ll r,F f,Better better={}){
+    assert(l<=r);
+    while((i128)r-l>6){
+        ll d=((i128)r-l)/3;
+        ll m1=l+d,m2=r-d;
+        auto v1=f(m1),v2=f(m2);
+        if(better(v2,v1))l=m1+1;
+        else r=m2-1;
+    }
+    ll ans=l;
+    auto val=f(l);
+    for(ll x=l;;x++){
+        auto cur=f(x);
+        if(better(cur,val))ans=x,val=cur;
+        if(x==r)break;
+    }
+    return ans;
+}
 
-// int l = 1,r = 100;
+//在实数区间上寻找连续单峰函数最优点；固定轮数规避eps导致的死循环。
+template<class F,class Better=less<>>
+ld ternaryReal(ld l,ld r,F f,int rounds=200,Better better={}){
+    assert(l<=r&&rounds>=0);
+    while(rounds--){
+        ld m1=l+(r-l)/3,m2=r-(r-l)/3;
+        auto v1=f(m1),v2=f(m2);
+        if(better(v2,v1))l=m1;
+        else r=m2;
+    }
+    return (l+r)/2;
+}
 
-// while(l < r) {
+//模板文件入口，不执行额外逻辑。
+```
 
-// int lmid = l + (r - l) / 3;
+== 三角剖分
 
-// int rmid = r - (r - l) / 3;
+```cpp
+using i128=__int128_t;
+using ld=long double;
+const ld eps=1e-18L;
 
-// lans = f(lmid),rans = f(rmid);
+//整数向量保存平移到圆心后的多边形端点，并精确完成叉积和点积。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return {x+o.x,y+o.y};}
+    vec operator-(const vec& o)const{return {x-o.x,y-o.y};}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点保存圆心和原多边形坐标。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+};
+//浮点向量仅用于线段与圆交点之间的面积积分。
+struct dvec{
+    ld x,y;
+    dvec(ld x=0,ld y=0):x(x),y(y){}
+};
 
+//返回整数向量长度平方，端点是否在圆内用它精确判断。
+i128 len2(const vec& a){return a&a;}
+//返回两个浮点向量的叉积，计算分段三角形面积时使用。
+ld crossVal(const dvec& a,const dvec& b){return a.x*b.y-a.y*b.x;}
+//返回两个浮点向量的点积，计算有向圆心角时使用。
+ld dotVal(const dvec& a,const dvec& b){return a.x*b.x+a.y*b.y;}
+//返回圆心到两向量的有向扇形面积，角度由atan2稳定计算。
+ld sector(const dvec& a,const dvec& b,ll r){return (ld)r*r*atan2l(crossVal(a,b),dotVal(a,b))/2;}
+//求线段a->b与圆的内部交点参数，返回值包含0和1并保持递增。
+vector<ld> cutParams(const vec& a,const vec& b,ll r){
+    vec d=b-a;
+    i128 A=d&d;
+    vector<ld> ts={0,1};
+    if(A==0)return ts;
+    i128 ad=a&d,cr=a*d;
+    i128 det=(i128)r*r*A-cr*cr;
+    if(det>0){
+        ld mid=-(ld)ad/(ld)A,off=sqrtl((ld)det)/(ld)A;
+        ld t1=mid-off,t2=mid+off;
+        if(t1>eps&&t1<1-eps)ts.push_back(t1);
+        if(t2>eps&&t2<1-eps)ts.push_back(t2);
+    }
+    sort(ts.begin(),ts.end());
+    ts.erase(unique(ts.begin(),ts.end(),[](ld x,ld y){return fabsl(x-y)<=eps;}),ts.end());
+    return ts;
+}
+//计算有向三角形Oab与圆的面积交贡献，直线交点和扇形角处才使用浮点数。
+ld getS(const vec& a,const vec& b,ll r){
+    if(r==0||(a.x==b.x&&a.y==b.y))return 0;
+    i128 rr=(i128)r*r;
+    if(len2(a)<=rr&&len2(b)<=rr)return (ld)(a*b)/2;
+    vec d=b-a;
+    vector<ld> ts=cutParams(a,b,r);
+    ld ans=0;
+    for(int i=0;i+1<(int)ts.size();i++){
+        ld l=ts[i],h=ts[i+1],m=(l+h)/2;
+        dvec u={a.x+d.x*l,a.y+d.y*l};
+        dvec v={a.x+d.x*h,a.y+d.y*h};
+        ld mx=a.x+d.x*m,my=a.y+d.y*m;
+        if(mx*mx+my*my<=(ld)rr+eps)ans+=crossVal(u,v)/2;
+        else ans+=sector(u,v,r);
+    }
+    return ans;
+}
+//三角剖分累加简单多边形与整数圆的面积交，顶点顺/逆时针均可。
+ld S(const pit& o,ll r,const vector<pit>& p){
+    assert(r>=0);
+    if(p.size()<3||r==0)return 0;
+    ld ans=0;
+    for(int i=0;i<(int)p.size();i++)ans+=getS(p[i]-o,p[(i+1)%p.size()]-o,r);
+    return fabsl(ans);
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 三角剖分2
+
+```cpp
+using i128=__int128_t;
+
+//整数向量为耳切法提供精确叉积和点积。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点保存简单多边形及剖分得到的三角形顶点。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+};
+
+//返回三点有向面积的两倍，耳朵判定全程使用该精确值。
+i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
+//返回多边形有向面积的两倍，用于统一输入方向。
+i128 area2(const vector<pit>& p){
+    i128 res=0;
+    for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
+    return res;
+}
+//判断点p是否位于闭线段ab上，用于清理多边形边上的冗余点。
+bool onSeg(const pit& a,const pit& b,const pit& p){return crossVal(a,b,p)==0&&((a-p)&(b-p))<=0;}
+//去掉连续重复点和共线中间点，并把有效简单多边形调整为逆时针。
+vector<pit> simplifyPolygon(vector<pit> p){
+    if(p.size()>1&&p.front()==p.back())p.pop_back();
+    vector<pit> q;
+    for(const auto& x:p)if(q.empty()||!(q.back()==x))q.push_back(x);
+    if(q.size()>1&&q.front()==q.back())q.pop_back();
+    bool changed=true;
+    while(changed&&q.size()>2){
+        changed=false;
+        vector<pit> r;
+        int n=q.size();
+        for(int i=0;i<n;i++){
+            if(onSeg(q[(i-1+n)%n],q[(i+1)%n],q[i]))changed=true;
+            else r.push_back(q[i]);
+        }
+        q.swap(r);
+    }
+    if(q.size()>2&&area2(q)<0)reverse(q.begin(),q.end());
+    return q;
+}
+//判断点p是否在逆时针三角形abc内部或边界上。
+bool inTriangle(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
+//用耳切法把简单多边形剖分为三角形；非法或退化输入返回空集，复杂度O(n^2)。
+vector<vector<pit>> triangulate(vector<pit> p){
+    p=simplifyPolygon(move(p));
+    int n=p.size();
+    if(n<3||area2(p)==0)return {};
+    if(n==3)return {p};
+    vector<int> pre(n),nxt(n),alive(n,1),ear(n);
+    for(int i=0;i<n;i++)pre[i]=(i-1+n)%n,nxt[i]=(i+1)%n;
+    auto isEar=[&](int u){
+        if(!alive[u])return false;
+        int a=pre[u],b=nxt[u];
+        if(crossVal(p[a],p[u],p[b])<=0)return false;
+        for(int v=nxt[b];v!=a;v=nxt[v])if(inTriangle(p[a],p[u],p[b],p[v]))return false;
+        return true;
+    };
+    queue<int> q;
+    for(int i=0;i<n;i++){
+        ear[i]=isEar(i);
+        if(ear[i])q.push(i);
+    }
+    vector<vector<pit>> res;
+    int cnt=n;
+    while(cnt>3&&!q.empty()){
+        int u=q.front();q.pop();
+        if(!alive[u])continue;
+        ear[u]=isEar(u);
+        if(!ear[u])continue;
+        int a=pre[u],b=nxt[u];
+        res.push_back({p[a],p[u],p[b]});
+        alive[u]=0;nxt[a]=b;pre[b]=a;cnt--;
+        ear[a]=isEar(a);ear[b]=isEar(b);
+        if(ear[a])q.push(a);
+        if(ear[b])q.push(b);
+    }
+    if(cnt!=3)return {};
+    int a=find(alive.begin(),alive.end(),1)-alive.begin(),b=nxt[a],c=nxt[b];
+    res.push_back({p[a],p[b],p[c]});
+    return res;
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 凸包
+
+```cpp
+using i128=__int128_t;
+using ld=long double;
+
+//整数向量用于精确计算叉积、点积和距离平方。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点提供Andrew排序和几何判定所需的基本运算。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+    bool operator<(const pit& o)const{return x!=o.x?x<o.x:y<o.y;}
+};
+
+//返回三点的有向二倍三角形面积，用于所有转向判断。
+i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
+//返回三点转向符号，逆时针、顺时针、共线分别为1、-1、0。
+int cross(const pit& a,const pit& b,const pit& c){i128 v=crossVal(a,b,c);return (v>0)-(v<0);}
+//判断点p是否在闭线段ab上，供退化凸包和边界查询使用。
+bool onSeg(const pit& a,const pit& b,const pit& p){return cross(a,b,p)==0&&((a-p)&(b-p))<=0;}
+//返回两点距离，只有周长需要真实长度时才开方。
+ld dis(const pit& a,const pit& b){return sqrtl((ld)((b-a)&(b-a)));}
+//Andrew算法返回闭合边界周长和逆时针凸包，不保留边上的共线中间点。
+pair<ld,vector<pit>> Andrew(vector<pit> p){
+    sort(p.begin(),p.end());
+    p.erase(unique(p.begin(),p.end()),p.end());
+    if(p.empty())return {0,{}};
+    if(p.size()==1)return {0,p};
+    vector<pit> lo,up;
+    for(const auto& x:p){
+        while(lo.size()>1&&crossVal(lo[lo.size()-2],lo.back(),x)<=0)lo.pop_back();
+        lo.push_back(x);
+    }
+    for(int i=(int)p.size()-1;i>=0;i--){
+        const pit& x=p[i];
+        while(up.size()>1&&crossVal(up[up.size()-2],up.back(),x)<=0)up.pop_back();
+        up.push_back(x);
+    }
+    lo.pop_back();up.pop_back();
+    lo.insert(lo.end(),up.begin(),up.end());
+    ld peri=0;
+    for(int i=0;i<(int)lo.size();i++)peri+=dis(lo[i],lo[(i+1)%lo.size()]);
+    return {peri,lo};
+}
+//返回多边形有向面积的两倍，逆时针为正且结果完全精确。
+i128 TA2(const vector<pit>& p){
+    i128 res=0;
+    for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
+    return res;
+}
+//返回多边形面积；除以2时才转换为浮点数。
+ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
+//若多边形为顺时针则翻转，使后续凸包算法统一按逆时针处理。
+void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
+//判断点p是否在逆时针三角形abc内部或边界上。
+bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
+//在逆时针凸包中二分判断点是否在内部或边界，复杂度O(logn)。
+bool isConvex(const vector<pit>& p,const pit& a){
+    int n=p.size();
+    if(n==0)return false;
+    if(n==1)return a==p[0];
+    if(n==2)return onSeg(p[0],p[1],a);
+    i128 lcr=crossVal(p[0],p[1],a),rcr=crossVal(p[0],p[n-1],a);
+    if(lcr<0||rcr>0)return false;
+    if(lcr==0)return onSeg(p[0],p[1],a);
+    if(rcr==0)return onSeg(p[0],p[n-1],a);
+    int l=1,r=n-1;
+    while(r-l>1){
+        int mid=(l+r)>>1;
+        if(crossVal(p[0],p[mid],a)>=0)l=mid;
+        else r=mid;
+    }
+    return crossVal(p[l],p[r],a)>=0;
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 凸包闵和
+
+```cpp
+using i128=__int128_t;
+
+//整数向量保存凸包边，叉积和点积均在i128中精确完成。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return {x+o.x,y+o.y};}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点用于输入、平移和输出闵可夫斯基和的顶点。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    pit operator+(const vec& o)const{return {x+o.x,y+o.y};}
+    pit operator+(const pit& o)const{return {x+o.x,y+o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+    bool operator<(const pit& o)const{return x!=o.x?x<o.x:y<o.y;}
+};
+
+//返回三点有向面积的两倍，用于检查凸性和删除共线冗余点。
+i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
+//返回多边形有向面积的两倍，正值表示逆时针。
+i128 area2(const vector<pit>& p){
+    i128 res=0;
+    for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
+    return res;
+}
+//在线性时间内规范凸多边形：去重、转为逆时针并删除边上的中间点。
+vector<pit> normalizeConvex(vector<pit> p){
+    if(p.size()>1&&p.front()==p.back())p.pop_back();
+    vector<pit> q;
+    for(const auto& x:p)if(q.empty()||!(q.back()==x))q.push_back(x);
+    if(q.size()>1&&q.front()==q.back())q.pop_back();
+    if(q.size()<3){
+        sort(q.begin(),q.end());
+        q.erase(unique(q.begin(),q.end()),q.end());
+        return q;
+    }
+    i128 s=area2(q);
+    if(s==0){
+        auto [mn,mx]=minmax_element(q.begin(),q.end());
+        if(*mn==*mx)return {*mn};
+        return {*mn,*mx};
+    }
+    if(s<0)reverse(q.begin(),q.end());
+    vector<pit> r;
+    for(const auto& x:q){
+        while(r.size()>1&&crossVal(r[r.size()-2],r.back(),x)==0)r.pop_back();
+        r.push_back(x);
+    }
+    while(r.size()>2&&crossVal(r[r.size()-2],r.back(),r[0])==0)r.pop_back();
+    while(r.size()>2&&crossVal(r.back(),r[0],r[1])==0)r.erase(r.begin());
+    return r;
+}
+//把方向按[0,2pi)分到两个半平面，供边向量归并使用。
+int half(const vec& a){return a.y>0||(a.y==0&&a.x>=0)?0:1;}
+//严格比较两个非零边向量的极角，不调用atan2。
+bool angleLess(const vec& a,const vec& b){
+    int ha=half(a),hb=half(b);
+    if(ha!=hb)return ha<hb;
+    i128 cr=a*b;
+    if(cr!=0)return cr>0;
+    return false;
+}
+//在线性时间求两个凸集的闵可夫斯基和，输入可顺/逆时针且无需重复首点。
+vector<pit> minkowski(vector<pit> a,vector<pit> b){
+    a=normalizeConvex(move(a));b=normalizeConvex(move(b));
+    if(a.empty()||b.empty())return {};
+    auto cmp=[](const pit& A,const pit& B){return A.y!=B.y?A.y<B.y:A.x<B.x;};
+    rotate(a.begin(),min_element(a.begin(),a.end(),cmp),a.end());
+    rotate(b.begin(),min_element(b.begin(),b.end(),cmp),b.end());
+    vector<vec> ea,eb;
+    if(a.size()>1)for(int i=0;i<(int)a.size();i++)ea.push_back(a[(i+1)%a.size()]-a[i]);
+    if(b.size()>1)for(int i=0;i<(int)b.size();i++)eb.push_back(b[(i+1)%b.size()]-b[i]);
+    vector<pit> res={a[0]+b[0]};
+    int i=0,j=0;
+    while(i<(int)ea.size()||j<(int)eb.size()){
+        vec e;
+        if(j==(int)eb.size()||(i<(int)ea.size()&&angleLess(ea[i],eb[j])))e=ea[i++];
+        else if(i==(int)ea.size()||angleLess(eb[j],ea[i]))e=eb[j++];
+        else e=ea[i++]+eb[j++];
+        res.push_back(res.back()+e);
+    }
+    if(res.size()>1&&res.back()==res.front())res.pop_back();
+    return res;
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 凸包面积并
+
+```cpp
+using i128=__int128_t;
+using ld=long double;
+const ld eps=1e-18L;
+
+//整数向量承担半平面裁剪中的叉积和点积判定。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点保存各凸多边形顶点，交点参数才转换为浮点数。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+};
+
+//返回向量叉积，供边对原点的有向面积贡献使用。
+i128 crossVal(const vec& a,const vec& b){return a*b;}
+//返回三点有向面积的两倍，用于精确的半平面方向判定。
+i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
+//返回多边形有向面积的两倍，正值表示逆时针。
+i128 area2(const vector<pit>& p){
+    i128 res=0;
+    for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
+    return res;
+}
+//清理重复首点并统一为逆时针，退化多边形会被丢弃。
+vector<pit> normalizePoly(vector<pit> p){
+    if(p.size()>1&&p.front()==p.back())p.pop_back();
+    vector<pit> q;
+    for(const auto& x:p)if(q.empty()||!(q.back()==x))q.push_back(x);
+    if(q.size()>1&&q.front()==q.back())q.pop_back();
+    if(q.size()<3||area2(q)==0)return {};
+    if(area2(q)<0)reverse(q.begin(),q.end());
+    return q;
+}
+//求若干凸多边形的面积并；半平面判断为整数，只有边上交点参数使用浮点数。
+ld area_union(vector<vector<pit>> polys){
+    vector<vector<pit>> valid;
+    for(auto& p:polys){
+        p=normalizePoly(move(p));
+        if(!p.empty())valid.push_back(move(p));
+    }
+    polys=move(valid);
+    ld ans=0;
+    int n=polys.size();
+    for(int i=0;i<n;i++){
+        int ni=polys[i].size();
+        for(int e=0;e<ni;e++){
+            pit A=polys[i][e],B=polys[i][(e+1)%ni];
+            vec AB=B-A;
+            vector<pair<ld,ld>> cov;
+            for(int j=0;j<n;j++){
+                if(i==j)continue;
+                ld L=0,R=1;
+                bool ok=true;
+                int nj=polys[j].size();
+                for(int k=0;k<nj;k++){
+                    pit C=polys[j][k],D=polys[j][(k+1)%nj];
+                    vec DC=D-C;
+                    i128 c1=DC*(A-C),c2=DC*AB;
+                    if(c2>0)L=max(L,-(ld)c1/(ld)c2);
+                    else if(c2<0)R=min(R,-(ld)c1/(ld)c2);
+                    else if(c1<0||(c1==0&&(AB&DC)>0&&i>j)){ok=false;break;}
+                }
+                if(ok&&L<=R+eps)cov.push_back({max(0.0L,L),min(1.0L,R)});
+            }
+            sort(cov.begin(),cov.end());
+            ld cur=0,edge=(ld)((vec(A.x,A.y))*vec(B.x,B.y));
+            for(auto [l,r]:cov){
+                if(r<cur+eps)continue;
+                if(l>cur+eps)ans+=(l-cur)*edge;
+                cur=max(cur,r);
+                if(cur>=1-eps)break;
+            }
+            if(cur<1-eps)ans+=(1-cur)*edge;
+        }
+    }
+    return ans/2;
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 向量
+
+```cpp
+using i128=__int128_t;
+using ld=long double;
+
+//整数向量负责精确的加减、叉积和点积，乘积用i128避免常见坐标范围下溢出。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return {x+o.x,y+o.y};}
+    vec operator-(const vec& o)const{return {x-o.x,y-o.y};}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点用于所有拓扑判定，只有构造非整数结果时才转换为dpit。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    pit operator+(const vec& o)const{return {x+o.x,y+o.y};}
+    pit operator+(const pit& o)const{return {x+o.x,y+o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+};
+//浮点向量仅承接单位化、旋转等无法保持整数坐标的结果。
+struct dvec{
+    ld x,y;
+    dvec(ld x=0,ld y=0):x(x),y(y){}
+    dvec operator+(const dvec& o)const{return {x+o.x,y+o.y};}
+    dvec operator-(const dvec& o)const{return {x-o.x,y-o.y};}
+    dvec operator*(ld k)const{return {x*k,y*k};}
+    dvec operator/(ld k)const{return {x/k,y/k};}
+};
+//浮点点用于表示直线交点等一般为有理数的坐标。
+struct dpit{
+    ld x,y;
+    dpit(ld x=0,ld y=0):x(x),y(y){}
+    dpit operator+(const dvec& o)const{return {x+o.x,y+o.y};}
+};
+
+//返回向量长度平方，比较距离时优先使用它以保持全整数。
+i128 len2(const vec& o){return o&o;}
+//返回向量模长，仅在确实需要长度值时进行开方。
+ld len(const vec& o){return sqrtl((ld)len2(o));}
+//返回两点距离平方，适合最近点和大小关系判断。
+i128 dis2(const pit& a,const pit& b){return len2(b-a);}
+//返回两点欧氏距离，输出真实距离时使用。
+ld dis(const pit& a,const pit& b){return sqrtl((ld)dis2(a,b));}
+//将整数向量逆时针旋转theta弧度，结果通常不再是整数。
+dvec rotate(const vec& o,ld theta){return {o.x*cosl(theta)-o.y*sinl(theta),o.x*sinl(theta)+o.y*cosl(theta)};}
+//返回同方向单位向量，调用者需保证原向量非零。
+dvec norm(const vec& o){
+    assert(len2(o)!=0);
+    ld l=len(o);
+    return {(ld)o.x/l,(ld)o.y/l};
+}
+//返回两个非零向量的较小夹角，范围为[0,pi]。
+ld angle(const vec& a,const vec& b){
+    assert(len2(a)!=0&&len2(b)!=0);
+    ld val=(ld)(a&b)/len(a)/len(b);
+    val=max(-1.0L,min(1.0L,val));
+    return acosl(val);
+}
+//返回有向平行四边形面积，正值表示b在a逆时针方向。
+i128 area(const vec& a,const vec& b){return a*b;}
+//精确判断点c相对有向直线ab的位置，依次返回1、-1、0。
+int cross(const pit& a,const pit& b,const pit& c){
+    i128 val=(b-a)*(c-a);
+    return (val>0)-(val<0);
+}
+//判断点p是否位于闭线段ab上，端点也计入。
+bool onSeg(const pit& a,const pit& b,const pit& p){return cross(a,b,p)==0&&((a-p)&(b-p))<=0;}
+//判断非退化直线ab是否与闭线段cd有公共点。
+bool lcross(const pit& a,const pit& b,const pit& c,const pit& d){return cross(a,b,c)*cross(a,b,d)<=0;}
+//判断两条闭线段是否相交，覆盖端点接触、重合和退化成点的情况。
+bool scross(const pit& a,const pit& b,const pit& c,const pit& d){
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    if(c1==0&&onSeg(a,b,c))return true;
+    if(c2==0&&onSeg(a,b,d))return true;
+    if(c3==0&&onSeg(c,d,a))return true;
+    if(c4==0&&onSeg(c,d,b))return true;
+    return c1*c2<0&&c3*c4<0;
+}
+//判断两条非退化直线是否有唯一交点，即方向向量不平行。
+bool pcross(const pit& a,const pit& b,const pit& c,const pit& d){return (b-a)*(d-c)!=0;}
+//求两条非平行直线ab、cd的交点，除法不可避免所以返回浮点点。
+dpit getNode(const pit& a,const pit& b,const pit& c,const pit& d){
+    vec u=b-a,v=d-c;
+    i128 den=u*v;
+    assert(den!=0);
+    ld t=(ld)((c-a)*v)/(ld)den;
+    return {a.x+u.x*t,a.y+u.y*t};
+}
+//用点向式求两条非平行直线的交点，u、v分别是两直线方向。
+dpit getNode(const pit& a,const vec& u,const pit& c,const vec& v){
+    i128 den=u*v;
+    assert(den!=0);
+    ld t=(ld)((c-a)*v)/(ld)den;
+    return {a.x+u.x*t,a.y+u.y*t};
+}
+//返回点p到闭线段ab的最短欧式距离
+ld disPtSeg(const pit& p,const pit& a,const pit& b){
+    vec ab=b-a,ap=p-a,bp=p-b;
+    if(len2(ab)==0)return dis(p,a); //退化成点
+    if((ab&ap)<=0)return dis(p,a); //投影在a的外侧
+    if(((a-b)&bp)<=0)return dis(p,b); //投影在b的外侧
+    i128 cr=ab*ap; //投影在线段上，计算平行四边形面积求高
+    return (ld)(cr<0?-cr:cr)/len(ab);
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 旋转卡壳
+
+```cpp
+using i128=__int128_t;
+using u128=__uint128_t;
+using ld=long double;
+const ld eps=1e-12L;
+
+//384位无符号整数只用于比较三个非负i128因子的乘积。
+struct u384{
+    array<uint32_t,12> d{};
+};
+
+//整数向量用于卡壳指针移动时的精确叉积、点积比较。
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    i128 operator*(const vec& o)const{return (i128)x*o.y-(i128)y*o.x;}
+    i128 operator&(const vec& o)const{return (i128)x*o.x+(i128)y*o.y;}
+};
+//整数点保存输入点集和凸包，所有最优性判定均不依赖eps。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return {x-o.x,y-o.y};}
+    bool operator==(const pit& o)const{return x==o.x&&y==o.y;}
+    bool operator<(const pit& o)const{return x!=o.x?x<o.x:y<o.y;}
+};
+//浮点点只用于返回最小外接矩形通常不是整数的四个顶点。
+struct dpit{
+    ld x,y;
+    dpit(ld x=0,ld y=0):x(x),y(y){}
+};
+
+//返回三点有向面积的两倍，凸包和卡壳高度都用它计算。
+i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
+//返回ab与ac的点积，用于寻找沿当前边方向的最远投影。
+i128 dotVal(const pit& a,const pit& b,const pit& c){return (b-a)&(c-a);}
+//返回向量与点位置向量的叉积，即该点在法向轴上的未归一化投影。
+i128 crossOrigin(const vec& a,const pit& p){return (i128)a.x*p.y-(i128)a.y*p.x;}
+//返回向量与点位置向量的点积，即该点在边轴上的未归一化投影。
+i128 dotOrigin(const vec& a,const pit& p){return (i128)a.x*p.x+(i128)a.y*p.y;}
+//精确计算三个非负i128的乘积，避免候选矩形面积比较时溢出。
+u384 mul3(i128 a,i128 b,i128 c){
+    assert(a>=0&&b>=0&&c>=0);
+    array<uint32_t,4> A{},B{},C{};
+    u128 x=a,y=b,z=c;
+    for(int i=0;i<4;i++)A[i]=x>>(i*32),B[i]=y>>(i*32),C[i]=z>>(i*32);
+    array<u128,13> sum{};
+    for(int i=0;i<4;i++)for(int j=0;j<4;j++)for(int k=0;k<4;k++)sum[i+j+k]+=(u128)A[i]*B[j]*C[k];
+    u384 res;
+    for(int i=0;i<12;i++)res.d[i]=sum[i],sum[i+1]+=sum[i]>>32;
+    return res;
+}
+//按数值比较两个384位无符号整数，供分数交叉相乘后判优。
+bool operator<(const u384& a,const u384& b){
+    for(int i=11;i>=0;i--)if(a.d[i]!=b.d[i])return a.d[i]<b.d[i];
+    return false;
+}
+//返回两点欧氏距离，计算凸包周长时使用。
+ld dis(const pit& a,const pit& b){vec d=b-a;return sqrtl((ld)(d&d));}
+//Andrew算法返回闭合边界周长和逆时针凸包，不保留共线中间点。
+pair<ld,vector<pit>> Andrew(vector<pit> p){
+    sort(p.begin(),p.end());
+    p.erase(unique(p.begin(),p.end()),p.end());
+    if(p.empty())return {0,{}};
+    if(p.size()==1)return {0,p};
+    vector<pit> lo,up;
+    for(const auto& x:p){
+        while(lo.size()>1&&crossVal(lo[lo.size()-2],lo.back(),x)<=0)lo.pop_back();
+        lo.push_back(x);
+    }
+    for(int i=(int)p.size()-1;i>=0;i--){
+        const pit& x=p[i];
+        while(up.size()>1&&crossVal(up[up.size()-2],up.back(),x)<=0)up.pop_back();
+        up.push_back(x);
+    }
+    lo.pop_back();up.pop_back();
+    lo.insert(lo.end(),up.begin(),up.end());
+    ld peri=0;
+    for(int i=0;i<(int)lo.size();i++)peri+=dis(lo[i],lo[(i+1)%lo.size()]);
+    return {peri,lo};
+}
+//返回多边形有向面积的两倍，用于统一卡壳遍历方向。
+i128 TA2(const vector<pit>& p){
+    i128 res=0;
+    for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
+    return res;
+}
+//返回多边形面积，只有最终除以2时转换为浮点数。
+ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
+//若凸包为顺时针则翻转，保证内部始终位于每条边左侧。
+void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
+//判断点p是否在逆时针三角形abc内部或边界上。
+bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
+//在逆时针凸包内二分判点，边界计入且复杂度为O(logn)。
+bool isConvex(const vector<pit>& p,const pit& a){
+    int n=p.size();
+    if(n==0)return false;
+    if(n==1)return a==p[0];
+    if(n==2)return crossVal(p[0],p[1],a)==0&&((p[0]-a)&(p[1]-a))<=0;
+    i128 x=crossVal(p[0],p[1],a),y=crossVal(p[0],p[n-1],a);
+    if(x<0||y>0)return false;
+    if(x==0)return ((p[0]-a)&(p[1]-a))<=0;
+    if(y==0)return ((p[0]-a)&(p[n-1]-a))<=0;
+    int l=1,r=n-1;
+    while(r-l>1){
+        int mid=(l+r)>>1;
+        if(crossVal(p[0],p[mid],a)>=0)l=mid;
+        else r=mid;
+    }
+    return crossVal(p[l],p[r],a)>=0;
+}
+//由边轴投影u和法轴投影v还原矩形顶点，除法在此处才发生。
+dpit fromProjection(const vec& e,i128 u,i128 v,i128 q){
+    ld X=((ld)e.x*(ld)u-(ld)e.y*(ld)v)/(ld)q;
+    ld Y=((ld)e.y*(ld)u+(ld)e.x*(ld)v)/(ld)q;
+    return {X,Y};
+}
+//旋转卡壳求逆时针凸包的最小面积外接矩形，返回面积和逆时针四顶点。
+pair<ld,vector<dpit>> rot(vector<pit> p){
+    if(p.empty())return {0,{}};
+    if(p.size()==1)return {0,vector<dpit>(4,{(ld)p[0].x,(ld)p[0].y})};
+    rev(p);
+    int n=p.size(),top=0,rgt=0,lft=0;
+    vec firstEdge=p[1]-p[0];
+    for(int i=1;i<n;i++){
+        if(crossVal(p[0],p[1],p[i])>crossVal(p[0],p[1],p[top]))top=i;
+        if(dotOrigin(firstEdge,p[i])>dotOrigin(firstEdge,p[rgt]))rgt=i;
+        if(dotOrigin(firstEdge,p[i])<dotOrigin(firstEdge,p[lft]))lft=i;
+    }
+    bool first=true;
+    i128 bestH=0,bestW=0,bestQ=1;
+    vector<dpit> fin(4);
+    for(int i=0;i<n;i++){
+        int ni=(i+1)%n;
+        vec e=p[ni]-p[i];
+        i128 q=e&e;
+        while(crossVal(p[i],p[ni],p[(top+1)%n])>crossVal(p[i],p[ni],p[top]))top=(top+1)%n;
+        while(dotVal(p[i],p[ni],p[(rgt+1)%n])>dotVal(p[i],p[ni],p[rgt]))rgt=(rgt+1)%n;
+        while(dotVal(p[i],p[ni],p[(lft+1)%n])<dotVal(p[i],p[ni],p[lft]))lft=(lft+1)%n;
+        i128 h=crossVal(p[i],p[ni],p[top]);
+        i128 w=dotOrigin(e,p[rgt])-dotOrigin(e,p[lft]);
+        if(first||mul3(h,w,bestQ)<mul3(bestH,bestW,q)){
+            first=false;bestH=h;bestW=w;bestQ=q;
+            i128 u0=dotOrigin(e,p[lft]),u1=dotOrigin(e,p[rgt]);
+            i128 v0=crossOrigin(e,p[i]),v1=crossOrigin(e,p[top]);
+            fin[0]=fromProjection(e,u0,v0,q);
+            fin[1]=fromProjection(e,u1,v0,q);
+            fin[2]=fromProjection(e,u1,v1,q);
+            fin[3]=fromProjection(e,u0,v1,q);
+        }
+    }
+    return {(ld)bestH*(ld)bestW/(ld)bestQ,fin};
+}
+//把极小的输出坐标归零，避免打印出-0.00000。
+void zero(dpit& a){if(fabsl(a.x)<eps)a.x=0;if(fabsl(a.y)<eps)a.y=0;}
+//按x、y字典序比较输出点，用于固定矩形顶点输出起点。
+bool dcmp(const dpit& a,const dpit& b){return fabsl(a.x-b.x)>eps?a.x<b.x:a.y<b.y-eps;}
+
+//读取整数点集并输出最小外接矩形示例，顶点从最小点起按顺时针排列。
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n;
+    if(!(cin>>n))return 0;
+    vector<pit> p(n);
+    for(auto& x:p)cin>>x.x>>x.y;
+    auto hull=Andrew(p).second;
+    auto [ans,fin]=rot(hull);
+    cout<<fixed<<setprecision(5)<<ans<<'\n';
+    if(fin.empty())return 0;
+    reverse(fin.begin(),fin.end());
+    int k=0;
+    for(int i=1;i<4;i++)if(dcmp(fin[i],fin[k]))k=i;
+    for(int i=0;i<4;i++){
+        dpit& x=fin[(k+i)%4];zero(x);
+        cout<<fixed<<setprecision(5)<<x.x<<' '<<x.y<<'\n';
+    }
+```
+
+== 极角排序
+
+```cpp
+using i128=__int128_t;
+
+//整数点是排序对象，坐标本身不做浮点化。
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+};
+
+//按atan2的[-pi,pi]顺序划分方向，避免实际计算反三角函数。
+int half(i128 x,i128 y){return y<0||(y==0&&x>=0)?0:1;}
+//比较两个方向的极角；同向时短向量优先，零向量排在最前。
+bool polarLess(i128 ax,i128 ay,i128 bx,i128 by){
+    bool az=ax==0&&ay==0,bz=bx==0&&by==0;
+    if(az||bz)return az&&!bz;
+    int ha=half(ax,ay),hb=half(bx,by);
+    if(ha!=hb)return ha<hb;
+    i128 cr=ax*by-ay*bx;
+    if(cr!=0)return cr>0;
+    return ax*ax+ay*ay<bx*bx+by*by;
+}
+//以整数点o为极点逆时针排序，角度相同的点按离o由近到远排列。
+void psort(vector<pit>& a,const pit& o){
+    sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
+        i128 ax=(i128)A.x-o.x,ay=(i128)A.y-o.y;
+        i128 bx=(i128)B.x-o.x,by=(i128)B.y-o.y;
+        if(polarLess(ax,ay,bx,by))return true;
+        if(polarLess(bx,by,ax,ay))return false;
+        return A.x!=B.x?A.x<B.x:A.y<B.y;
+    });
+}
+//以点集重心为极点排序，用n*p-sum精确表示方向而不做除法。
+void psort(vector<pit>& a){
+    if(a.empty())return;
+    i128 sx=0,sy=0,n=a.size();
+    for(const auto& p:a)sx+=p.x,sy+=p.y;
+    sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
+        i128 ax=n*A.x-sx,ay=n*A.y-sy;
+        i128 bx=n*B.x-sx,by=n*B.y-sy;
+        if(polarLess(ax,ay,bx,by))return true;
+        if(polarLess(bx,by,ax,ay))return false;
+        return A.x!=B.x?A.x<B.x:A.y<B.y;
+    });
+}
+
+//模板文件入口，不执行额外逻辑。
+```
+
+== 点在多边形内判定
+
+```cpp
+using ld=long double;
+using dpit=array<ld,2>;
+const ld eps=1e-9;
+struct vec{
+    ll x,y;
+    vec(ll x=0,ll y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
+    vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
+    ll operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
+    ll operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit{
+    ll x,y;
+    pit(ll x=0,ll y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+};
+int cross(pit a,pit b,pit c){
+    ll val=(b-a)*(c-a);
+    if(val>0)return 1;
+    if(val<0)return -1;
+    return 0;
+}
+bool onSeg(pit a,pit b,pit p){
+    return cross(a,b,p)==0&&((a-p)&(b-p))<=0;
+}
+bool scross(pit a,pit b,pit c,pit d){
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    if(c1==0&&onSeg(a,b,c))return 1;
+    if(c2==0&&onSeg(a,b,d))return 1;
+    if(c3==0&&onSeg(c,d,a))return 1;
+    if(c4==0&&onSeg(c,d,b))return 1;
+    return c1*c2<0&&c3*c4<0;
+}
+dpit getnode(pit a,pit b,pit c,pit d){
+    vec u=b-a,v=d-c;
+    ld t=1.0*((c-a)*v)/(u*v);
+    return {a.x+u.x*t,a.y+u.y*t};
+}
+bool inPoly(pit p,const vector<pit>& poly){
+    int n=poly.size();
+    if(n==1) return p.x==poly[0].x&&p.y==poly[0].y;
+    if(n==2) return onSeg(poly[0],poly[1],p);
+    int cnt=0;
+    for(int i=0;i<n;++i){
+        pit a=poly[i],b=poly[(i+1)%n];
+        if(onSeg(a,b,p))return 1;
+        int k=cross(a,b,p);
+        ll d1=a.y-p.y,d2=b.y-p.y;
+        if(k>0&&d1<=0&&d2>0)cnt++;
+        if(k<0&&d2<=0&&d1>0)cnt--;
+    }
+    return cnt!=0;
+}
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int t;cin>>t;
+    while(t--){
+        int n,m,q;cin>>n>>m>>q;
+        vector<pit> a(n),b(m);
+        for(int i=0;i<n;i++) cin>>a[i].x>>a[i].y;
+        for(int i=0;i<m;i++) cin>>b[i].x>>b[i].y;
+        while(q--){
+            pit c;cin>>c.x>>c.y;
+            vector<pit> nb(m);
+            for(int i=0;i<m;i++) nb[i]=pit(c.x-b[i].x,c.y-b[i].y);
+            bool flag=0;
+            dpit ans1,ans2;
+            for(int i=0;i<n;i++){
+                if(flag) break;
+                for(int j=0;j<m;j++){
+                    if(flag) break;
+                    pit a1=a[i],a2=a[(i+1)%n],b1=nb[j],b2=nb[(j+1)%m];
+                    if(scross(a1,a2,b1,b2)){
+                        if(cross(a1,a2,b1)==0&&cross(a1,a2,b2)==0){
+                            if(onSeg(a1,a2,b1)) ans1={1.0*b1.x,1.0*b1.y};
+                            else if(onSeg(a1,a2,b2)) ans1={1.0*b2.x,1.0*b2.y};
+                            else if(onSeg(b1,b2,a1)) ans1={1.0*a1.x,1.0*a1.y};
+                            else ans1={1.0*a2.x,1.0*a2.y};
+                        }
+                        else ans1=getnode(a1,a2,b1,b2);
+                        ans2={c.x-ans1[0],c.y-ans1[1]};
+                        flag=1;
+                    }
+                }
+            }
+            for(int i=0;i<n;i++){
+                if(inPoly(a[i],nb)){
+                    ans1={(ld)a[i].x,(ld)a[i].y};
+                    ans2={c.x-ans1[0],c.y-ans1[1]};
+                    flag=1;
+                    break;
+                }
+            }
+            for(int i=0;i<m;i++){
+                if(inPoly(nb[i],a)){
+                    ans1={(ld)nb[i].x,(ld)nb[i].y};
+                    ans2={c.x-ans1[0],c.y-ans1[1]};
+                    flag=1;
+                    break;
+                }
+            }
+            if(flag) cout<<fixed<<setprecision(10)<<ans1[0]<<" "<<ans1[1]<<" "<<ans2[0]<<" "<<ans2[1]<<'\n';
+            else cout<<"-1 -1 -1 -1\n";
+        }
+    }
+```
+
+= 计算几何(浮点数版)
+
+== 三分
+
+```cpp
+//注意我们通常不用浮点数三分 而是固定次数 t=100
+/*
+int l = 1,r = 100;
+while(l < r) {
+    int lmid = l + (r - l) / 3;
+    int rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid - 1;
+    else l = lmid + 1;
+    // 求凸函数的极大值
+    if(lasn >= rans) l = lmid + 1;
+    else r = rmid - 1;
+}
 // 求凹函数的极小值
-
-// if(lans <= rans) r = rmid - 1;
-
-// else l = lmid + 1;
-
+cout << min(lans,rans) << endl;
 // 求凸函数的极大值
-
-// if(lasn >= rans) l = lmid + 1;
-
-// else r = rmid - 1;
-
-// }
-
-// 求凹函数的极小值
-
-// cout << min(lans,rans) << endl;
-
-// 求凸函数的极大值
-
-// cout << max(lans,rans) << endl;
-
-// */
-
-// *
-
-// const double EPS = 1e-9;
-
-// while(r - l > EPS) {
-
-// double lmid = l + (r - l) / 3;
-
-// double rmid = r - (r - l) / 3;
-
-// lans = f(lmid),rans = f(rmid);
-
-// 求凹函数的极小值
-
-// if(lans <= rans) r = rmid;
-
-// else l = lmid;
-
-// 求凸函数的极大值
-
-// if(lans >= rans) l = lmid;
-
-// else r = rmid;
-
-// }
-
+cout << max(lans,rans) << endl;
+*/
+/*
+const double EPS = 1e-9;
+while(r - l > EPS) {
+    double lmid = l + (r - l) / 3;
+    double rmid = r - (r - l) / 3;
+    lans = f(lmid),rans = f(rmid);
+    // 求凹函数的极小值
+    if(lans <= rans) r = rmid;
+    else l = lmid;
+    // 求凸函数的极大值
+    if(lans >= rans) l = lmid;
+    else r = rmid;
+}
 // 输出 l 或 r 都可
-
-// cout << l << endl;
-
-// */
-
+cout << l << endl;
+*/
+```
 
 ```cpp
 #define double long double
@@ -9791,7 +11136,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 }
-//向量单位化
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -9815,15 +11160,20 @@ bool lcross(pit a,pit b,pit c,pit d){
 }
 //case2:线段ab与线段cd
 bool scross(pit a,pit b,pit c,pit d){
-    if(cross(a,b,c)*cross(a,b,d)>0||cross(c,d,a)*cross(c,d,b)>0) return 0;//c,d在ab 或 a,b在cd 的同一侧 无交点
-    return 1; //有交点
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    //共线时还要判断投影是否落在线段上
+    if(c1==0&&onSeg(a,b,c)) return 1;
+    if(c2==0&&onSeg(a,b,d)) return 1;
+    if(c3==0&&onSeg(c,d,a)) return 1;
+    if(c4==0&&onSeg(c,d,b)) return 1;
+    return c1*c2<0&&c3*c4<0; //严格跨立 有交点
 }
 //case3:直线ab与直线cd
 bool pcross(pit a,pit b,pit c,pit d){
     if(fabs((b-a)*(d-c))<=eps) return 0; //平行 无交点
     return 1; //有交点
 }
-//求两直线ab,cd的交点(两点式)
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps);
@@ -9831,7 +11181,7 @@ pit getNode(pit a,pit b,pit c,pit d){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps);
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
@@ -9882,12 +11232,11 @@ pit getNode(pit a,vec u,pit c,vec v){
 
 == 三角剖分
 
-// 三角剖分：将多边形分割成若干边 求边与圆心构成的三角形
-
-// 通过这个三角形，求多边形与圆的面积交
-
-// 传多边形的时候要逆时针传参(极角排序,当且仅当多边形为凸多边形时成立),同时圆心要平移到(0,0)
-
+```cpp
+//三角剖分：将多边形分割成若干边 求边与圆心构成的三角形
+//通过这个三角形，求多边形与圆的面积交
+//传多边形的时候要逆时针传参(极角排序,当且仅当多边形为凸多边形时成立),同时圆心要平移到(0,0)
+```
 
 ```cpp
 //#define double long double
@@ -9926,7 +11275,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 }
-//单位向量
+//单位向量；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -9951,11 +11300,10 @@ bool onSeg(pit a,pit b,pit p){
 }
 //OA OB扇形面积
 double sector(vec a,vec b){
-    double angle=acos((a&b)/len(a)/len(b)); //[0,pi]
-    if(a*b<=-eps) angle=-angle;
+    double angle=atan2(a*b,a&b); //有向圆心角，范围为(-pi,pi]
     return angle*R*R/2;
 }
-//求两直线ab,cd的交点(两点式)
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps); //平行 无交点
@@ -9963,7 +11311,7 @@ pit getNode(pit a,pit b,pit c,pit d){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps); //平行 无交点
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
@@ -10041,12 +11389,118 @@ double S(pit o,double r,vector<pit> a)
 }
 ```
 
+== 三角剖分2
+
+```cpp
+//#define double long double
+//const double eps=1e-12;
+using namespace std;
+const double eps=1e-8;
+struct vec{
+    double x,y;
+    vec(double x=0,double y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
+    vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
+    vec operator/(const double& o)const{return vec(x/o,y/o);} //数除
+    vec operator*(const double& o)const{return vec(x*o,y*o);} //数乘
+    double operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
+    double operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit
+{
+    double x,y;
+    pit(double x=0,double y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+    pit operator/(const double& o)const{return pit(x/o,y/o);}
+};
+double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
+double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
+vec rotate(const vec& o,double theta){
+    return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
+}
+//向量单位化；要求a为非零向量，否则会产生NaN
+vec norm(vec a){
+    return a/len(a);
+}
+double angle(vec a,vec b){
+    double val=(a&b)/len(a)/len(b);
+    val=max(-1.0,min(1.0,val));
+    return acos(val);
+}
+double area(vec a,vec b){return a*b;}
+int cross(pit a,pit b,pit c){
+    if((b-a)*(c-a)>eps) return 1;
+    else if((b-a)*(c-a)<-eps) return -1;
+    return 0;
+}
+bool onSeg(pit a,pit b,pit p){
+    return cross(a,b,p)==0&&((a-p)&(b-p))<=eps;
+}
+bool lcross(pit a,pit b,pit c,pit d){
+    if(cross(a,b,c)*cross(a,b,d)>0) return 0;
+    return 1;
+}
+bool scross(pit a,pit b,pit c,pit d){
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    if(c1==0&&onSeg(a,b,c)) return 1;
+    if(c2==0&&onSeg(a,b,d)) return 1;
+    if(c3==0&&onSeg(c,d,a)) return 1;
+    if(c4==0&&onSeg(c,d,b)) return 1;
+    return c1*c2<0&&c3*c4<0;
+}
+bool pcross(pit a,pit b,pit c,pit d){
+    if(fabs((b-a)*(d-c))<=eps) return 0;
+    return 1;
+}
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
+pit getNode(pit a,pit b,pit c,pit d){
+    vec u=b-a,v=d-c;
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
+pit getNode(pit a,vec u,pit c,vec v){
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//O(n^2) 三角剖分 把逆时针传入的一个多边形剖分成on个三角形
+vector<vector<pit>> triangulate(vector<pit> p){
+    int n=p.size();
+    if(n==3) return {p};
+    vector<vector<pit>> res;
+    vector<int> nxt(n),pre(n),in(n,1),ear(n,0);//in 是否被删除
+    for(int i=0;i<n;++i) nxt[i]=(i+1)%n,pre[i]=(i-1+n)%n;
+    auto chk=[&](int u){
+        int pu=pre[u],nu=nxt[u];
+        if(cross(p[pu],p[u],p[nu])!=1) return 0;
+        for(int j=nxt[nu];j!=pu;j=nxt[j])
+            if(cross(p[pu],p[u],p[j])>=0&&cross(p[u],p[nu],p[j])>=0&&cross(p[nu],p[pu],p[j])>=0) return 0;
+        return 1;
+    };//判断p是否是耳朵点 即和前驱和后继是否能形成一个凸三角形 且没有点在其内部
+    queue<int> q; //维护耳朵点
+    for(int i=0;i<n;++i) if(ear[i]=chk(i)) q.push(i);
+    int cnt=n;
+    while(cnt>2&&!q.empty()){
+        int u=q.front();q.pop();
+        if(!in[u]||!ear[u])continue;
+        int pu=pre[u],nu=nxt[u];
+        res.push_back({p[pu],p[u],p[nu]});
+        in[u]=0;nxt[pu]=nu;pre[nu]=pu;cnt--; //删除这个点
+        if(ear[pu]=chk(pu)) q.push(pu); //判断前驱是否是耳朵点
+        if(ear[nu]=chk(nu)) q.push(nu); //判断后继是否是耳朵点
+    }
+    return res;
+}
+```
+
 == 凸包
 
-// 凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法
-
-// O(nlogn)，不保证逆时针/顺时针，保证有序
-
+```cpp
+//凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法
+//O(nlogn)，不保证逆时针/顺时针，保证有序
+```
 
 ```cpp
 //#define double long double
@@ -10075,7 +11529,8 @@ struct pit
 double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
 double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 bool cmp(const pit& a,const pit& b){
-    return fabs(a.x-b.x)>=eps?a.x<b.x:a.y<b.y;
+    if(a.x!=b.x)return a.x<b.x;
+    return a.y<b.y;
 }
 //ab x ac
 double cross(pit a,pit b,pit c){
@@ -10129,26 +11584,251 @@ bool isCon(pit a,pit b,pit c,pit p){
     return cross(a,b,p)>=-eps&&cross(b,c,p)>=-eps&&cross(c,a,p)>=-eps;
 }
 //二分判断点是否在凸包内O(logn)
-//需保证凸包逆时针
-bool isConvex(vector<pit> p,pit a)
+//需保证凸包逆时针，边界计入
+bool isConvex(const vector<pit>& p,pit a)
 {
     int n=p.size();
     if(n<3) return false;
-    if((p[1]-p[0])*(a-p[0])<=-eps) return false;
-    if((p[n-1]-p[0])*(a-p[0])>=eps) return false;
-    int l=1,r=n-1,idx=-1;
-    while(l<=r)
+    double c1=(p[1]-p[0])*(a-p[0]);
+    double c2=(p[n-1]-p[0])*(a-p[0]);
+    if(c1<-eps||c2>eps) return false;
+    if(fabs(c1)<=eps) return ((p[0]-a)&(p[1]-a))<=eps;
+    if(fabs(c2)<=eps) return ((p[0]-a)&(p[n-1]-a))<=eps;
+    int l=1,r=n-1;
+    while(r-l>1)
     {
         int mid=(l+r)>>1;
         if((p[mid]-p[0])*(a-p[0])>=-eps)
         {
-            idx=mid;
-            l=mid+1;
+            l=mid;
         }
-        else r=mid-1;
+        else r=mid;
     }
-    if(idx==-1||idx>=n-1) return false;
-    return isCon(p[0],p[idx],p[idx+1],a);
+    return isCon(p[0],p[l],p[r],a);
+}
+```
+
+== 凸包闵和
+
+```cpp
+//#define double long double
+//const double eps=1e-12;
+using namespace std;
+const double eps=1e-8;
+struct vec{
+    double x,y;
+    vec(double x=0,double y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
+    vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
+    vec operator/(const double& o)const{return vec(x/o,y/o);} //数除
+    vec operator*(const double& o)const{return vec(x*o,y*o);} //数乘
+    double operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
+    double operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit
+{
+    double x,y;
+    pit(double x=0,double y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+    pit operator/(const double& o)const{return pit(x/o,y/o);}
+};
+double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
+double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
+vec rotate(const vec& o,double theta){
+    return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
+}
+//向量单位化；要求a为非零向量，否则会产生NaN
+vec norm(vec a){
+    return a/len(a);
+}
+double angle(vec a,vec b){
+    double val=(a&b)/len(a)/len(b);
+    val=max(-1.0,min(1.0,val));
+    return acos(val);
+}
+double area(vec a,vec b){return a*b;}
+int cross(pit a,pit b,pit c){
+    if((b-a)*(c-a)>eps) return 1;
+    else if((b-a)*(c-a)<-eps) return -1;
+    return 0;
+}
+bool onSeg(pit a,pit b,pit p){
+    return cross(a,b,p)==0&&((a-p)&(b-p))<=eps;
+}
+bool lcross(pit a,pit b,pit c,pit d){
+    if(cross(a,b,c)*cross(a,b,d)>0) return 0;
+    return 1;
+}
+bool scross(pit a,pit b,pit c,pit d){
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    if(c1==0&&onSeg(a,b,c)) return 1;
+    if(c2==0&&onSeg(a,b,d)) return 1;
+    if(c3==0&&onSeg(c,d,a)) return 1;
+    if(c4==0&&onSeg(c,d,b)) return 1;
+    return c1*c2<0&&c3*c4<0;
+}
+bool pcross(pit a,pit b,pit c,pit d){
+    if(fabs((b-a)*(d-c))<=eps) return 0;
+    return 1;
+}
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
+pit getNode(pit a,pit b,pit c,pit d){
+    vec u=b-a,v=d-c;
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
+pit getNode(pit a,vec u,pit c,vec v){
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//O(n+m)凸包闵和；要求a、b非空、为凸多边形、按逆时针排列且不带重复首点
+//同向边可能保留共线中间点；空输入会在后续访问a[0]或b[0]时崩溃
+vector<pit> minkowski(vector<pit> a,vector<pit> b){
+    auto cmp=[](const pit& p1,const pit& p2){
+        if(p1.y!=p2.y)return p1.y<p2.y;
+        return p1.x<p2.x;
+    };
+    rotate(a.begin(),min_element(a.begin(),a.end(),cmp),a.end());
+    rotate(b.begin(),min_element(b.begin(),b.end(),cmp),b.end());//以最左下角的点为起点
+    int n=a.size(),m=b.size();
+    vector<vec> va(n),vb(m);
+    for(int i=0;i<n;++i) va[i]=a[(i+1)%n]-a[i];
+    for(int i=0;i<m;++i) vb[i]=b[(i+1)%m]-b[i];
+    vector<pit> res;
+    res.push_back(a[0]+b[0]);
+    int i=0,j=0; //做归并排序
+    while(i<n&&j<m)res.push_back(res.back()+(va[i]*vb[j]>=0?va[i++]:vb[j++]));
+    while(i<n) res.push_back(res.back()+va[i++]);
+    while(j<m) res.push_back(res.back()+vb[j++]);
+    res.pop_back(); //闭合会回到起点，弹掉最后一个重复点
+    return res;
+}
+```
+
+== 凸包面积并
+
+```cpp
+//#define double long double
+//const double eps=1e-12;
+using namespace std;
+const double eps=1e-8;
+struct vec{
+    double x,y;
+    vec(double x=0,double y=0):x(x),y(y){}
+    vec operator+(const vec& o)const{return vec(x+o.x,y+o.y);}
+    vec operator-(const vec& o)const{return vec(x-o.x,y-o.y);}
+    vec operator/(const double& o)const{return vec(x/o,y/o);} //数除
+    vec operator*(const double& o)const{return vec(x*o,y*o);} //数乘
+    double operator*(const vec& o)const{return x*o.y-y*o.x;} //叉积
+    double operator&(const vec& o)const{return x*o.x+y*o.y;} //点积
+};
+struct pit
+{
+    double x,y;
+    pit(double x=0,double y=0):x(x),y(y){}
+    vec operator-(const pit& o)const{return vec(x-o.x,y-o.y);}
+    pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
+    pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
+    pit operator/(const double& o)const{return pit(x/o,y/o);}
+};
+double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
+double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
+vec rotate(const vec& o,double theta){
+    return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
+}
+//向量单位化；要求a为非零向量，否则会产生NaN
+vec norm(vec a){
+    return a/len(a);
+}
+double angle(vec a,vec b){
+    double val=(a&b)/len(a)/len(b);
+    val=max(-1.0,min(1.0,val));
+    return acos(val);
+}
+double area(vec a,vec b){return a*b;}
+int cross(pit a,pit b,pit c){
+    if((b-a)*(c-a)>eps) return 1;
+    else if((b-a)*(c-a)<-eps) return -1;
+    return 0;
+}
+bool onSeg(pit a,pit b,pit p){
+    return cross(a,b,p)==0&&((a-p)&(b-p))<=eps;
+}
+bool lcross(pit a,pit b,pit c,pit d){
+    if(cross(a,b,c)*cross(a,b,d)>0) return 0;
+    return 1;
+}
+bool scross(pit a,pit b,pit c,pit d){
+    int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
+    if(c1==0&&onSeg(a,b,c)) return 1;
+    if(c2==0&&onSeg(a,b,d)) return 1;
+    if(c3==0&&onSeg(c,d,a)) return 1;
+    if(c4==0&&onSeg(c,d,b)) return 1;
+    return c1*c2<0&&c3*c4<0;
+}
+bool pcross(pit a,pit b,pit c,pit d){
+    if(fabs((b-a)*(d-c))<=eps) return 0;
+    return 1;
+}
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
+pit getNode(pit a,pit b,pit c,pit d){
+    vec u=b-a,v=d-c;
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
+pit getNode(pit a,vec u,pit c,vec v){
+    double t=((c-a)*v)/(u*v);
+    return a+u*t;
+}
+//O(v^2+nvlogn) 凸包面积并(逆时针) v为凸包总点数
+//做法是 找出外轮廓 然后用鞋带公式算
+double area_union(const vector<vector<pit>>& polys){
+    double ans=0;
+    int n=polys.size();
+    for(int i=0;i<n;++i){
+        int szi=polys[i].size();
+        for(int e=0;e<szi;++e){
+            pit A=polys[i][e],B=polys[i][(e+1)%szi];
+            vec AB=B-A;
+            vector<pair<double,double>> cov;
+            for(int j=0;j<n;++j){
+                if(i==j)continue;
+                int szj=polys[j].size();
+                double L=0,R=1.0;
+                bool valid=1;
+                for(int k=0;k<szj;++k){
+                    pit C=polys[j][k],D=polys[j][(k+1)%szj];
+                    vec DC=D-C,CA=A-C;
+                    double c1=DC*CA,c2=DC*AB;
+                    if(c2>eps)L=max(L,-c1/c2);
+                    else if(c2<-eps)R=min(R,-c1/c2);
+                    else{
+                        if(c1<-eps){valid=0;break;}
+                        else if(c1<=eps&&(AB&DC)>eps&&i>j){valid=0;break;}
+                    }
+                }
+                if(valid&&L<=R)cov.push_back({L,R});
+            }
+            sort(cov.begin(),cov.end());
+            double cur=0;
+            for(auto& p:cov){
+                if(p.first>cur+eps){
+                    pit P1=A+AB*cur,P2=A+AB*p.first;
+                    ans+=(P1.x*P2.y-P1.y*P2.x);
+                }
+                cur=max(cur,p.second);
+            }
+            if(cur<1.0-eps){
+                pit P1=A+AB*cur;
+                ans+=(P1.x*B.y-P1.y*B.x);
+            }
+        }
+    }
+    return ans/2.0;
 }
 ```
 
@@ -10184,7 +11864,7 @@ double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 vec rotate(const vec& o,double theta){
     return vec(o.x*cos(theta)-o.y*sin(theta),o.x*sin(theta)+o.y*cos(theta));
 }
-//向量单位化
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -10228,7 +11908,7 @@ bool pcross(pit a,pit b,pit c,pit d){
     if(fabs((b-a)*(d-c))<=eps) return 0; //平行 无交点
     return 1; //有交点
 }
-//求两直线ab,cd的交点(两点式)
+//求两条不平行直线ab、cd的交点；要求两条方向向量非零且不平行
 pit getNode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     //assert(fabs(u*v)<=eps);
@@ -10236,21 +11916,29 @@ pit getNode(pit a,pit b,pit c,pit d){
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
-//求两直线ab,cd的交点(点向式) a起点u方向向量 c起点v方向向量
+//点向式求两条不平行直线的交点；要求u、v非零且不平行
 pit getNode(pit a,vec u,pit c,vec v){
     //assert(fabs(u*v)<=eps);
     //if(fabs(u*v)<=eps) return pit(NAN,NAN); //平行 无交点
     double t=((c-a)*v)/(u*v);
     return a+u*t;
 }
+//返回点p到闭线段ab的最短距离
+double disPtSeg(pit p,pit a,pit b){
+    vec ab=b-a,ap=p-a,bp=p-b;
+    if(len(ab)<=eps)return dis(p,a);
+    if((ab&ap)<=-eps)return dis(p,a);
+    if(((a-b)&bp)<=-eps)return dis(p,b);
+    return fabs(ab*ap)/len(ab);
+}
 ```
 
 == 旋转卡壳
 
-// 凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法
-
-// O(nlogn)，不保证逆时针/顺时针，保证有序
-
+```cpp
+//凸包：给定点集，求周长最小凸多边形围住它们 Andrew算法
+//O(nlogn)，不保证逆时针/顺时针，保证有序
+```
 
 ```cpp
 #define double long double
@@ -10280,7 +11968,8 @@ struct pit
 double len(const vec& o){return sqrt(o.x*o.x+o.y*o.y);} //向量模长
 double dis(const pit& a,const pit& b){return len(b-a);} //两点距离
 bool cmp(const pit& a,const pit& b){
-    return fabs(a.x-b.x)>=eps?a.x<b.x:a.y<b.y;
+    if(a.x!=b.x)return a.x<b.x;
+    return a.y<b.y;
 }
 //向量逆时针旋转theta弧度
 vec rotate(const vec& o,double theta){
@@ -10294,6 +11983,7 @@ double cross(pit a,pit b,pit c){
 double dot(pit a,pit b,pit c){
     return (b-a)&(c-a);
 }
+//向量单位化；要求a为非零向量，否则会产生NaN
 vec norm(vec a){
     return a/len(a);
 }
@@ -10344,30 +12034,31 @@ bool isCon(pit a,pit b,pit c,pit p){
     return cross(a,b,p)>=-eps&&cross(b,c,p)>=-eps&&cross(c,a,p)>=-eps;
 }
 //二分判断点是否在凸包内O(logn)
-//需保证凸包逆时针
-bool isConvex(vector<pit> p,pit a)
+//需保证凸包逆时针，边界计入
+bool isConvex(const vector<pit>& p,pit a)
 {
     int n=p.size();
     if(n<3) return false;
-    if((p[1]-p[0])*(a-p[0])<=-eps) return false;
-    if((p[n-1]-p[0])*(a-p[0])>=eps) return false;
-    int l=1,r=n-1,idx=-1;
-    while(l<=r)
+    double c1=(p[1]-p[0])*(a-p[0]);
+    double c2=(p[n-1]-p[0])*(a-p[0]);
+    if(c1<-eps||c2>eps) return false;
+    if(fabs(c1)<=eps) return ((p[0]-a)&(p[1]-a))<=eps;
+    if(fabs(c2)<=eps) return ((p[0]-a)&(p[n-1]-a))<=eps;
+    int l=1,r=n-1;
+    while(r-l>1)
     {
         int mid=(l+r)>>1;
         if((p[mid]-p[0])*(a-p[0])>=-eps)
         {
-            idx=mid;
-            l=mid+1;
+            l=mid;
         }
-        else r=mid-1;
+        else r=mid;
     }
-    if(idx==-1||idx>=n-1) return false;
-    return isCon(p[0],p[idx],p[idx+1],a);
+    return isCon(p[0],p[l],p[r],a);
 }
 //双指针/多指针在凸包上找最优->旋转卡壳 形如一个游标卡尺绕着凸包旋转
 //旋转卡壳,用叉积可以找离一条线垂直最高或最低，用点积可以找离一条线水平最左或最右的点（点积的几何意义是b在a的投影长度)
-//要求传入非退化凸包，点数至少为3；单点/两点/全共线需先特判
+//要求传入非退化逆时针凸包，点数至少为3；单点/两点/全共线需先特判
 pair<double,vector<pit>> rot(vector<pit> p)
 {
     double ans=1e14;vector<pit> fin(4);
@@ -10423,8 +12114,9 @@ void zero(pit& a)
 
 == 极角排序
 
-// 极角排序：将点按照极角排序(逆时针)，即以某点为极点，将点按照与x轴的夹角从小到大排序
-
+```cpp
+//极角排序：将点按照极角排序(逆时针)，即以某点为极点，将点按照与x轴的夹角从小到大排序
+```
 
 ```cpp
 //#define double long double
@@ -10787,20 +12479,15 @@ struct DyBitset1Base
 
 == 整体二分
 
-// 整体二分(离线算法) agc2 d
-
-// 把q次二分操作放在一起 对询问整体做二分
-
-// 一般的二分是考虑区间[l,r],每次二分后变成[l,mid]和[mid+1,r],对单个询问
-
-// 整体二分是考虑区间[l,r],每次二分后变成[l,mid]和[mid+1,r],对多个询问 把询问分到左右区间
-
-// 时间复杂度分析我们可以把他变成一颗线段树来看
-
-// 通常 我们在一层递归的时候我们要保证[1,l-1]的信息存在
-
-// 考虑同层的区间修改是常数的 所以修改操作是O(nlogn)的
-
+```cpp
+//整体二分(离线算法) agc2 d
+//把q次二分操作放在一起 对询问整体做二分
+//一般的二分是考虑区间[l,r],每次二分后变成[l,mid]和[mid+1,r],对单个询问
+//整体二分是考虑区间[l,r],每次二分后变成[l,mid]和[mid+1,r],对多个询问 把询问分到左右区间
+//时间复杂度分析我们可以把他变成一颗线段树来看
+//通常 我们在一层递归的时候我们要保证[1,l-1]的信息存在
+//考虑同层的区间修改是常数的 所以修改操作是O(nlogn)的
+```
 
 ```cpp
 class REDSU{
