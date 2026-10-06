@@ -19,3 +19,11 @@ $$C_y = \frac{\sum_{i=1}^{N} (x_i y_{i+1} - x_{i+1} y_i)(y_i + y_{i+1})}{3 \sum_
     将凸包 $A$ 和 $B$ 的相交与距离问题转化为 $C = A - B$（即 $A$ 和 $-B$ 的闵可夫斯基和）。
     判定相交：如果 $A$ 和 $B$ 相交，当且仅当原点 $(0, 0)$ 在凸包 $C$ 的内部或边界上。
     计算距离：如果 $A$ 和 $B$ 不相交，它们之间的最短距离等于原点 $(0,0)$ 到凸包 $C$ 边界的最短距离。
+
+6. 闵可夫斯基和
+
+$ \operatorname{conv}(\alpha L + \beta R)$
+$= \operatorname{conv}(\alpha L) + \operatorname{conv}(\beta R)$
+$= \alpha \operatorname{conv}(L) + \beta \operatorname{conv}(R)$
+
+> conv是点集凸包的意思，凸包加法定义为闵和

@@ -106,6 +106,7 @@ int main()
             q[i][2]=read();
             q[i][3]=i;
         }
+        //一般来说 我们最优的块长应该是 序列长度/sqrt(q)
         int block=static_cast<int>(sqrt(n))+1;//按值域分块
         auto cmp=[block](array<int,4> a,array<int,4> b)
         {

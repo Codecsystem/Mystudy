@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <algorithm>
 #include <bitset>
 #include <cmath>
@@ -42,15 +44,18 @@ struct pit{
     pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
     pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
 };
+//时间复杂度：O(1)。
 int cross(pit a,pit b,pit c){
     ll val=(b-a)*(c-a);
     if(val>0)return 1;
     if(val<0)return -1;
     return 0;
 }
+//时间复杂度：O(1)。
 bool onSeg(pit a,pit b,pit p){
     return cross(a,b,p)==0&&((a-p)&(b-p))<=0;
 }
+//时间复杂度：O(1)。
 bool scross(pit a,pit b,pit c,pit d){
     int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
     if(c1==0&&onSeg(a,b,c))return 1;
@@ -59,11 +64,13 @@ bool scross(pit a,pit b,pit c,pit d){
     if(c4==0&&onSeg(c,d,b))return 1;
     return c1*c2<0&&c3*c4<0;
 }
+//时间复杂度：O(1)。
 dpit getnode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     ld t=1.0*((c-a)*v)/(u*v);
     return {a.x+u.x*t,a.y+u.y*t};
 }
+//时间复杂度：O(n)；n 为多边形顶点数。
 bool inPoly(pit p,const vector<pit>& poly){
     int n=poly.size();
     if(n==1) return p.x==poly[0].x&&p.y==poly[0].y;
@@ -79,6 +86,7 @@ bool inPoly(pit p,const vector<pit>& poly){
     }
     return cnt!=0;
 }
+//时间复杂度：O(sum(n+m+q*n*m))；对各测试用例求和，n、m 为两多边形顶点数，q 为查询数。
 signed main()
 {
     auto T_start=chrono::steady_clock::now();

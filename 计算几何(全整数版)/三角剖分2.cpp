@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -19,16 +21,20 @@ struct pit{
 };
 
 //返回三点有向面积的两倍，耳朵判定全程使用该精确值。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，用于统一输入方向。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //判断点p是否位于闭线段ab上，用于清理多边形边上的冗余点。
+//时间复杂度：O(1)。
 bool onSeg(const pit& a,const pit& b,const pit& p){return crossVal(a,b,p)==0&&((a-p)&(b-p))<=0;}
 //去掉连续重复点和共线中间点，并把有效简单多边形调整为逆时针。
+//时间复杂度：最坏 O(n^2)；n 为输入顶点数，每轮扫描后至少删除一个点或结束。
 vector<pit> simplifyPolygon(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -49,8 +55,10 @@ vector<pit> simplifyPolygon(vector<pit> p){
     return q;
 }
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool inTriangle(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //用耳切法把简单多边形剖分为三角形；非法或退化输入返回空集，复杂度O(n^2)。
+//时间复杂度：O(n^2)；n 为输入顶点数，含多边形简化及各次耳朵判定。
 vector<vector<pit>> triangulate(vector<pit> p){
     p=simplifyPolygon(move(p));
     int n=p.size();
@@ -58,6 +66,7 @@ vector<vector<pit>> triangulate(vector<pit> p){
     if(n==3)return {p};
     vector<int> pre(n),nxt(n),alive(n,1),ear(n);
     for(int i=0;i<n;i++)pre[i]=(i-1+n)%n,nxt[i]=(i+1)%n;
+    //时间复杂度：isEar 单次最坏 O(n)，n 为当前存活顶点数。
     auto isEar=[&](int u){
         if(!alive[u])return false;
         int a=pre[u],b=nxt[u];
@@ -91,4 +100,5 @@ vector<vector<pit>> triangulate(vector<pit> p){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}

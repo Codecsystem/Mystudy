@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -21,14 +23,19 @@ struct pit{
 };
 
 //返回三点的有向二倍三角形面积，用于所有转向判断。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回三点转向符号，逆时针、顺时针、共线分别为1、-1、0。
+//时间复杂度：O(1)。
 int cross(const pit& a,const pit& b,const pit& c){i128 v=crossVal(a,b,c);return (v>0)-(v<0);}
 //判断点p是否在闭线段ab上，供退化凸包和边界查询使用。
+//时间复杂度：O(1)。
 bool onSeg(const pit& a,const pit& b,const pit& p){return cross(a,b,p)==0&&((a-p)&(b-p))<=0;}
 //返回两点距离，只有周长需要真实长度时才开方。
+//时间复杂度：O(1)。
 ld dis(const pit& a,const pit& b){return sqrtl((ld)((b-a)&(b-a)));}
 //Andrew算法返回闭合边界周长和逆时针凸包，不保留边上的共线中间点。
+//时间复杂度：O(n log n)；n 为输入点数，排序后构造凸包和计算周长均为 O(n)。
 pair<ld,vector<pit>> Andrew(vector<pit> p){
     sort(p.begin(),p.end());
     p.erase(unique(p.begin(),p.end()),p.end());
@@ -51,18 +58,23 @@ pair<ld,vector<pit>> Andrew(vector<pit> p){
     return {peri,lo};
 }
 //返回多边形有向面积的两倍，逆时针为正且结果完全精确。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 TA2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //返回多边形面积；除以2时才转换为浮点数。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
 //若多边形为顺时针则翻转，使后续凸包算法统一按逆时针处理。
+//时间复杂度：O(n)；n 为多边形顶点数。
 void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //在逆时针凸包中二分判断点是否在内部或边界，复杂度O(logn)。
+//时间复杂度：O(log n)；n 为凸包顶点数，n<=2 时为 O(1)。
 bool isConvex(const vector<pit>& p,const pit& a){
     int n=p.size();
     if(n==0)return false;
@@ -82,4 +94,5 @@ bool isConvex(const vector<pit>& p,const pit& a){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}

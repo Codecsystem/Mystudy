@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -29,18 +31,24 @@ struct pit{
 //浮点点只用于返回最小外接矩形通常不是整数的四个顶点。
 struct dpit{
     ld x,y;
+    //时间复杂度：O(1)。
     dpit(ld x=0,ld y=0):x(x),y(y){}
 };
 
 //返回三点有向面积的两倍，凸包和卡壳高度都用它计算。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回ab与ac的点积，用于寻找沿当前边方向的最远投影。
+//时间复杂度：O(1)。
 i128 dotVal(const pit& a,const pit& b,const pit& c){return (b-a)&(c-a);}
 //返回向量与点位置向量的叉积，即该点在法向轴上的未归一化投影。
+//时间复杂度：O(1)。
 i128 crossOrigin(const vec& a,const pit& p){return (i128)a.x*p.y-(i128)a.y*p.x;}
 //返回向量与点位置向量的点积，即该点在边轴上的未归一化投影。
+//时间复杂度：O(1)。
 i128 dotOrigin(const vec& a,const pit& p){return (i128)a.x*p.x+(i128)a.y*p.y;}
 //精确计算三个非负i128的乘积，避免候选矩形面积比较时溢出。
+//时间复杂度：O(1)；整数位宽固定，三重循环仅执行 4^3 次乘加。
 u384 mul3(i128 a,i128 b,i128 c){
     assert(a>=0&&b>=0&&c>=0);
     array<uint32_t,4> A{},B{},C{};
@@ -53,13 +61,16 @@ u384 mul3(i128 a,i128 b,i128 c){
     return res;
 }
 //按数值比较两个384位无符号整数，供分数交叉相乘后判优。
+//时间复杂度：O(1)。
 bool operator<(const u384& a,const u384& b){
     for(int i=11;i>=0;i--)if(a.d[i]!=b.d[i])return a.d[i]<b.d[i];
     return false;
 }
 //返回两点欧氏距离，计算凸包周长时使用。
+//时间复杂度：O(1)。
 ld dis(const pit& a,const pit& b){vec d=b-a;return sqrtl((ld)(d&d));}
 //Andrew算法返回闭合边界周长和逆时针凸包，不保留共线中间点。
+//时间复杂度：O(n log n)；n 为输入点数，排序后构造凸包和计算周长均为 O(n)。
 pair<ld,vector<pit>> Andrew(vector<pit> p){
     sort(p.begin(),p.end());
     p.erase(unique(p.begin(),p.end()),p.end());
@@ -82,18 +93,23 @@ pair<ld,vector<pit>> Andrew(vector<pit> p){
     return {peri,lo};
 }
 //返回多边形有向面积的两倍，用于统一卡壳遍历方向。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 TA2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //返回多边形面积，只有最终除以2时转换为浮点数。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
 //若凸包为顺时针则翻转，保证内部始终位于每条边左侧。
+//时间复杂度：O(n)；n 为多边形顶点数。
 void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //在逆时针凸包内二分判点，边界计入且复杂度为O(logn)。
+//时间复杂度：O(log n)；n 为凸包顶点数，n<=2 时为 O(1)。
 bool isConvex(const vector<pit>& p,const pit& a){
     int n=p.size();
     if(n==0)return false;
@@ -112,12 +128,14 @@ bool isConvex(const vector<pit>& p,const pit& a){
     return crossVal(p[l],p[r],a)>=0;
 }
 //由边轴投影u和法轴投影v还原矩形顶点，除法在此处才发生。
+//时间复杂度：O(1)。
 dpit fromProjection(const vec& e,i128 u,i128 v,i128 q){
     ld X=((ld)e.x*(ld)u-(ld)e.y*(ld)v)/(ld)q;
     ld Y=((ld)e.y*(ld)u+(ld)e.x*(ld)v)/(ld)q;
     return {X,Y};
 }
 //旋转卡壳求逆时针凸包的最小面积外接矩形，返回面积和逆时针四顶点。
+//时间复杂度：O(n)；n 为凸包顶点数，三个卡壳指针各自累计移动 O(n) 次，不含求凸包。
 pair<ld,vector<dpit>> rot(vector<pit> p){
     if(p.empty())return {0,{}};
     if(p.size()==1)return {0,vector<dpit>(4,{(ld)p[0].x,(ld)p[0].y})};
@@ -154,11 +172,14 @@ pair<ld,vector<dpit>> rot(vector<pit> p){
     return {(ld)bestH*(ld)bestW/(ld)bestQ,fin};
 }
 //把极小的输出坐标归零，避免打印出-0.00000。
+//时间复杂度：O(1)。
 void zero(dpit& a){if(fabsl(a.x)<eps)a.x=0;if(fabsl(a.y)<eps)a.y=0;}
 //按x、y字典序比较输出点，用于固定矩形顶点输出起点。
+//时间复杂度：O(1)。
 bool dcmp(const dpit& a,const dpit& b){return fabsl(a.x-b.x)>eps?a.x<b.x:a.y<b.y-eps;}
 
 //读取整数点集并输出最小外接矩形示例，顶点从最小点起按顺时针排列。
+//时间复杂度：O(n log n)；n 为输入点数，主要耗时为 Andrew 求凸包。
 signed main(){
     ios::sync_with_stdio(false),cin.tie(nullptr);
     int n;

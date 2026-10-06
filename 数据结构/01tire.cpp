@@ -78,6 +78,29 @@ class O1Tire{
             return res;
         }
 		//其他逻辑反着来即可
+        //求解01trie中与x异或的第k小的异或值(k从1开始)
+        uint32_t kth(uint32_t x,int k)
+        {
+            int p=root;
+            uint32_t res=0;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                int c=trie[p].ch[d]?trie[trie[p].ch[d]].cnt:0;
+                if(k<=c) p=trie[p].ch[d];
+                else k-=c,p=trie[p].ch[d^1],res+=(1u<<i);
+                if(!p) return res;
+            }
+            return res;
+        }
+        void clear(){
+            for(auto &i:trie){
+                i.cnt=0;
+                i.ch[0]=i.ch[1]=0;
+            }
+            tot=0;
+            root=0;
+        }
 };
 int main()
 {

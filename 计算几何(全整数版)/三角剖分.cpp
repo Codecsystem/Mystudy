@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -23,18 +25,24 @@ struct pit{
 //浮点向量仅用于线段与圆交点之间的面积积分。
 struct dvec{
     ld x,y;
+    //时间复杂度：O(1)。
     dvec(ld x=0,ld y=0):x(x),y(y){}
 };
 
 //返回整数向量长度平方，端点是否在圆内用它精确判断。
+//时间复杂度：O(1)。
 i128 len2(const vec& a){return a&a;}
 //返回两个浮点向量的叉积，计算分段三角形面积时使用。
+//时间复杂度：O(1)。
 ld crossVal(const dvec& a,const dvec& b){return a.x*b.y-a.y*b.x;}
 //返回两个浮点向量的点积，计算有向圆心角时使用。
+//时间复杂度：O(1)。
 ld dotVal(const dvec& a,const dvec& b){return a.x*b.x+a.y*b.y;}
 //返回圆心到两向量的有向扇形面积，角度由atan2稳定计算。
+//时间复杂度：O(1)。
 ld sector(const dvec& a,const dvec& b,ll r){return (ld)r*r*atan2l(crossVal(a,b),dotVal(a,b))/2;}
 //求线段a->b与圆的内部交点参数，返回值包含0和1并保持递增。
+//时间复杂度：O(1)；参数至多 4 个，排序和去重规模均为常数。
 vector<ld> cutParams(const vec& a,const vec& b,ll r){
     vec d=b-a;
     i128 A=d&d;
@@ -49,10 +57,12 @@ vector<ld> cutParams(const vec& a,const vec& b,ll r){
         if(t2>eps&&t2<1-eps)ts.push_back(t2);
     }
     sort(ts.begin(),ts.end());
+    //时间复杂度：lambda 单次比较 O(1)，常数个参数的整次去重也是 O(1)。
     ts.erase(unique(ts.begin(),ts.end(),[](ld x,ld y){return fabsl(x-y)<=eps;}),ts.end());
     return ts;
 }
 //计算有向三角形Oab与圆的面积交贡献，直线交点和扇形角处才使用浮点数。
+//时间复杂度：O(1)；线段与圆至多有两个交点，只需处理常数个子区间。
 ld getS(const vec& a,const vec& b,ll r){
     if(r==0||(a.x==b.x&&a.y==b.y))return 0;
     i128 rr=(i128)r*r;
@@ -71,6 +81,7 @@ ld getS(const vec& a,const vec& b,ll r){
     return ans;
 }
 //三角剖分累加简单多边形与整数圆的面积交，顶点顺/逆时针均可。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld S(const pit& o,ll r,const vector<pit>& p){
     assert(r>=0);
     if(p.size()<3||r==0)return 0;
@@ -80,4 +91,5 @@ ld S(const pit& o,ll r,const vector<pit>& p){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}

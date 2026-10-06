@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -23,14 +25,17 @@ struct pit{
 };
 
 //返回三点有向面积的两倍，用于检查凸性和删除共线冗余点。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，正值表示逆时针。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //在线性时间内规范凸多边形：去重、转为逆时针并删除边上的中间点。
+//时间复杂度：O(n)；n 为输入凸多边形顶点数，各点进出栈总计 O(n)。
 vector<pit> normalizeConvex(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -58,8 +63,10 @@ vector<pit> normalizeConvex(vector<pit> p){
     return r;
 }
 //把方向按[0,2pi)分到两个半平面，供边向量归并使用。
+//时间复杂度：O(1)。
 int half(const vec& a){return a.y>0||(a.y==0&&a.x>=0)?0:1;}
 //严格比较两个非零边向量的极角，不调用atan2。
+//时间复杂度：O(1)。
 bool angleLess(const vec& a,const vec& b){
     int ha=half(a),hb=half(b);
     if(ha!=hb)return ha<hb;
@@ -68,9 +75,11 @@ bool angleLess(const vec& a,const vec& b){
     return false;
 }
 //在线性时间求两个凸集的闵可夫斯基和，输入可顺/逆时针且无需重复首点。
+//时间复杂度：O(n+m)；n、m 为两个输入凸集的顶点数，含规范化与边向量归并。
 vector<pit> minkowski(vector<pit> a,vector<pit> b){
     a=normalizeConvex(move(a));b=normalizeConvex(move(b));
     if(a.empty()||b.empty())return {};
+    //时间复杂度：cmp 单次比较 O(1)。
     auto cmp=[](const pit& A,const pit& B){return A.y!=B.y?A.y<B.y:A.x<B.x;};
     rotate(a.begin(),min_element(a.begin(),a.end(),cmp),a.end());
     rotate(b.begin(),min_element(b.begin(),b.end(),cmp),b.end());
@@ -91,4 +100,5 @@ vector<pit> minkowski(vector<pit> a,vector<pit> b){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}

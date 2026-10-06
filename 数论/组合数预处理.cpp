@@ -123,6 +123,7 @@ class Pre{
         preC();
         preD();
         preS2();
+        preH();
     }
     void preS(){
         s.resize(n+1,vector<Z>(m+1));
@@ -173,6 +174,22 @@ class Pre{
             }
         }
     }
+    void preH(){
+        fac.resize(2*n+1);
+        invfac.resize(2*n+1);
+        inv.resize(2*n+1);
+        inv[1]=1;
+        for(int i=2;i<=2*n;i++)
+        {
+            inv[i]=(mod-mod/i)*inv[mod%i];
+        }
+        fac[0]=invfac[0]=1;
+        for(int i=1;i<=2*n;i++)
+        {
+            fac[i]=fac[i-1]*i;
+            invfac[i]=invfac[i-1]*inv[i];
+        }
+    }
     //第一类斯特林数S(n,m) n个不同元素划分为m个非空圆排列的方案数
     Z S(int i,int j){
         return s[i][j];
@@ -205,6 +222,11 @@ class Pre{
     {
         if(n<0||m<0||n<m)return 0;
         return d[m]*C(n,m);
+    }
+    //卡特兰数 H(n) n个节点的二叉树个数
+    //H(n)=C(2n,n)/(n+1)
+    Z H(int n){
+        return C(2*n,n)*inv[n+1];
     }
 };
 signed main()

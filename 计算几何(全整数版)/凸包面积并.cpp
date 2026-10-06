@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -21,16 +23,20 @@ struct pit{
 };
 
 //返回向量叉积，供边对原点的有向面积贡献使用。
+//时间复杂度：O(1)。
 i128 crossVal(const vec& a,const vec& b){return a*b;}
 //返回三点有向面积的两倍，用于精确的半平面方向判定。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，正值表示逆时针。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //清理重复首点并统一为逆时针，退化多边形会被丢弃。
+//时间复杂度：O(n)；n 为输入多边形顶点数。
 vector<pit> normalizePoly(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -41,6 +47,7 @@ vector<pit> normalizePoly(vector<pit> p){
     return q;
 }
 //求若干凸多边形的面积并；半平面判断为整数，只有边上交点参数使用浮点数。
+//时间复杂度：O(k+N^2+N*k*log(k+1))；k 为输入多边形数，N 为总顶点数，含逐边裁剪与覆盖区间排序。
 ld area_union(vector<vector<pit>> polys){
     vector<vector<pit>> valid;
     for(auto& p:polys){
@@ -86,4 +93,5 @@ ld area_union(vector<vector<pit>> polys){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}

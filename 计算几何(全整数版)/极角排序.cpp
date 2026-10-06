@@ -1,3 +1,5 @@
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
 #include <bits/stdc++.h>
 using namespace std;
 using ll=long long;
@@ -10,8 +12,10 @@ struct pit{
 };
 
 //按atan2的[-pi,pi]顺序划分方向，避免实际计算反三角函数。
+//时间复杂度：O(1)。
 int half(i128 x,i128 y){return y<0||(y==0&&x>=0)?0:1;}
 //比较两个方向的极角；同向时短向量优先，零向量排在最前。
+//时间复杂度：O(1)。
 bool polarLess(i128 ax,i128 ay,i128 bx,i128 by){
     bool az=ax==0&&ay==0,bz=bx==0&&by==0;
     if(az||bz)return az&&!bz;
@@ -22,7 +26,9 @@ bool polarLess(i128 ax,i128 ay,i128 bx,i128 by){
     return ax*ax+ay*ay<bx*bx+by*by;
 }
 //以整数点o为极点逆时针排序，角度相同的点按离o由近到远排列。
+//时间复杂度：O(n log n)；n 为待排序点数，单次极角比较为 O(1)。
 void psort(vector<pit>& a,const pit& o){
+    //时间复杂度：lambda 单次比较 O(1)，整次排序 O(n log n)。
     sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
         i128 ax=(i128)A.x-o.x,ay=(i128)A.y-o.y;
         i128 bx=(i128)B.x-o.x,by=(i128)B.y-o.y;
@@ -32,10 +38,12 @@ void psort(vector<pit>& a,const pit& o){
     });
 }
 //以点集重心为极点排序，用n*p-sum精确表示方向而不做除法。
+//时间复杂度：O(n log n)；n 为待排序点数，单次极角比较为 O(1)。
 void psort(vector<pit>& a){
     if(a.empty())return;
     i128 sx=0,sy=0,n=a.size();
     for(const auto& p:a)sx+=p.x,sy+=p.y;
+    //时间复杂度：lambda 单次比较 O(1)，整次排序 O(n log n)。
     sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
         i128 ax=n*A.x-sx,ay=n*A.y-sy;
         i128 bx=n*B.x-sx,by=n*B.y-sy;
@@ -46,4 +54,5 @@ void psort(vector<pit>& a){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 signed main(){return 0;}
