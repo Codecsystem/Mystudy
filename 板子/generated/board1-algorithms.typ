@@ -29,6 +29,7 @@
 #include <ranges> // C++20
 #include <set>
 #include <stack>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -128,6 +129,29 @@ class O1Tire{
             return res;
         }
         //其他逻辑反着来即可
+        //求解01trie中与x异或的第k小的异或值(k从1开始)
+        uint32_t kth(uint32_t x,int k)
+        {
+            int p=root;
+            uint32_t res=0;
+            for(int i=31;i>=0;i--)
+            {
+                int d=(x>>i)&1;
+                int c=trie[p].ch[d]?trie[trie[p].ch[d]].cnt:0;
+                if(k<=c) p=trie[p].ch[d];
+                else k-=c,p=trie[p].ch[d^1],res+=(1u<<i);
+                if(!p) return res;
+            }
+            return res;
+        }
+        void clear(){
+            for(auto &i:trie){
+                i.cnt=0;
+                i.ch[0]=i.ch[1]=0;
+            }
+            tot=0;
+            root=0;
+        }
 };
 ```
 
@@ -1968,6 +1992,7 @@ unordered_map<int,int> dis(vector<int> a)
             q[i][2]=read();
             q[i][3]=i;
         }
+        //一般来说 我们最优的块长应该是 序列长度/sqrt(q)
         int block=static_cast<int>(sqrt(n))+1;//按值域分块
         auto cmp=[block](array<int,4> a,array<int,4> b)
         {
@@ -6069,6 +6094,120 @@ class TreeEsum{
 };
 ```
 
+== 树上基本处理(带欧拉序)
+
+```cpp
+class tree{
+    public:
+    vector<vector<int>> tr;
+    vector<vector<int>> fa;
+    vector<int> dfn,dep,siz,in,out,eul;
+    int n,k,tot,tim;
+    tree(int n,vector<vector<int>>& tr):
+    tr(tr),n(n),k(__lg(n)+1),tim(0),dfn(n+1,0),dep(n+1,0),tot(0),siz(n+1,0),
+    fa(n+1,vector<int>(__lg(n)+2,0)),in(n+1,0),out(n+1,0),eul(2*n+1,0){
+        dfs(1,0);
+    }
+
+    int dfs(int u,int f){
+        dfn[u]=++tot,in[u]=++tim;eul[tim]=u;
+        dep[u]=dep[f]+1;
+        fa[u][0]=f;siz[u]=1;
+        for(int i=1;i<=k;i++){
+            fa[u][i]=fa[fa[u][i-1]][i-1];
+        }
+        for(auto v:tr[u]){
+            if(v==f) continue;
+            siz[u]+=dfs(v,u);
+        }
+        out[u]=++tim,eul[tim]=u;
+        return siz[u];
+    }
+    //求u,v的最近公共祖先
+    int lca(int u,int v){
+        if(dep[u]<dep[v]) swap(u,v);
+        for(int i=k;i>=0;i--){
+            if(dep[fa[u][i]]>=dep[v]) u=fa[u][i];
+        }
+        if(u==v) return u;
+        for(int i=k;i>=0;i--){
+            if(fa[u][i]!=fa[v][i]){
+                u=fa[u][i];
+                v=fa[v][i];
+            }
+        }
+        return fa[u][0];
+    }
+    //求u,v距离
+    int dis(int u,int v){
+        return dep[u]+dep[v]-2*dep[lca(u,v)];
+    }
+    //判断x是否在s,t的路径上
+    bool con(int s,int t,int x){
+        return dis(s,x)+dis(t,x)==dis(s,t);
+    }
+};
+```
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    int n,q;cin>>n>>q;
+    vector<int> a(n+1),vis(n+1,0),g(n+5,0),cnt(n+1,0);
+    for(int i=1;i<=n;i++) cin>>a[i];
+    vector<vector<int>> tr(n+1);
+    for(int i=1;i<n;i++){
+        int u,v;cin>>u>>v;
+        tr[u].push_back(v);
+        tr[v].push_back(u);
+    }
+    tree t(n,tr);
+    vector<array<int,6>> qry(q);
+    vector<int> ans(q);
+    for(int i=0;i<q;i++){
+        int u,v,qa,qb;cin>>u>>v>>qa>>qb;
+        if(t.in[u]>t.in[v]) swap(u,v);
+        if(t.lca(u,v)==u){
+            qry[i]={t.in[u],t.in[v],qa,qb,0,i};
+        }
+        else{
+            qry[i]={t.in[u]+1,t.in[v],qa,qb,t.lca(u,v),i};
+        }
+    }
+    const int B=2*n/static_cast<int>(sqrt(q));
+    auto cmp=[&](array<int,6> a,array<int,6> b){
+        if(a[0]/B!=b[0]/B) return a[0]/B<b[0]/B;
+        else{
+            if((a[0]/B)&1) return a[1]>b[1];
+            else return a[1]<b[1];
+        }
+    };
+    sort(qry.begin(),qry.end(),cmp);
+    int l=1,r=0;
+    auto f=[&](int x){
+        int c=a[x];
+        if(vis[x]){
+            g[cnt[c]]--;
+            cnt[c]--;
+        }
+        else{
+            cnt[c]++;
+            g[cnt[c]]++;
+        }
+        vis[x]^=1;
+    };
+    for(auto [ql,qr,qa,qb,lca,i]:qry){
+        while(r<qr) f(t.eul[++r]);
+        while(l>ql) f(t.eul[--l]);
+        while(r>qr) f(t.eul[r--]);
+        while(l<ql) f(t.eul[l++]);
+        if(lca) f(lca);
+        ans[i]=g[qa]-g[qb+1];
+        if(lca) f(lca);
+    }
+    for(int i=0;i<q;i++) cout<<ans[i]<<'\n';
+```
+
 == 树上基本处理
 
 ```cpp
@@ -6531,6 +6670,64 @@ class HierholzerN{
             return res;
         }
         //返回欧拉回路/欧拉路径
+};
+```
+
+== 点分树
+
+```cpp
+//点分树，处理一类树上带修路径问题
+//把点分治的分治重心连成一条树，这样就可以用点分治的思路处理树上带修路径问题了
+//如果在点分树上，$x$ 是 $u$ 和 $v$ 的最近公共祖先（LCA），那么 $x$ 一定在原树 $u$ 到 $v$ 的路径上。
+//换句话说 在点分树上以x子树的不同分支的点对 一一对应 以x为最早分治中心的那些路径
+//换句话说 点分树 把所有路径做了如下划分：按路径上作为分治中心最早的那个点进行分类
+//换句话说 点分树 从u向上跳到根 等价于 访问了所有以u为端点的路径
+//注意：在点分树上，当你从 $u$ 跳到祖先 $x$，并利用 $x$ 的信息去计算 $u$ 到其他分支的路径时，
+//你会多算“和 $u$ 在 $x$ 的同一个子树分支里的点”，可以容斥掉或者用答案不劣规避掉
+```
+
+```cpp
+class DivTree{
+public:
+    vector<vector<int>> tr,ntr;
+    vector<int> sz,vis,fa;
+    int n,frt;
+    DivTree(int n,const vector<vector<int>>& tr):
+    n(n),sz(n+1,0),vis(n+1,0),fa(n+1,0),tr(tr),ntr(n+1){
+        build();
+    }
+    int getsz(int u,int p){
+        sz[u]=1;
+        for(auto v:tr[u]){
+            if(v==p||vis[v]) continue;
+            sz[u]+=getsz(v,u);
+        }
+        return sz[u];
+    }
+    int getrt(int u,int p,int szrt){
+        for(auto v:tr[u]){
+            if(v==p||vis[v]) continue;
+            if(sz[v]>szrt/2) return getrt(v,u,szrt);
+        }
+        return u;
+    }
+    void div(int u){
+        vis[u]=1;
+        for(auto v:tr[u]){
+            if(vis[v]) continue;
+            getsz(v,0);
+            int subrt=getrt(v,0,sz[v]);
+            fa[subrt]=u;
+            ntr[u].push_back(subrt);
+            ntr[subrt].push_back(u);
+            div(subrt);
+        }
+    }
+    void build(){
+        getsz(1,0);
+        frt=getrt(1,0,sz[1]);
+        div(frt);
+    }
 };
 ```
 
@@ -10021,6 +10218,7 @@ class Pre{
         preC();
         preD();
         preS2();
+        preH();
     }
     void preS(){
         s.resize(n+1,vector<Z>(m+1));
@@ -10071,6 +10269,22 @@ class Pre{
             }
         }
     }
+    void preH(){
+        fac.resize(2*n+1);
+        invfac.resize(2*n+1);
+        inv.resize(2*n+1);
+        inv[1]=1;
+        for(int i=2;i<=2*n;i++)
+        {
+            inv[i]=(mod-mod/i)*inv[mod%i];
+        }
+        fac[0]=invfac[0]=1;
+        for(int i=1;i<=2*n;i++)
+        {
+            fac[i]=fac[i-1]*i;
+            invfac[i]=invfac[i-1]*inv[i];
+        }
+    }
     //第一类斯特林数S(n,m) n个不同元素划分为m个非空圆排列的方案数
     Z S(int i,int j){
         return s[i][j];
@@ -10104,6 +10318,11 @@ class Pre{
         if(n<0||m<0||n<m)return 0;
         return d[m]*C(n,m);
     }
+    //卡特兰数 H(n) n个节点的二叉树个数
+    //H(n)=C(2n,n)/(n+1)
+    Z H(int n){
+        return C(2*n,n)*inv[n+1];
+    }
 };
 ```
 
@@ -10112,10 +10331,16 @@ class Pre{
 == 三分
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using ld=long double;
 
 //在闭整数区间上寻找单峰函数最优点；默认求最小值，求最大值传greater<>。
+//时间复杂度：O((T_f+T_b+1) log(r-l+2))；T_f、T_b 分别为单次 f、better 调用耗时。
 template<class F,class Better=less<>>
 ll ternaryInt(ll l,ll r,F f,Better better={}){
     assert(l<=r);
@@ -10137,6 +10362,7 @@ ll ternaryInt(ll l,ll r,F f,Better better={}){
 }
 
 //在实数区间上寻找连续单峰函数最优点；固定轮数规避eps导致的死循环。
+//时间复杂度：O(1+rounds*(T_f+T_b+1))；T_f、T_b 分别为单次 f、better 调用耗时。
 template<class F,class Better=less<>>
 ld ternaryReal(ld l,ld r,F f,int rounds=200,Better better={}){
     assert(l<=r&&rounds>=0);
@@ -10150,11 +10376,17 @@ ld ternaryReal(ld l,ld r,F f,int rounds=200,Better better={}){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 三角剖分
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using ld=long double;
 const ld eps=1e-18L;
@@ -10177,18 +10409,24 @@ struct pit{
 //浮点向量仅用于线段与圆交点之间的面积积分。
 struct dvec{
     ld x,y;
+    //时间复杂度：O(1)。
     dvec(ld x=0,ld y=0):x(x),y(y){}
 };
 
 //返回整数向量长度平方，端点是否在圆内用它精确判断。
+//时间复杂度：O(1)。
 i128 len2(const vec& a){return a&a;}
 //返回两个浮点向量的叉积，计算分段三角形面积时使用。
+//时间复杂度：O(1)。
 ld crossVal(const dvec& a,const dvec& b){return a.x*b.y-a.y*b.x;}
 //返回两个浮点向量的点积，计算有向圆心角时使用。
+//时间复杂度：O(1)。
 ld dotVal(const dvec& a,const dvec& b){return a.x*b.x+a.y*b.y;}
 //返回圆心到两向量的有向扇形面积，角度由atan2稳定计算。
+//时间复杂度：O(1)。
 ld sector(const dvec& a,const dvec& b,ll r){return (ld)r*r*atan2l(crossVal(a,b),dotVal(a,b))/2;}
 //求线段a->b与圆的内部交点参数，返回值包含0和1并保持递增。
+//时间复杂度：O(1)；参数至多 4 个，排序和去重规模均为常数。
 vector<ld> cutParams(const vec& a,const vec& b,ll r){
     vec d=b-a;
     i128 A=d&d;
@@ -10203,10 +10441,12 @@ vector<ld> cutParams(const vec& a,const vec& b,ll r){
         if(t2>eps&&t2<1-eps)ts.push_back(t2);
     }
     sort(ts.begin(),ts.end());
+    //时间复杂度：lambda 单次比较 O(1)，常数个参数的整次去重也是 O(1)。
     ts.erase(unique(ts.begin(),ts.end(),[](ld x,ld y){return fabsl(x-y)<=eps;}),ts.end());
     return ts;
 }
 //计算有向三角形Oab与圆的面积交贡献，直线交点和扇形角处才使用浮点数。
+//时间复杂度：O(1)；线段与圆至多有两个交点，只需处理常数个子区间。
 ld getS(const vec& a,const vec& b,ll r){
     if(r==0||(a.x==b.x&&a.y==b.y))return 0;
     i128 rr=(i128)r*r;
@@ -10225,6 +10465,7 @@ ld getS(const vec& a,const vec& b,ll r){
     return ans;
 }
 //三角剖分累加简单多边形与整数圆的面积交，顶点顺/逆时针均可。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld S(const pit& o,ll r,const vector<pit>& p){
     assert(r>=0);
     if(p.size()<3||r==0)return 0;
@@ -10234,11 +10475,17 @@ ld S(const pit& o,ll r,const vector<pit>& p){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 三角剖分2
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 
 //整数向量为耳切法提供精确叉积和点积。
@@ -10257,16 +10504,20 @@ struct pit{
 };
 
 //返回三点有向面积的两倍，耳朵判定全程使用该精确值。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，用于统一输入方向。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //判断点p是否位于闭线段ab上，用于清理多边形边上的冗余点。
+//时间复杂度：O(1)。
 bool onSeg(const pit& a,const pit& b,const pit& p){return crossVal(a,b,p)==0&&((a-p)&(b-p))<=0;}
 //去掉连续重复点和共线中间点，并把有效简单多边形调整为逆时针。
+//时间复杂度：最坏 O(n^2)；n 为输入顶点数，每轮扫描后至少删除一个点或结束。
 vector<pit> simplifyPolygon(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -10287,8 +10538,10 @@ vector<pit> simplifyPolygon(vector<pit> p){
     return q;
 }
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool inTriangle(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //用耳切法把简单多边形剖分为三角形；非法或退化输入返回空集，复杂度O(n^2)。
+//时间复杂度：O(n^2)；n 为输入顶点数，含多边形简化及各次耳朵判定。
 vector<vector<pit>> triangulate(vector<pit> p){
     p=simplifyPolygon(move(p));
     int n=p.size();
@@ -10296,6 +10549,7 @@ vector<vector<pit>> triangulate(vector<pit> p){
     if(n==3)return {p};
     vector<int> pre(n),nxt(n),alive(n,1),ear(n);
     for(int i=0;i<n;i++)pre[i]=(i-1+n)%n,nxt[i]=(i+1)%n;
+    //时间复杂度：isEar 单次最坏 O(n)，n 为当前存活顶点数。
     auto isEar=[&](int u){
         if(!alive[u])return false;
         int a=pre[u],b=nxt[u];
@@ -10329,11 +10583,17 @@ vector<vector<pit>> triangulate(vector<pit> p){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 凸包
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using ld=long double;
 
@@ -10354,14 +10614,19 @@ struct pit{
 };
 
 //返回三点的有向二倍三角形面积，用于所有转向判断。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回三点转向符号，逆时针、顺时针、共线分别为1、-1、0。
+//时间复杂度：O(1)。
 int cross(const pit& a,const pit& b,const pit& c){i128 v=crossVal(a,b,c);return (v>0)-(v<0);}
 //判断点p是否在闭线段ab上，供退化凸包和边界查询使用。
+//时间复杂度：O(1)。
 bool onSeg(const pit& a,const pit& b,const pit& p){return cross(a,b,p)==0&&((a-p)&(b-p))<=0;}
 //返回两点距离，只有周长需要真实长度时才开方。
+//时间复杂度：O(1)。
 ld dis(const pit& a,const pit& b){return sqrtl((ld)((b-a)&(b-a)));}
 //Andrew算法返回闭合边界周长和逆时针凸包，不保留边上的共线中间点。
+//时间复杂度：O(n log n)；n 为输入点数，排序后构造凸包和计算周长均为 O(n)。
 pair<ld,vector<pit>> Andrew(vector<pit> p){
     sort(p.begin(),p.end());
     p.erase(unique(p.begin(),p.end()),p.end());
@@ -10384,18 +10649,23 @@ pair<ld,vector<pit>> Andrew(vector<pit> p){
     return {peri,lo};
 }
 //返回多边形有向面积的两倍，逆时针为正且结果完全精确。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 TA2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //返回多边形面积；除以2时才转换为浮点数。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
 //若多边形为顺时针则翻转，使后续凸包算法统一按逆时针处理。
+//时间复杂度：O(n)；n 为多边形顶点数。
 void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //在逆时针凸包中二分判断点是否在内部或边界，复杂度O(logn)。
+//时间复杂度：O(log n)；n 为凸包顶点数，n<=2 时为 O(1)。
 bool isConvex(const vector<pit>& p,const pit& a){
     int n=p.size();
     if(n==0)return false;
@@ -10415,11 +10685,17 @@ bool isConvex(const vector<pit>& p,const pit& a){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 凸包闵和
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 
 //整数向量保存凸包边，叉积和点积均在i128中精确完成。
@@ -10442,14 +10718,17 @@ struct pit{
 };
 
 //返回三点有向面积的两倍，用于检查凸性和删除共线冗余点。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，正值表示逆时针。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //在线性时间内规范凸多边形：去重、转为逆时针并删除边上的中间点。
+//时间复杂度：O(n)；n 为输入凸多边形顶点数，各点进出栈总计 O(n)。
 vector<pit> normalizeConvex(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -10477,8 +10756,10 @@ vector<pit> normalizeConvex(vector<pit> p){
     return r;
 }
 //把方向按[0,2pi)分到两个半平面，供边向量归并使用。
+//时间复杂度：O(1)。
 int half(const vec& a){return a.y>0||(a.y==0&&a.x>=0)?0:1;}
 //严格比较两个非零边向量的极角，不调用atan2。
+//时间复杂度：O(1)。
 bool angleLess(const vec& a,const vec& b){
     int ha=half(a),hb=half(b);
     if(ha!=hb)return ha<hb;
@@ -10487,9 +10768,11 @@ bool angleLess(const vec& a,const vec& b){
     return false;
 }
 //在线性时间求两个凸集的闵可夫斯基和，输入可顺/逆时针且无需重复首点。
+//时间复杂度：O(n+m)；n、m 为两个输入凸集的顶点数，含规范化与边向量归并。
 vector<pit> minkowski(vector<pit> a,vector<pit> b){
     a=normalizeConvex(move(a));b=normalizeConvex(move(b));
     if(a.empty()||b.empty())return {};
+    //时间复杂度：cmp 单次比较 O(1)。
     auto cmp=[](const pit& A,const pit& B){return A.y!=B.y?A.y<B.y:A.x<B.x;};
     rotate(a.begin(),min_element(a.begin(),a.end(),cmp),a.end());
     rotate(b.begin(),min_element(b.begin(),b.end(),cmp),b.end());
@@ -10510,11 +10793,17 @@ vector<pit> minkowski(vector<pit> a,vector<pit> b){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 凸包面积并
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using ld=long double;
 const ld eps=1e-18L;
@@ -10535,16 +10824,20 @@ struct pit{
 };
 
 //返回向量叉积，供边对原点的有向面积贡献使用。
+//时间复杂度：O(1)。
 i128 crossVal(const vec& a,const vec& b){return a*b;}
 //返回三点有向面积的两倍，用于精确的半平面方向判定。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回多边形有向面积的两倍，正值表示逆时针。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 area2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //清理重复首点并统一为逆时针，退化多边形会被丢弃。
+//时间复杂度：O(n)；n 为输入多边形顶点数。
 vector<pit> normalizePoly(vector<pit> p){
     if(p.size()>1&&p.front()==p.back())p.pop_back();
     vector<pit> q;
@@ -10555,6 +10848,7 @@ vector<pit> normalizePoly(vector<pit> p){
     return q;
 }
 //求若干凸多边形的面积并；半平面判断为整数，只有边上交点参数使用浮点数。
+//时间复杂度：O(k+N^2+N*k*log(k+1))；k 为输入多边形数，N 为总顶点数，含逐边裁剪与覆盖区间排序。
 ld area_union(vector<vector<pit>> polys){
     vector<vector<pit>> valid;
     for(auto& p:polys){
@@ -10600,11 +10894,17 @@ ld area_union(vector<vector<pit>> polys){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 向量
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using ld=long double;
 
@@ -10629,36 +10929,50 @@ struct pit{
 //浮点向量仅承接单位化、旋转等无法保持整数坐标的结果。
 struct dvec{
     ld x,y;
+    //时间复杂度：O(1)。
     dvec(ld x=0,ld y=0):x(x),y(y){}
+    //时间复杂度：O(1)。
     dvec operator+(const dvec& o)const{return {x+o.x,y+o.y};}
+    //时间复杂度：O(1)。
     dvec operator-(const dvec& o)const{return {x-o.x,y-o.y};}
+    //时间复杂度：O(1)。
     dvec operator*(ld k)const{return {x*k,y*k};}
+    //时间复杂度：O(1)。
     dvec operator/(ld k)const{return {x/k,y/k};}
 };
 //浮点点用于表示直线交点等一般为有理数的坐标。
 struct dpit{
     ld x,y;
+    //时间复杂度：O(1)。
     dpit(ld x=0,ld y=0):x(x),y(y){}
+    //时间复杂度：O(1)。
     dpit operator+(const dvec& o)const{return {x+o.x,y+o.y};}
 };
 
 //返回向量长度平方，比较距离时优先使用它以保持全整数。
+//时间复杂度：O(1)。
 i128 len2(const vec& o){return o&o;}
 //返回向量模长，仅在确实需要长度值时进行开方。
+//时间复杂度：O(1)。
 ld len(const vec& o){return sqrtl((ld)len2(o));}
 //返回两点距离平方，适合最近点和大小关系判断。
+//时间复杂度：O(1)。
 i128 dis2(const pit& a,const pit& b){return len2(b-a);}
 //返回两点欧氏距离，输出真实距离时使用。
+//时间复杂度：O(1)。
 ld dis(const pit& a,const pit& b){return sqrtl((ld)dis2(a,b));}
 //将整数向量逆时针旋转theta弧度，结果通常不再是整数。
+//时间复杂度：O(1)。
 dvec rotate(const vec& o,ld theta){return {o.x*cosl(theta)-o.y*sinl(theta),o.x*sinl(theta)+o.y*cosl(theta)};}
 //返回同方向单位向量，调用者需保证原向量非零。
+//时间复杂度：O(1)。
 dvec norm(const vec& o){
     assert(len2(o)!=0);
     ld l=len(o);
     return {(ld)o.x/l,(ld)o.y/l};
 }
 //返回两个非零向量的较小夹角，范围为[0,pi]。
+//时间复杂度：O(1)。
 ld angle(const vec& a,const vec& b){
     assert(len2(a)!=0&&len2(b)!=0);
     ld val=(ld)(a&b)/len(a)/len(b);
@@ -10666,17 +10980,22 @@ ld angle(const vec& a,const vec& b){
     return acosl(val);
 }
 //返回有向平行四边形面积，正值表示b在a逆时针方向。
+//时间复杂度：O(1)。
 i128 area(const vec& a,const vec& b){return a*b;}
 //精确判断点c相对有向直线ab的位置，依次返回1、-1、0。
+//时间复杂度：O(1)。
 int cross(const pit& a,const pit& b,const pit& c){
     i128 val=(b-a)*(c-a);
     return (val>0)-(val<0);
 }
 //判断点p是否位于闭线段ab上，端点也计入。
+//时间复杂度：O(1)。
 bool onSeg(const pit& a,const pit& b,const pit& p){return cross(a,b,p)==0&&((a-p)&(b-p))<=0;}
 //判断非退化直线ab是否与闭线段cd有公共点。
+//时间复杂度：O(1)。
 bool lcross(const pit& a,const pit& b,const pit& c,const pit& d){return cross(a,b,c)*cross(a,b,d)<=0;}
 //判断两条闭线段是否相交，覆盖端点接触、重合和退化成点的情况。
+//时间复杂度：O(1)。
 bool scross(const pit& a,const pit& b,const pit& c,const pit& d){
     int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
     if(c1==0&&onSeg(a,b,c))return true;
@@ -10686,8 +11005,10 @@ bool scross(const pit& a,const pit& b,const pit& c,const pit& d){
     return c1*c2<0&&c3*c4<0;
 }
 //判断两条非退化直线是否有唯一交点，即方向向量不平行。
+//时间复杂度：O(1)。
 bool pcross(const pit& a,const pit& b,const pit& c,const pit& d){return (b-a)*(d-c)!=0;}
 //求两条非平行直线ab、cd的交点，除法不可避免所以返回浮点点。
+//时间复杂度：O(1)。
 dpit getNode(const pit& a,const pit& b,const pit& c,const pit& d){
     vec u=b-a,v=d-c;
     i128 den=u*v;
@@ -10696,6 +11017,7 @@ dpit getNode(const pit& a,const pit& b,const pit& c,const pit& d){
     return {a.x+u.x*t,a.y+u.y*t};
 }
 //用点向式求两条非平行直线的交点，u、v分别是两直线方向。
+//时间复杂度：O(1)。
 dpit getNode(const pit& a,const vec& u,const pit& c,const vec& v){
     i128 den=u*v;
     assert(den!=0);
@@ -10703,6 +11025,7 @@ dpit getNode(const pit& a,const vec& u,const pit& c,const vec& v){
     return {a.x+u.x*t,a.y+u.y*t};
 }
 //返回点p到闭线段ab的最短欧式距离
+//时间复杂度：O(1)。
 ld disPtSeg(const pit& p,const pit& a,const pit& b){
     vec ab=b-a,ap=p-a,bp=p-b;
     if(len2(ab)==0)return dis(p,a); //退化成点
@@ -10713,11 +11036,17 @@ ld disPtSeg(const pit& p,const pit& a,const pit& b){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 旋转卡壳
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 using u128=__uint128_t;
 using ld=long double;
@@ -10746,18 +11075,24 @@ struct pit{
 //浮点点只用于返回最小外接矩形通常不是整数的四个顶点。
 struct dpit{
     ld x,y;
+    //时间复杂度：O(1)。
     dpit(ld x=0,ld y=0):x(x),y(y){}
 };
 
 //返回三点有向面积的两倍，凸包和卡壳高度都用它计算。
+//时间复杂度：O(1)。
 i128 crossVal(const pit& a,const pit& b,const pit& c){return (b-a)*(c-a);}
 //返回ab与ac的点积，用于寻找沿当前边方向的最远投影。
+//时间复杂度：O(1)。
 i128 dotVal(const pit& a,const pit& b,const pit& c){return (b-a)&(c-a);}
 //返回向量与点位置向量的叉积，即该点在法向轴上的未归一化投影。
+//时间复杂度：O(1)。
 i128 crossOrigin(const vec& a,const pit& p){return (i128)a.x*p.y-(i128)a.y*p.x;}
 //返回向量与点位置向量的点积，即该点在边轴上的未归一化投影。
+//时间复杂度：O(1)。
 i128 dotOrigin(const vec& a,const pit& p){return (i128)a.x*p.x+(i128)a.y*p.y;}
 //精确计算三个非负i128的乘积，避免候选矩形面积比较时溢出。
+//时间复杂度：O(1)；整数位宽固定，三重循环仅执行 4^3 次乘加。
 u384 mul3(i128 a,i128 b,i128 c){
     assert(a>=0&&b>=0&&c>=0);
     array<uint32_t,4> A{},B{},C{};
@@ -10770,13 +11105,16 @@ u384 mul3(i128 a,i128 b,i128 c){
     return res;
 }
 //按数值比较两个384位无符号整数，供分数交叉相乘后判优。
+//时间复杂度：O(1)。
 bool operator<(const u384& a,const u384& b){
     for(int i=11;i>=0;i--)if(a.d[i]!=b.d[i])return a.d[i]<b.d[i];
     return false;
 }
 //返回两点欧氏距离，计算凸包周长时使用。
+//时间复杂度：O(1)。
 ld dis(const pit& a,const pit& b){vec d=b-a;return sqrtl((ld)(d&d));}
 //Andrew算法返回闭合边界周长和逆时针凸包，不保留共线中间点。
+//时间复杂度：O(n log n)；n 为输入点数，排序后构造凸包和计算周长均为 O(n)。
 pair<ld,vector<pit>> Andrew(vector<pit> p){
     sort(p.begin(),p.end());
     p.erase(unique(p.begin(),p.end()),p.end());
@@ -10799,18 +11137,23 @@ pair<ld,vector<pit>> Andrew(vector<pit> p){
     return {peri,lo};
 }
 //返回多边形有向面积的两倍，用于统一卡壳遍历方向。
+//时间复杂度：O(n)；n 为多边形顶点数。
 i128 TA2(const vector<pit>& p){
     i128 res=0;
     for(int i=0;i<(int)p.size();i++)res+=(i128)p[i].x*p[(i+1)%p.size()].y-(i128)p[i].y*p[(i+1)%p.size()].x;
     return res;
 }
 //返回多边形面积，只有最终除以2时转换为浮点数。
+//时间复杂度：O(n)；n 为多边形顶点数。
 ld TA(const vector<pit>& p){i128 s=TA2(p);return (ld)(s<0?-s:s)/2;}
 //若凸包为顺时针则翻转，保证内部始终位于每条边左侧。
+//时间复杂度：O(n)；n 为多边形顶点数。
 void rev(vector<pit>& p){if(TA2(p)<0)reverse(p.begin(),p.end());}
 //判断点p是否在逆时针三角形abc内部或边界上。
+//时间复杂度：O(1)。
 bool isCon(const pit& a,const pit& b,const pit& c,const pit& p){return crossVal(a,b,p)>=0&&crossVal(b,c,p)>=0&&crossVal(c,a,p)>=0;}
 //在逆时针凸包内二分判点，边界计入且复杂度为O(logn)。
+//时间复杂度：O(log n)；n 为凸包顶点数，n<=2 时为 O(1)。
 bool isConvex(const vector<pit>& p,const pit& a){
     int n=p.size();
     if(n==0)return false;
@@ -10829,12 +11172,14 @@ bool isConvex(const vector<pit>& p,const pit& a){
     return crossVal(p[l],p[r],a)>=0;
 }
 //由边轴投影u和法轴投影v还原矩形顶点，除法在此处才发生。
+//时间复杂度：O(1)。
 dpit fromProjection(const vec& e,i128 u,i128 v,i128 q){
     ld X=((ld)e.x*(ld)u-(ld)e.y*(ld)v)/(ld)q;
     ld Y=((ld)e.y*(ld)u+(ld)e.x*(ld)v)/(ld)q;
     return {X,Y};
 }
 //旋转卡壳求逆时针凸包的最小面积外接矩形，返回面积和逆时针四顶点。
+//时间复杂度：O(n)；n 为凸包顶点数，三个卡壳指针各自累计移动 O(n) 次，不含求凸包。
 pair<ld,vector<dpit>> rot(vector<pit> p){
     if(p.empty())return {0,{}};
     if(p.size()==1)return {0,vector<dpit>(4,{(ld)p[0].x,(ld)p[0].y})};
@@ -10871,11 +11216,14 @@ pair<ld,vector<dpit>> rot(vector<pit> p){
     return {(ld)bestH*(ld)bestW/(ld)bestQ,fin};
 }
 //把极小的输出坐标归零，避免打印出-0.00000。
+//时间复杂度：O(1)。
 void zero(dpit& a){if(fabsl(a.x)<eps)a.x=0;if(fabsl(a.y)<eps)a.y=0;}
 //按x、y字典序比较输出点，用于固定矩形顶点输出起点。
+//时间复杂度：O(1)。
 bool dcmp(const dpit& a,const dpit& b){return fabsl(a.x-b.x)>eps?a.x<b.x:a.y<b.y-eps;}
 
 //读取整数点集并输出最小外接矩形示例，顶点从最小点起按顺时针排列。
+//时间复杂度：O(n log n)；n 为输入点数，主要耗时为 Andrew 求凸包。
 ```
 
 #text(size: 8pt, fill: gray)[用法示例:]
@@ -10901,6 +11249,11 @@ bool dcmp(const dpit& a,const dpit& b){return fabsl(a.x-b.x)>eps?a.x<b.x:a.y<b.y
 == 极角排序
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <bits/stdc++.h>
+using namespace std;
+using ll=long long;
 using i128=__int128_t;
 
 //整数点是排序对象，坐标本身不做浮点化。
@@ -10910,8 +11263,10 @@ struct pit{
 };
 
 //按atan2的[-pi,pi]顺序划分方向，避免实际计算反三角函数。
+//时间复杂度：O(1)。
 int half(i128 x,i128 y){return y<0||(y==0&&x>=0)?0:1;}
 //比较两个方向的极角；同向时短向量优先，零向量排在最前。
+//时间复杂度：O(1)。
 bool polarLess(i128 ax,i128 ay,i128 bx,i128 by){
     bool az=ax==0&&ay==0,bz=bx==0&&by==0;
     if(az||bz)return az&&!bz;
@@ -10922,7 +11277,9 @@ bool polarLess(i128 ax,i128 ay,i128 bx,i128 by){
     return ax*ax+ay*ay<bx*bx+by*by;
 }
 //以整数点o为极点逆时针排序，角度相同的点按离o由近到远排列。
+//时间复杂度：O(n log n)；n 为待排序点数，单次极角比较为 O(1)。
 void psort(vector<pit>& a,const pit& o){
+    //时间复杂度：lambda 单次比较 O(1)，整次排序 O(n log n)。
     sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
         i128 ax=(i128)A.x-o.x,ay=(i128)A.y-o.y;
         i128 bx=(i128)B.x-o.x,by=(i128)B.y-o.y;
@@ -10932,10 +11289,12 @@ void psort(vector<pit>& a,const pit& o){
     });
 }
 //以点集重心为极点排序，用n*p-sum精确表示方向而不做除法。
+//时间复杂度：O(n log n)；n 为待排序点数，单次极角比较为 O(1)。
 void psort(vector<pit>& a){
     if(a.empty())return;
     i128 sx=0,sy=0,n=a.size();
     for(const auto& p:a)sx+=p.x,sy+=p.y;
+    //时间复杂度：lambda 单次比较 O(1)，整次排序 O(n log n)。
     sort(a.begin(),a.end(),[&](const pit& A,const pit& B){
         i128 ax=n*A.x-sx,ay=n*A.y-sy;
         i128 bx=n*B.x-sx,by=n*B.y-sy;
@@ -10946,11 +11305,40 @@ void psort(vector<pit>& a){
 }
 
 //模板文件入口，不执行额外逻辑。
+//时间复杂度：O(1)。
 ```
 
 == 点在多边形内判定
 
 ```cpp
+//本板子由 AI 生成。
+//复杂度按固定字长整数及浮点基本运算为 O(1) 计。
+#include <algorithm>
+#include <bitset>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <deque>
+#include <map>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <stack>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <numeric>
+#include <functional>
+#include <ranges>
+#include <iomanip>
+#include <chrono>
+#include <random>
+#include <cstdint>
+//#define int long long //赫赫 要不要龙龙呢
+using namespace std;
+using ll=long long;
 using ld=long double;
 using dpit=array<ld,2>;
 const ld eps=1e-9;
@@ -10969,15 +11357,18 @@ struct pit{
     pit operator+(const vec& o)const{return pit(x+o.x,y+o.y);}
     pit operator+(const pit& o)const{return pit(x+o.x,y+o.y);}
 };
+//时间复杂度：O(1)。
 int cross(pit a,pit b,pit c){
     ll val=(b-a)*(c-a);
     if(val>0)return 1;
     if(val<0)return -1;
     return 0;
 }
+//时间复杂度：O(1)。
 bool onSeg(pit a,pit b,pit p){
     return cross(a,b,p)==0&&((a-p)&(b-p))<=0;
 }
+//时间复杂度：O(1)。
 bool scross(pit a,pit b,pit c,pit d){
     int c1=cross(a,b,c),c2=cross(a,b,d),c3=cross(c,d,a),c4=cross(c,d,b);
     if(c1==0&&onSeg(a,b,c))return 1;
@@ -10986,11 +11377,13 @@ bool scross(pit a,pit b,pit c,pit d){
     if(c4==0&&onSeg(c,d,b))return 1;
     return c1*c2<0&&c3*c4<0;
 }
+//时间复杂度：O(1)。
 dpit getnode(pit a,pit b,pit c,pit d){
     vec u=b-a,v=d-c;
     ld t=1.0*((c-a)*v)/(u*v);
     return {a.x+u.x*t,a.y+u.y*t};
 }
+//时间复杂度：O(n)；n 为多边形顶点数。
 bool inPoly(pit p,const vector<pit>& poly){
     int n=poly.size();
     if(n==1) return p.x==poly[0].x&&p.y==poly[0].y;
@@ -11006,6 +11399,7 @@ bool inPoly(pit p,const vector<pit>& poly){
     }
     return cnt!=0;
 }
+//时间复杂度：O(sum(n+m+q*n*m))；对各测试用例求和，n、m 为两多边形顶点数，q 为查询数。
 ```
 
 #text(size: 8pt, fill: gray)[用法示例:]
@@ -12155,6 +12549,74 @@ void psort(vector<pit>& a)
 ```
 
 = 其他
+
+== bitset操作手册
+
+#text(size: 8pt, fill: gray)[用法示例:]
+
+```cpp
+    // 竞赛标配 IO 优化
+    cin.tie(0);
+    // ==========================================
+    // 1. 初始化构造 (时间复杂度：O(N/w))
+    // ==========================================
+    bitset<16> a;                     // 默认全 0
+    bitset<16> b(170);                // 整数初始化: 0000000010101010
+    bitset<16> c(string("11001100")); // 字符串初始化
+    // ==========================================
+    // 2. 整体按位运算 (时间复杂度：O(N/w))
+    // ==========================================
+    bitset<16> res;
+    res = b & c;    // 按位与
+    res = b | c;    // 按位或
+    res = b ^ c;    // 按位异或
+    res = ~b;       // 按位取反
+    res = b << 2;   // 整体左移
+    res = b >> 2;   // 整体右移
+    // ==========================================
+    // 3. 整体修改 (时间复杂度：O(N/w))
+    // ==========================================
+    a.set();        // 所有位置 1
+    a.reset();      // 所有位置 0
+    a.flip();       // 所有位取反
+    // ==========================================
+    // 4. 单点修改与查询 (时间复杂度：严格 O(1))
+    // ==========================================
+    // 【重点】直接使用 [] 操作符：不带越界检查，常数极小，支持直接修改和相互赋值
+    b[2] = 1;       // 直接修改第 2 位为 1
+    b[5] = 0;       // 直接修改第 5 位为 0
+    b[3] = b[2];    // 支持位与位之间的相互赋值
+    b[4] = ~b[2];   // 支持取反后赋值
+    // 传统内置函数 (常数稍大)：
+    b.set(2);       // 将第 2 位设为 1
+    b.set(3, 0);    // 将第 3 位设为 0
+    b.reset(4);     // 将第 4 位设为 0
+    b.flip(5);      // 将第 5 位取反
+    bool v = b.test(2); // 查询第 2 位 (自带越界检查，越界抛异常)
+    // ==========================================
+    // 5. 状态统计与判定 (除 size() 外，时间复杂度：O(N/w))
+    // ==========================================
+    int cnt = b.count();  // 统计 1 的个数 (底层调用 CPU popcount 指令)
+    bool s1 = b.any();    // 是否存在至少一个 1
+    bool s2 = b.none();   // 是否全为 0
+    bool s3 = b.all();    // 是否全为 1 (C++11起)
+    int sz = b.size();    // 返回位数 (此处为 16，时间复杂度 O(1))
+    // ==========================================
+    // 6. GCC 扩展：高效遍历 1 的位置 (时间复杂度：O(N/w + c))
+    // ==========================================
+    bitset<1000> mask;
+    mask[10] = 1;
+    mask[666] = 1;
+    mask[999] = 1;
+    // _Find_first() 返回最低位的 1 的下标，若没有则返回 size()
+    // _Find_next(i) 返回下标 i 之后第一个 1 的下标，若没有则返回 size()
+    // 这俩个函数，时间复杂度：O(N/w)
+    // 配合 for 循环，跳跃次数严格等于 1 的个数 c，扫描空白段的开销被压缩了 64 倍
+    for (int i = mask._Find_first(); i < mask.size(); i = mask._Find_next(i)) {
+        cout << i << " "; // 将输出 10 666 999
+    }
+    cout << "\n";
+```
 
 == SWAG(滑动窗口聚合)
 

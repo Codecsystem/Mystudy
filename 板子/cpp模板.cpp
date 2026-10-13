@@ -24,6 +24,7 @@
 #include <ranges> // C++20
 #include <set>
 #include <stack>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>

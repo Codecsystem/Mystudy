@@ -474,6 +474,14 @@
   {
     "board": "board1",
     "folder": "图论",
+    "file": "树上基本处理(带欧拉序).cpp",
+    "title": "树上基本处理(带欧拉序)",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
     "file": "树上基本处理.cpp",
     "title": "树上基本处理",
     "has_usage": false,
@@ -502,6 +510,14 @@
     "title": "欧拉回路(路径,Hierholzer法)",
     "has_usage": false,
     "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "图论",
+    "file": "点分树.cpp",
+    "title": "点分树",
+    "has_usage": false,
+    "has_tail": true
   },
   {
     "board": "board1",
@@ -946,6 +962,14 @@
   {
     "board": "board1",
     "folder": "其他",
+    "file": "bitset操作手册.cpp",
+    "title": "bitset操作手册",
+    "has_usage": true,
+    "has_tail": false
+  },
+  {
+    "board": "board1",
+    "folder": "其他",
     "file": "SWAG(滑动窗口聚合).cpp",
     "title": "SWAG(滑动窗口聚合)",
     "has_usage": true,
@@ -1002,6 +1026,13 @@
     "group": "基础与工具",
     "file": "数论/数论笔记部分/数论笔记(不定方程与同余方程组).md",
     "title": "数论/数论笔记部分/数论笔记(不定方程与同余方程组)",
+    "warnings": []
+  },
+  {
+    "board": "board2",
+    "group": "基础与工具",
+    "file": "数论/数论笔记部分/数论笔记(威尔逊定理与卢卡斯定理).md",
+    "title": "数论/数论笔记部分/数论笔记(威尔逊定理与卢卡斯定理)",
     "warnings": []
   },
   {

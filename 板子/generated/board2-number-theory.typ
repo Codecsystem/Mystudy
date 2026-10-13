@@ -642,6 +642,42 @@ int _exCRT()
 ```
 
 
+== 数论/数论笔记部分/数论笔记(威尔逊定理与卢卡斯定理)
+
+=== 威尔逊定理
+<威尔逊定理>
+对于一个大于 1 的整数 $p$，$p$ 是素数当且仅当：
+
+$ ( p - 1 ) ! equiv - 1 med (mod p) $
+
+在同余中，$- 1$ 和 $p - 1$ 是等价的，所以这个公式也可以写成：
+
+$ ( p - 1 ) ! equiv p - 1 med (mod p) $
+
+=== 拓展一下
+<拓展一下>
+记 $W ( j ) = ( j - 1 ) ! #h(0em) mod med j$。
+
+根据数论知识，我们可以对 $j$ 分类讨论：
+
+- $j = 1$：任何数模 $1$ 都是 $0$，所以 $W ( 1 ) = 0$。
+- $j = 4$：$3 ! = 6 equiv 2 med (mod 4)$，所以 $W ( 4 ) = 2$。
+- $j$ 为素数：根据威尔逊定理，$( j - 1 ) ! equiv - 1 equiv j - 1 med (mod j)$，所以 $W ( j ) = j - 1$。
+- $j$ 为大于 $4$ 的合数：由于 $j$ 可以分解为两个较小因子的乘积，这些因子必然包含在 $( j - 1 ) !$ 的连乘中，因此 $( j - 1 ) ! equiv 0 med (mod j)$，即 $W ( j ) = 0$。
+
+=== 卢卡斯定理
+<卢卡斯定理>
+对于非负整数 $n \, m$ 和素数 $p$，卢卡斯定理指出：
+
+$ binom(n, m) equiv binom(floor.l n \/ p floor.r, floor.l m \/ p floor.r) times binom(n #h(0em) mod med p, m #h(0em) mod med p) med (mod p) $
+
+对于一类 $n \, m$ 在 $10^18$，$p$ 在 $10^5$ 的情况，卢卡斯定理可以快速求出 $binom(n, m) #h(0em) mod med p$。
+
+具体来说：
+
+$ upright("Lucas") ( n \, m ) = cases(delim: "{", 1 & m = 0, (C ( n #h(0em) mod med p \, m #h(0em) mod med p ) times upright("Lucas") ( floor.l n \/ p floor.r \, floor.l m \/ p floor.r )) #h(0em) mod med p & m > 0) $
+
+
 == 数论/Trick/数论小结论
 
 $upright("gcd")$ 的重要恒等式： $upright("gcd") ( x_1 \, x_2 \, dots.h \, x_n ) = upright("gcd") ( x_1 \, x_2 - x_1 \, x_3 - x_2 \, dots.h \, x_n - x_(n - 1) )$。
@@ -667,6 +703,16 @@ $ sum_(i = 1)^n i^3 = [frac(n ( n + 1 ), 2)]^2 = frac(n^2 ( n + 1 )^2, 4) $
 Raney 引理：如果一个整数序列 $x_1 \, x_2 \, dots.h \, x_m$ 的每一项都不超过 $1$，且总和为 $S > 0$，那么在这个序列的 $m$ 个循环移位中，恰好有 $S$ 个移位满足“所有非空前缀和都严格大于 $0$”。
 
 $ sum_(i = 1)^n ⌊n / i⌋ = 2 sum_(i = 1)^(floor.l sqrt(n) floor.r) ⌊n / i⌋ - floor.l sqrt(n) floor.r^2 $
+
+$ floor.l A / B floor.r = frac(A - ( A med mod med B ), B) $
+
+对于任意给定的两个正整数 $r$ 和 $k$，必然存在一个正整数 $N$，使得无论如何用 $r$ 种颜色对连续整数集合 ${ 1 \, 2 \, dots.h \, N }$ 进行染色，该集合中都必定包含一个长度为 $k$ 的同色等差数列。满足上述条件的最小正整数 $N$ 被称为范德瓦尔登数，通常记为 $W ( r \, k )$。 W(2,3)=9,W(2,4)=35,W(2,5)=178,W(2,6)=1132,W(3,3)=27,W(4,3)=76
+
+考察 一个长度为 $n + 1$ 的序列为 $A = angle.l a_0 \, a_1 \, dots.h \, a_n angle.r$ 令序列 $A^R$ 为 $A$ 翻转后的序列，即定义 $a_i^R = a_(n - i)$。 将 $A ( x )$ 与 $A^R ( x )$ 相乘得到 $C ( x )$ 那么有 $ c_(n - k) = sum_(i = 0)^(n - k) a_i a_(i + k) $ 即 乘积后的第 $n - k$ 项是 下标差为 $k$ 的数对乘积之和 这叫差卷积
+
+约定多项式 $A$ 的长度为 $n + 1$，多项式 $B$ 的长度为 $m + 1$ $A ( x ) = sum_(i = 0)^n a_i x^i$ $B ( x ) = sum_(j = 0)^m b_j x^j$ 将 $B ( x )$ 翻转 $ c_(m - k) = sum_i a_i b_(i + k) $
+
+对于长度为 $n + 1$ 的 $01$ 序列 $A$，我们需要对每一个距离 $k$，求出不相等的对数 $a n s_k$ $ a n s_k = sum_(i = 0)^(n - k) \[ a_i eq.not a_(i + k) \] $ $ \[ a_i eq.not a_(i + k) \] arrow.l.r.double a_i xor a_(i + k) $ 利用 $01$ 变量的代数性质 $a xor b = a + b - 2 ( a and b )$，且在数值上 $a and b = a dot.op b$，我们可以将上述求和式展开：$ a n s_k = sum_(i = 0)^(n - k) ( a_i xor a_(i + k) ) = sum_(i = 0)^(n - k) ( a_i + a_(i + k) - 2 a_i a_(i + k) ) $ $ a n s_k = (sum_(i = 0)^(n - k) a_i) + (sum_(i = 0)^(n - k) a_(i + k)) - 2 (sum_(i = 0)^(n - k) a_i a_(i + k)) $ 然后直接做就可以,如果要求 相等，容斥做即可。
 
 
 = 卷积与反演
