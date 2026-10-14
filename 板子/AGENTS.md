@@ -212,21 +212,38 @@ python 板子/scripts/fix_md_math.py --include-blacklisted
 
 ### `scripts/generate_typst.py`
 
-生成三份 `generated/*.typ`、`generated/manifest.json`，并编译 PDF。
+生成三份 `generated/*.typ`、`generated/manifest.json`，并编译 PDF。生成的每个 `.typ` 文件顶部会自动注入 `#import "../typst/common.typ": *`，确保在 Typst `#include` 独立词法作用域内可直接调用公共组件（如 `#code-badge`、`#horizontalrule` 及主题色变量）。
 
-Board 2/3 使用 Pandoc `markdown-yaml_metadata_block → typst`，然后做少量后处理：
+Board 1 生成规则补充：
+- 保留原 C++ 文件的全部代码结构、缩进与花括号风格，仅剥离顶部通用模板头文件/宏与空壳 `main()`。
+- 若存在非空 `main()` 用法示例，以 `#code-badge("Usage / Example")` 紧凑徽章衔接在同一小节内，不再产生冗余的 `=== 主函数示例` 子标题。
+
+Board 2/3 使用 Pandoc 转 Typst（规范化笔记使用 `markdown-yaml_metadata_block`，未规范化/Trick 笔记使用 `markdown+hard_line_breaks-yaml_metadata_block`），然后做后处理：
 
 | 后处理 | 说明 |
 |------|------|
-| `<!-- board:hr -->` / 独占 `---` → Typst 横线 | 兼容旧笔记 |
-| 标题层级重映射 | 文件内最浅标题映射为正文层级，并封顶到 6 级 |
+| 笔记标题净化 (`clean_note_title`) | 展示标题自动剥离 `数论笔记(...)`、`图论笔记(...)`、`笔记` 等冗余前后缀（不改动源文件名） |
+| 首标题严格去重 | 仅当文件内首个标题与文件名归一化文本严格相等（`norm_ht == norm_ft`）时剥离，避免误删有效三级子标题 |
+| 未规范化笔记三层间距 | 对非 `normalized_files` 启用 `+hard_line_breaks`，将行尾 `\` 转为段间分隔，并包裹 `#set par(leading: 0.50em, spacing: 0.78em)`；若不含编号列表则对原空行插入 `#v(0.5em)`，形成「软换行 < 单换行 < 空行」三层呼吸感 |
+| 单侧空格行内公式修复 | 在 Pandoc 转换前将未规范化笔记中的 `$ expr$` / `$expr $` 修正为紧凑 `$expr$` |
+| 数学多字母标识符自动合并 | 通过 `SPACED_MATH_WORDS` 将数学模式中被拆开的 `g c d`、`l c m`、`m a x`、`m i n`、`H a s h`、`s u m` 等还原为 `"gcd"`、`"lcm"` 等连写标识符 |
+| `<!-- board:hr -->` / 独占 `---` → `#horizontalrule` | 统一渲染为紧凑浅灰分隔线 |
+| 标题层级重映射 | 文件内最浅标题映射为 3 级标题（`===`），并封顶到 6 级 |
 | `\( mod ... \)` → `(mod ...)` | 修复 `\pmod{}` 转换残留 |
 | `\$\$...\$\$` 重转 | 尝试修复 Pandoc 未转换的 display math |
 | 数学内 `\(` `\)` → `(` `)` | 修复残留转义括号 |
 | `,)` → `)` | 修复部分 Pandoc 尾随逗号 |
-| 图片路径按当前 `.md` 所在目录解析 | 缺失图片用红字占位 |
+| 图片路径解析与跨栏自适应 | 按当前 `.md` 所在目录解析相对路径并剥离无意义的默认图注（如 `image`、`img`）；对高密度宽图（`WIDE_IMAGE_NAMES`：如 `图.png`、`卡特兰数.png`、`FFT1~7.png`）自动使用 `place(top + center, scope: "parent", float: true)` 跨双栏全宽浮动排版 |
 
 `--check` 只校验配置，不生成。
+
+### `typst/common.typ`（V2 护眼清晰双栏版）
+
+统一控制三份板子的页面几何、字体、各级标题、目录与代码块样式：
+
+- **页面与分栏**：A4 竖向双栏（`margin: (top: 1.3cm, bottom: 1.2cm, x: 1.0cm)`，`columns: 2, gutter: 0.42cm`），兼顾激光黑白/彩色打印清晰度与低页数。
+- **字号与对比度**：正文 `8.5pt`（深炭黑 `#0f172a`），行距 `0.48em`；数学块级公式 `8.6pt`；代码块 `7.0pt`（行高 `0.38em`，边框 `0.45pt` 中灰 `#cbd5e1`，打印不丢框线）。
+- **目录与封面**：顶部横跨双栏的紧凑横幅卡片 + 三栏紧凑索引目录（仅索引 1~2 级标题），正文紧接目录双栏流式排布。
 
 ### `scripts/check_note_style.py`
 
@@ -260,7 +277,7 @@ path:line: RULE message
 ## 编译失败排查
 
 - Pandoc 报错：先对问题文件运行同参数转换：`pandoc -f markdown-yaml_metadata_block -t typst --wrap=none 问题文件.md`。
-- Typst `unknown variable: horizontalrule`：检查 `typst/common.typ` 是否被正确 import。
+- Typst `unknown variable: horizontalrule` / `code-badge`：检查 `generated/*.typ` 顶部是否包含 `#import "../typst/common.typ": *`。
 - Typst `failed to decode image`：检查图片扩展名和真实格式是否一致。
 - Typst `failed to load file (access denied)`：检查 `typst.compile(src, root=ROOT)`，`ROOT` 应为仓库根目录。
 - Typst `unexpected comma`：检查 Pandoc 输出里的 `,)` 或图片缺失占位。
@@ -278,5 +295,5 @@ path:line: RULE message
 ## 已知限制
 
 1. `generated/` 是自动生成目录，不要手改。
-2. 图片路径会在生成时改成相对 `generated/` 的路径；新增图片应放在对应笔记附近。
-3. Typst 数学模式会把多字母变量拆开显示；需要连写时在源 Markdown 中用 `\text{FWT}` 或 `\mathrm{FWT}`。
+2. 图片路径会在生成时改成相对 `generated/` 的路径；新增图片应放在对应笔记附近。若新增高密度宽图需要跨双栏显示，可将其文件名加入 `scripts/generate_typst.py` 的 `WIDE_IMAGE_NAMES`。
+3. 生成器已内置 `SPACED_MATH_WORDS` 自动合并常见多字母数学标识符；若遇到罕见多字母变量仍被拆开显示，可在源 Markdown 中用 `\text{...}` / `\mathrm{...}` 或补充到 `SPACED_MATH_WORDS`。

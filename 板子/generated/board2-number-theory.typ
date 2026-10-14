@@ -1,16 +1,20 @@
-= 参考图表
+#import "../typst/common.typ": *
+
+= 常用速查图表
 
 == 表
 
-#image("../../表.jpg", width: 100%)
+#block(fill: white, stroke: 0.45pt + c-code-border, radius: 1.5pt, clip: true)[#image("../../表.jpg", width: 100%)]
 
 == 图
 
-#image("../../图.png", width: 100%)
+#text(size: 7.8pt, fill: c-muted)[（见本页下方通栏大图：U 群常见问题速查）]
+
+#place(bottom + center, scope: "parent", float: true)[#block(width: 100%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../图.png", width: 100%)]]
 
 = 基础与工具
 
-== 数论/数论笔记部分/数论笔记(筛法)
+== 数论笔记(筛法)
 
 === 欧拉函数的定义
 <欧拉函数的定义>
@@ -193,7 +197,7 @@ $ 12 = 2^2 times 3^1 \, $
 
 $ f ( 12 ) = ( 1 + 2 + 4 ) times ( 1 + 3 ) = 7 times 4 = 28 $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 === 筛法求约数和
 <筛法求约数和>
 记g\[i\]为i的最小质因子的幂和 1 + p^1 +p^2 + … + p^k，f\[i\]为i的约数和。
@@ -265,7 +269,7 @@ vector<int> sumd()
 <唯一分解定理>
 $ n = product_(i = 1)^s p_i^(alpha_i) = p_1^(alpha_1) p_2^(alpha_2) dots.h.c p_s^(alpha_s) $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 === 莫比乌斯函数定义
 <莫比乌斯函数定义>
 莫比乌斯函数记作 $mu ( n )$，它是一个经典的数论函数，定义如下：
@@ -278,7 +282,7 @@ $ n = product_(i = 1)^s p_i^(alpha_i) = p_1^(alpha_1) p_2^(alpha_2) dots.h.c p_s
 
 $ mu ( n ) = ( - 1 )^k $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 === 筛法求莫比乌斯函数
 <筛法求莫比乌斯函数>
 若 $i$ 是质数，$mu \[ i \] = - 1$。 在线性筛中，每个合数 $m$ 都是被最小的质因子筛掉的。 设 $p_j$ 是 $m$ 的最小质因子，则 $m$ 通过 $m = i times p_j$ 筛掉。
@@ -302,7 +306,7 @@ $ mu \[ m \] = 0 $
 综上，$mu \[ m \] = - mu \[ i \]$。
 
 
-== 数论/数论笔记部分/数论笔记(线性逆元)
+== 数论笔记(线性逆元)
 
 === O(n) 求阶乘和阶乘逆元
 <on-求阶乘和阶乘逆元>
@@ -312,7 +316,7 @@ $ mu \[ m \] = 0 $
 
 $ upright("求 ") forall 1 lt.eq i lt.eq n \, quad upright("使得 ") r_i dot.op i equiv 1 med (mod p) upright(" 的 ") r_i $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 推导公式
 <推导公式>
 我们设 $r_i = i^(- 1) #h(0em) mod med p$，有：
@@ -322,7 +326,7 @@ $ upright("求 ") forall 1 lt.eq i lt.eq n \, quad upright("使得 ") r_i dot.op
 
 $ r_i = ( p - ⌊p / i⌋ ) dot.op r_(p #h(0em) mod med i) #h(0em) mod med p $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 证明过程
 <证明过程>
 考虑：
@@ -348,7 +352,7 @@ $ #box(stroke: black, inset: 3pt, [$ upright("inv") \[ i \] = \( p - p \/ i \) d
 
 这就是我们要用的递推式！
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== C++ 实现示例
 <c-实现示例>
 ```cpp
@@ -368,7 +372,7 @@ void preC()
 }
 ```
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 时间复杂度
 <时间复杂度>
 - 时间：$cal(O) ( n )$
@@ -376,7 +380,7 @@ void preC()
 - 要求 $p$ 是质数（否则不存在乘法逆元）
 
 
-== 数论/数论笔记部分/数论笔记(不定方程与同余方程组)
+== 数论笔记(不定方程与同余方程组)
 
 === 前置芝士
 <前置芝士>
@@ -386,13 +390,13 @@ exgcd求解不定方程 ax+by=gcd(a,b) /线性同余方程 ax≡b(mod m) 的解
 <exgcd求解不定方程-axbygcdab>
 设
 
-$ a x_1 + b y_1 = g c d ( a \, b ) $
+$ a x_1 + b y_1 = gcd ( a \, b ) $
 
-$ b x_2 + ( a % b ) y_2 = g c d ( b \, a % b ) $
+$ b x_2 + ( a % b ) y_2 = gcd ( b \, a % b ) $
 
 由欧几里得定理可得
 
-$ g c d ( a \, b ) = g c d ( b \, a % b ) $
+$ gcd ( a \, b ) = gcd ( b \, a % b ) $
 
 于是
 
@@ -441,7 +445,7 @@ $ a x + m k = b $
 
 令
 
-$ d = g c d ( a \, m ) $
+$ d = gcd ( a \, m ) $
 
 于是我们先求解不定方程
 
@@ -471,7 +475,7 @@ $ x = ( x_1 #h(0em) mod med t + t ) #h(0em) mod med t $
 
 其中
 
-$ t = m \/ g c d ( a \, m ) $
+$ t = m \/ gcd ( a \, m ) $
 
 如果要求最小正整数解，并且上式得到 $x = 0$，则取 $x = t$。
 
@@ -493,7 +497,7 @@ $ a x equiv 1 med (mod m) $
 
 可写成
 
-$ a x + m k = g c d ( a \, m ) = 1 $
+$ a x + m k = gcd ( a \, m ) = 1 $
 
 罢了
 
@@ -592,25 +596,25 @@ $ k_1 \* m_1 - k_2 \* m_2 = a_2 - a_1 $
 
 可通过exgcd求解
 
-$ K_1 \* m_1 - K_2 \* m_2 = g c d ( m_1 \, m_2 ) $
+$ K_1 \* m_1 - K_2 \* m_2 = gcd ( m_1 \, m_2 ) $
 
 于是
 
-$ k_1 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 $
+$ k_1 = frac(a_2 - a_1, gcd ( m_1 \, m_2 )) \* K_1 $
 
-$ k_2 = frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_2 $
+$ k_2 = frac(a_2 - a_1, gcd ( m_1 \, m_2 )) \* K_2 $
 
 得到x的一个解
 
-$ x_0 = a_1 + k_1 \* m_1 = a_1 + frac(a_2 - a_1, g c d ( m_1 \, m_2 )) \* K_1 \* m_1 $
+$ x_0 = a_1 + k_1 \* m_1 = a_1 + frac(a_2 - a_1, gcd ( m_1 \, m_2 )) \* K_1 \* m_1 $
 
 窝们很显然可以构造x的通解
 
-$ x = x_0 + t \* l c m ( m_1 \, m_2 ) $
+$ x = x_0 + t \* lcm ( m_1 \, m_2 ) $
 
 于是进行形式转化
 
-$ x equiv x_0 med (mod l c m ( m_1 \, m_2) ) $
+$ x equiv x_0 med (mod lcm ( m_1 \, m_2) ) $
 
 于是我们得到了两个同余方程的合并
 
@@ -642,7 +646,7 @@ int _exCRT()
 ```
 
 
-== 数论/数论笔记部分/数论笔记(威尔逊定理与卢卡斯定理)
+== 数论笔记(威尔逊定理与卢卡斯定理)
 
 === 威尔逊定理
 <威尔逊定理>
@@ -678,46 +682,145 @@ $ binom(n, m) equiv binom(floor.l n \/ p floor.r, floor.l m \/ p floor.r) times 
 $ upright("Lucas") ( n \, m ) = cases(delim: "{", 1 & m = 0, (C ( n #h(0em) mod med p \, m #h(0em) mod med p ) times upright("Lucas") ( floor.l n \/ p floor.r \, floor.l m \/ p floor.r )) #h(0em) mod med p & m > 0) $
 
 
-== 数论/Trick/数论小结论
+== 数论小结论
 
-$upright("gcd")$ 的重要恒等式： $upright("gcd") ( x_1 \, x_2 \, dots.h \, x_n ) = upright("gcd") ( x_1 \, x_2 - x_1 \, x_3 - x_2 \, dots.h \, x_n - x_(n - 1) )$。
+#[
+#set par(leading: 0.50em, spacing: 0.78em)
+#set enum(spacing: 0.85em)
+$upright("gcd")$ 的重要恒等式：
 
-对于一个前缀 $upright("gcd")$ 序列 $g_i = upright("gcd") ( a_1 \, dots.h \, a_i )$，这个序列 $g_1 \, g_2 \, dots.h \, g_n$ 的不同取值最多只有 $O ( log V )$ 个。 因为下降是$l o g$的
+
+$upright("gcd") ( x_1 \, x_2 \, dots.h \, x_n ) = upright("gcd") ( x_1 \, x_2 - x_1 \, x_3 - x_2 \, dots.h \, x_n - x_(n - 1) )$。
+
+#v(0.5em)
+
+对于一个前缀 $upright("gcd")$ 序列 $g_i = upright("gcd") ( a_1 \, dots.h \, a_i )$，这个序列 $g_1 \, g_2 \, dots.h \, g_n$ 的不同取值最多只有 $O ( log V )$ 个。
+
+
+因为下降是$l o g$的
+
+#v(0.5em)
 
 gcd(x,y)=x xor y -\> gcd(x,y)=|x-y|
 
+#v(0.5em)
+
 gcd(x,y)=x+y -\> gcd(x,y)=max(x,y)。
 
-gcd(k,n)=1-\>gcd(n-k,n)=1 simga \[gcd(i,n)=1\]#emph[i=phi(n)];n/2 https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&returnHomeType=1&uid=719203876
+#v(0.5em)
 
-原来aj\*2\>ai的时候aj一定不整除ai https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
+gcd(k,n)=1-\>gcd(n-k,n)=1 simga \[gcd(i,n)=1\]#emph[i=phi(n)];n/2
 
-c|ab 当仅当 (c/gcd(a,c))|b 考虑 ab=k#emph[c 令g=gcd(a,c),有 (a/g) ] b=k \*(c/g) 此时 a/g和c/g互质,其实含义就是(c/g)|b,反代得 (c/gcd(a,c))|b
+
+https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79094134&returnHomeType=1&uid=719203876
+
+#v(0.5em)
+
+原来aj\*2\>ai的时候aj一定不整除ai
+
+
+https:\/\/ac.nowcoder.com/acm/contest/view-submission?submissionId=79086887&returnHomeType=1&uid=719203876
+
+#v(0.5em)
+
+c|ab 当仅当 (c/gcd(a,c))|b
+
+
+考虑 ab=k#emph[c 令g=gcd(a,c),有 (a/g) ] b=k \*(c/g) 此时 a/g和c/g互质,其实含义就是(c/g)|b,反代得 (c/gcd(a,c))|b
+
+#v(0.5em)
 
 自然数k次和：
 
+#v(0.5em)
+
 $ sum_(i = 1)^n i^2 = frac(n ( n + 1 ) ( 2 n + 1 ), 6) $
+
+#v(0.5em)
 
 $ sum_(i = 1)^n i^3 = [frac(n ( n + 1 ), 2)]^2 = frac(n^2 ( n + 1 )^2, 4) $
 
+#v(0.5em)
+
 Raney 引理：如果一个整数序列 $x_1 \, x_2 \, dots.h \, x_m$ 的每一项都不超过 $1$，且总和为 $S > 0$，那么在这个序列的 $m$ 个循环移位中，恰好有 $S$ 个移位满足“所有非空前缀和都严格大于 $0$”。
+
+#v(0.5em)
 
 $ sum_(i = 1)^n ⌊n / i⌋ = 2 sum_(i = 1)^(floor.l sqrt(n) floor.r) ⌊n / i⌋ - floor.l sqrt(n) floor.r^2 $
 
+#v(0.5em)
+
 $ floor.l A / B floor.r = frac(A - ( A med mod med B ), B) $
 
-对于任意给定的两个正整数 $r$ 和 $k$，必然存在一个正整数 $N$，使得无论如何用 $r$ 种颜色对连续整数集合 ${ 1 \, 2 \, dots.h \, N }$ 进行染色，该集合中都必定包含一个长度为 $k$ 的同色等差数列。满足上述条件的最小正整数 $N$ 被称为范德瓦尔登数，通常记为 $W ( r \, k )$。 W(2,3)=9,W(2,4)=35,W(2,5)=178,W(2,6)=1132,W(3,3)=27,W(4,3)=76
+#v(0.5em)
 
-考察 一个长度为 $n + 1$ 的序列为 $A = angle.l a_0 \, a_1 \, dots.h \, a_n angle.r$ 令序列 $A^R$ 为 $A$ 翻转后的序列，即定义 $a_i^R = a_(n - i)$。 将 $A ( x )$ 与 $A^R ( x )$ 相乘得到 $C ( x )$ 那么有 $ c_(n - k) = sum_(i = 0)^(n - k) a_i a_(i + k) $ 即 乘积后的第 $n - k$ 项是 下标差为 $k$ 的数对乘积之和 这叫差卷积
+对于任意给定的两个正整数 $r$ 和 $k$，必然存在一个正整数 $N$，使得无论如何用 $r$ 种颜色对连续整数集合 ${ 1 \, 2 \, dots.h \, N }$ 进行染色，该集合中都必定包含一个长度为 $k$ 的同色等差数列。满足上述条件的最小正整数 $N$ 被称为范德瓦尔登数，通常记为 $W ( r \, k )$。
 
-约定多项式 $A$ 的长度为 $n + 1$，多项式 $B$ 的长度为 $m + 1$ $A ( x ) = sum_(i = 0)^n a_i x^i$ $B ( x ) = sum_(j = 0)^m b_j x^j$ 将 $B ( x )$ 翻转 $ c_(m - k) = sum_i a_i b_(i + k) $
 
-对于长度为 $n + 1$ 的 $01$ 序列 $A$，我们需要对每一个距离 $k$，求出不相等的对数 $a n s_k$ $ a n s_k = sum_(i = 0)^(n - k) \[ a_i eq.not a_(i + k) \] $ $ \[ a_i eq.not a_(i + k) \] arrow.l.r.double a_i xor a_(i + k) $ 利用 $01$ 变量的代数性质 $a xor b = a + b - 2 ( a and b )$，且在数值上 $a and b = a dot.op b$，我们可以将上述求和式展开：$ a n s_k = sum_(i = 0)^(n - k) ( a_i xor a_(i + k) ) = sum_(i = 0)^(n - k) ( a_i + a_(i + k) - 2 a_i a_(i + k) ) $ $ a n s_k = (sum_(i = 0)^(n - k) a_i) + (sum_(i = 0)^(n - k) a_(i + k)) - 2 (sum_(i = 0)^(n - k) a_i a_(i + k)) $ 然后直接做就可以,如果要求 相等，容斥做即可。
+W(2,3)=9,W(2,4)=35,W(2,5)=178,W(2,6)=1132,W(3,3)=27,W(4,3)=76
 
+#v(0.5em)
+
+考察
+
+
+一个长度为 $n + 1$ 的序列为 $A = angle.l a_0 \, a_1 \, dots.h \, a_n angle.r$
+
+
+令序列 $A^R$ 为 $A$ 翻转后的序列，即定义 $a_i^R = a_(n - i)$。
+
+
+将 $A ( x )$ 与 $A^R ( x )$ 相乘得到 $C ( x )$
+
+
+那么有
+
+
+$ c_(n - k) = sum_(i = 0)^(n - k) a_i a_(i + k) $
+
+
+即 乘积后的第 $n - k$ 项是 下标差为 $k$ 的数对乘积之和 这叫差卷积
+
+#v(0.5em)
+
+约定多项式 $A$ 的长度为 $n + 1$，多项式 $B$ 的长度为 $m + 1$
+
+
+$A ( x ) = sum_(i = 0)^n a_i x^i$
+
+
+$B ( x ) = sum_(j = 0)^m b_j x^j$
+
+
+将 $B ( x )$ 翻转
+
+
+$ c_(m - k) = sum_i a_i b_(i + k) $
+
+#v(0.5em)
+
+对于长度为 $n + 1$ 的 $01$ 序列 $A$，我们需要对每一个距离 $k$，求出不相等的对数 $"ans"_k$
+
+
+$ "ans"_k = sum_(i = 0)^(n - k) \[ a_i eq.not a_(i + k) \] $
+
+
+$ \[ a_i eq.not a_(i + k) \] arrow.l.r.double a_i xor a_(i + k) $
+
+
+利用 $01$ 变量的代数性质 $a xor b = a + b - 2 ( a and b )$，且在数值上 $a and b = a dot.op b$，我们可以将上述求和式展开：$ "ans"_k = sum_(i = 0)^(n - k) ( a_i xor a_(i + k) ) = sum_(i = 0)^(n - k) ( a_i + a_(i + k) - 2 a_i a_(i + k) ) $
+
+
+$ "ans"_k = (sum_(i = 0)^(n - k) a_i) + (sum_(i = 0)^(n - k) a_(i + k)) - 2 (sum_(i = 0)^(n - k) a_i a_(i + k)) $
+
+
+然后直接做就可以,如果要求 相等，容斥做即可。
+
+]
 
 = 卷积与反演
 
-== 数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 1)
+== 数论笔记(狄利克雷卷积与莫比乌斯反演 1)
 
 === 狄利克雷生成函数
 <狄利克雷生成函数>
@@ -751,7 +854,7 @@ $ sum_(d \| n) a_d b_(n \/ d) $
   , kind: table
   )
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 === 一点和式的小结论
 <一点和式的小结论>
 ==== 欧拉函数
@@ -841,7 +944,7 @@ $ sum_(d \| 12) phi ( d ) = phi ( 1 ) + phi ( 2 ) + phi ( 3 ) + phi ( 4 ) + phi 
 
   即得证。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 === 莫比乌斯函数
 <莫比乌斯函数>
 莫比乌斯函数 $mu ( n )$ 定义如下：
@@ -904,7 +1007,7 @@ mu ( 6 ) & = ( - 1 )^2 = 1 quad & ( upright("取质因子 ") 2 \, 3 ) $
 和为 $1 + ( - 1 ) + ( - 1 ) + 1 = 0$。
 
 
-== 数论/数论笔记部分/数论笔记(狄利克雷卷积与莫比乌斯反演 2)
+== 数论笔记(狄利克雷卷积与莫比乌斯反演 2)
 
 === 狄利克雷卷积
 <狄利克雷卷积>
@@ -922,14 +1025,14 @@ $ ( f \* g ) ( n ) = sum_(d \| n) f ( d ) g (n / d) = sum_(d \| n) f (n / d) g (
 <示例>
 $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 运算规律
 <运算规律>
 + #strong[交换律];：$f \* g = g \* f$
 + #strong[结合律];：$( f \* g ) \* h = f \* ( g \* h )$
 + #strong[分配律];：$( f + g ) \* h = f \* h + g \* h$
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 常用函数
 <常用函数>
 #figure(
@@ -946,7 +1049,7 @@ $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
   , kind: table
   )
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #quote(block: true)[
 注意符号的读法 $mu$ 读作“缪”，$phi$ 读作“phi”，$epsilon.alt$ 读作“一穆西隆”
 ]
@@ -961,7 +1064,7 @@ $ ( f \* g ) ( 4 ) = f ( 1 ) g ( 4 ) + f ( 2 ) g ( 2 ) + f ( 4 ) g ( 1 ) $
 + $f \* epsilon.alt = f$
 + $f \* 1 eq.not f$
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #quote(block: true)[
 注意莫比乌斯函数是常数函数的逆元
 ]
@@ -1000,7 +1103,7 @@ $ sum_(d \| n) mu ( d ) = \[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1) 
 
 把 $n$ 换成 $gcd ( a \, b )$
 
-$ sum_(d \| g c d ( a \, b )) mu ( d ) = \[ g c d ( a \, b ) = 1 \] cases(delim: "{", 1 & g c d ( a \, b ) = 1, 0 & g c d ( a \, b ) > 1) $
+$ sum_(d \| gcd ( a \, b )) mu ( d ) = \[ gcd ( a \, b ) = 1 \] cases(delim: "{", 1 & gcd ( a \, b ) = 1, 0 & gcd ( a \, b ) > 1) $
 
 === 莫比乌斯变换
 <莫比乌斯变换>
@@ -1017,7 +1120,7 @@ $ f = g \* 1 arrow.l.r.double g = mu \* f $
 - $f ( n )$ 称为 $g ( n )$ 的莫比乌斯变换
 - $g ( n )$ 称为 $f ( n )$ 的莫比乌斯逆变换
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #quote(block: true)[
 注意对于一些函数 $f ( n )$，如果很难直接求出它的值，而容易求出其倍数和或约数和 $g ( n )$，那么可以通过莫比乌斯反演简化运算，求得 $f ( n )$ 的值。
 ]
@@ -1040,7 +1143,7 @@ g \* 1 & = ( mu \* f ) \* 1\
  & = f \* epsilon.alt\
  & = f $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 证明方法二（双重求和）
 <证明方法二双重求和>
 $ sum_(d \| n) mu ( d ) f (n / d) & = sum_(d \| n) mu ( d ) sum_(k \| n / d) g ( k )\
@@ -1051,7 +1154,7 @@ $ sum_(d \| n) mu ( d ) f (n / d) & = sum_(d \| n) mu ( d ) sum_(k \| n / d) g (
  & = g ( n ) $
 
 
-== 数论/数论笔记部分/数论笔记(炫酷反演魔术)
+== 数论笔记(炫酷反演魔术)
 
 #quote(block: true)[
 从广义莫比乌斯反演的角度思考各类反演魔术
@@ -1448,7 +1551,7 @@ $ sum_(d \| n) mu ( d ) = \[ n = 1 \] = cases(delim: "{", 1 & n = 1, 0 & n > 1) 
 
 把 $n$ 换成 $gcd ( a \, b )$
 
-$ sum_(d \| g c d ( a \, b )) mu ( d ) = \[ g c d ( a \, b ) = 1 \] cases(delim: "{", 1 & g c d ( a \, b ) = 1, 0 & g c d ( a \, b ) > 1) $
+$ sum_(d \| gcd ( a \, b )) mu ( d ) = \[ gcd ( a \, b ) = 1 \] cases(delim: "{", 1 & gcd ( a \, b ) = 1, 0 & gcd ( a \, b ) > 1) $
 
 初等证明前已述及
 
@@ -1555,7 +1658,7 @@ $ f ( n ) = sum_(i = 0)^n mat(delim: "{", n; i) g ( i ) arrow.l.r.double g ( n )
 <前置知识>
 #strong[上升幂和下降幂]
 
-上升幂 $x^(overline(n)) = product_(i = 0)^(n - 1) ( x + i )$ 下降幂 \$x^{} = = \_{i=0}^{n-1} (x-i) =n! \$
+上升幂 $x^(overline(n)) = product_(i = 0)^(n - 1) ( x + i )$ 下降幂 $x^(underline(n)) = frac(x !, ( x - n ) !) = product_(i = 0)^(n - 1) ( x - i ) = n ! binom(x, n)$
 
 上升幂转普通幂
 
@@ -1813,7 +1916,7 @@ $ x^(underline(n)) = sum_(k = 0)^n ( - 1 )^(n - k) mat(delim: "[", n; k) x^k $
   )
 
 
-== 数论/数论笔记部分/数论笔记(和式变换)
+== 数论笔记(和式变换)
 
 === 和式变换规则与技术
 <和式变换规则与技术>
@@ -1841,7 +1944,7 @@ $ sum_(k in K) a_k = sum_(p ( k ) in K) a_(p ( k )) $
 
 #strong[示例];：$a_1 + a_2 + a_3 + a_6 = a_6 + a_3 + a_2 + a_1$
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 高级变换技术
 <高级变换技术>
 ==== 1. 替换条件式
@@ -1880,7 +1983,7 @@ $ floor.l frac(floor.l n / k floor.r, m) floor.r = floor.l frac(n, k m) floor.r 
 人话：在1到n的整数中，能被k整除的数的个数是 $floor.l n / k floor.r$
 ]
 
-==== 2. $\[ g c d ( i \, j ) = 1 \]$的进一步变换
+==== 2. $\[ gcd ( i \, j ) = 1 \]$的进一步变换
 <gcdij1的进一步变换>
 $ sum_(i = 1)^n sum_(j = 1)^m \[ gcd ( i \, j ) = 1 \] = sum_(i = 1)^n sum_(j = 1)^m sum_(d \| gcd ( i \, j )) mu ( d ) $
 
@@ -1900,7 +2003,7 @@ $ sum_(i = 1)^n sum_(j = 1)^n A ( i \, j ) = 2 \* sum_(i = 1)^n sum_(j = i)^n A 
 人话：将有序对转换为无序对，注意枚举顺序
 ]
 
-==== 4. 通过$g c d ( i \, j ) = 1$构造条件式$\[ g c d ( i \, j ) = 1 \]$
+==== 4. 通过$gcd ( i \, j ) = 1$构造条件式$\[ gcd ( i \, j ) = 1 \]$
 <通过gcdij1构造条件式gcdij1>
 令
 
@@ -1926,16 +2029,16 @@ $ = sum_(d = 1)^(min ( n \, m )) sum_(i = 1)^(floor.l n \/ d floor.r) sum_(j = 1
 人话：没有人话
 ]
 
-==== 5. $g c d ( x \, y )$的变换
+==== 5. $gcd ( x \, y )$的变换
 <gcdxy的变换>
 $ n = sum_(d \| n) phi ( d ) $
 
-$ g c d ( x \, y ) = sum_(d \| gcd ( x \, y )) phi ( d ) = sum_(d \| x \, d \| y) phi ( d ) $
+$ gcd ( x \, y ) = sum_(d \| gcd ( x \, y )) phi ( d ) = sum_(d \| x \, d \| y) phi ( d ) $
 
 
 = 组合与生成函数
 
-== 数论/数论笔记部分/数论笔记(排列组合)
+== 数论笔记(排列组合)
 
 === 圆排列
 <圆排列>
@@ -1970,7 +2073,7 @@ $ Q_n^m = C_n^m dot.op Q_m^m = frac(n !, m dot.op ( n - m ) !) $
 - $D_3 = 2$（即 ${ 2 \, 3 \, 1 } \, { 3 \, 1 \, 2 }$）
 - $D_4 = 9$（即 ${ 2 \, 1 \, 4 \, 3 } \, { 2 \, 3 \, 4 \, 1 } \, { 2 \, 4 \, 1 \, 3 } \, { 3 \, 1 \, 4 \, 2 } \, { 3 \, 4 \, 1 \, 2 } \, { 3 \, 4 \, 2 \, 1 } \, { 4 \, 1 \, 2 \, 3 } \, { 4 \, 3 \, 1 \, 2 } \, { 4 \, 3 \, 2 \, 1 }$）
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 递推关系 $D_n = ( n - 1 ) ( D_(n - 1) + D_(n - 2) )$
 <递推关系-d_n-n-1d_n-1-d_n-2>
 #strong[边界条件];：
@@ -1987,7 +2090,7 @@ $ D_1 = 0 \, quad D_2 = 1 $
   , kind: table
   )
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 信封问题
 <信封问题>
 $n$ 封不同的信（编号 $1 \, 2 \, dots.h \, n$）放入 $n$ 个编号对应的信封中，要求每个信封的编号与信的编号都不相同。有多少种放置方法？
@@ -2017,7 +2120,7 @@ $ mat(delim: "[", n; m) $
 <递推关系>
 $ mat(delim: "[", n; m) = mat(delim: "[", n - 1; m - 1) + ( n - 1 ) mat(delim: "[", n - 1; m) $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 组合解释（圆桌问题）
 <组合解释圆桌问题>
 $n$ 个人坐 $m$ 张圆桌的方案数，考虑第 $n$ 个人的两种坐法：
@@ -2040,7 +2143,7 @@ $ mat(delim: "{", n; m) $
 <递推关系-1>
 $ mat(delim: "{", n; m) = mat(delim: "{", n - 1; m - 1) + m mat(delim: "{", n - 1; m) $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 组合解释（房间分配问题）
 <组合解释房间分配问题>
 $n$ 个人进入 $m$ 个房间的方案数（每个房间非空），考虑第 $n$ 个人的两种选择：
@@ -2064,11 +2167,7 @@ $n$ 个人进入 $m$ 个房间的方案数（每个房间非空），考虑第 $
 
 ==== 证明
 <证明>
-#figure(image("../../数论/数论笔记部分/md.img/卡特兰数.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/卡特兰数.png", width: 100%)]]]]
 
 ==== Catalan 数列
 <catalan-数列>
@@ -2103,14 +2202,14 @@ $ C_0 = 1 \, #h(2em) C_n = sum_(i = 0)^(n - 1) C_i thin C_(n - 1 - i) med ( n gt
 
 并且初值一致，所以计数相同。分别说------
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 3) 单栈出栈序列的个数 = $C_n$
 <单栈出栈序列的个数-c_n>
 把栈的操作写成长度 $2 n$ 的串： - 入栈记“(”，出栈记“)”。 合法性：任何时刻不能空栈出栈 ⇒ 任意前缀“)”不多于“(”；最后入栈、出栈各 $n$ 次。 这正是#strong[合法括号序列];的定义，因此个数为 $C_n = frac(1, n + 1) binom(2 n, n)$。
 
 （同说法：栈可生成的排列=231-避免排列，其数目为卡特兰数。）
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 4) $n$ 个结点的二叉树个数 = $C_n$
 <n-个结点的二叉树个数-c_n>
 设 $T_n$ 为有 $n$ 个结点（有序、无标号）的二叉树数。以根为界：左子树 $i$ 个结点、右子树 $n - 1 - i$ 个结点，二者独立：
@@ -2119,7 +2218,7 @@ $ T_n = sum_(i = 0)^(n - 1) T_i thin T_(n - 1 - i) \, quad T_0 = 1 . $
 
 这恰是卡特兰递推，因此 $T_n = C_n$。 （等价双射：对二叉树做先序/中序边走访，“向下”记“(”，“返回”记“)”，得到 Dyck 串，反之亦然。）
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 5) 圆上 $2 n$ 点配对且弦不相交的配法数 = $C_n$
 <圆上-2n-点配对且弦不相交的配法数-c_n>
 固定点 1，它必须与某个点 $2 k$ 相连（顺时针计）。这一条弦把圆分成两侧： - 一侧有 $2 k - 2$ 个点，可不交配对数 $C_(k - 1)$； - 另一侧有 $2 n - 2 k$ 个点，可不交配对数 $C_(n - k)$。 枚举 $k = 1 . . n$ 得
@@ -2128,7 +2227,7 @@ $ M_n = sum_(k = 1)^n C_(k - 1) C_(n - k) = sum_(i = 0)^(n - 1) C_i C_(n - 1 - i
 
 同初值 $M_0 = 1$，故 $M_n = C_n$。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 6) 将凸 $( n + 2 )$-边形三角剖分的方法数 = $C_n$
 <将凸-n2-边形三角剖分的方法数-c_n>
 固定顶点 1，选一条对角线 $( 1 \, j )$（$j = 3 . . n + 2$）。它把多边形分成： - 一个 $( j - 1 )$-边形（可三角剖分数 $C_(j - 3)$）； - 一个 $( n + 3 - j )$-边形（可三角剖分数 $C_(n - ( j - 2 ))$）。 求和得同一递推：
@@ -2137,7 +2236,7 @@ $ T_n = sum_(j = 3)^(n + 2) C_(j - 3) C_(n - ( j - 2 )) = sum_(i = 0)^(n - 1) C_
 
 故 $T_n = C_n$。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 递推来源
 <递推来源>
 ==== 从合法括号序列（Dyck 路径）推导
@@ -2161,7 +2260,7 @@ $ C_n = sum_(k = 0)^(n - 1) C_k dot.op C_(n - 1 - k) . $
 这就是递推的来源。
 
 
-== 数论/数论笔记部分/数论笔记(排列组合进阶)
+== 数论笔记(排列组合进阶)
 
 === 组合意义天地灭 代数推导保平安
 <组合意义天地灭-代数推导保平安>
@@ -2498,7 +2597,7 @@ $ A n s = sum_(p = 0)^k ( - 1 )^p sum_A binom(k + r - 1 - sum_A n_(A_i) - p, k -
 其中 $A$ 是充当枚举子集的作用，满足 $\| A \| = p \, med A_i < A_(i + 1)$。
 
 
-== 数论/数论笔记部分/数论笔记(生成函数)
+== 数论笔记(生成函数)
 
 === 普通生成函数
 <普通生成函数>
@@ -2556,15 +2655,15 @@ F ( x ) & = frac(1, 1 - p x) $
 
 ==== 普通生成函数可以用来解决#strong[多重集合组合数];问题。
 <普通生成函数可以用来解决多重集合组合数问题>
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 问题：有 $n$ 种物品，每种物品有 $a_i$ 个，问取 $m$ 个物品的组合数？
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 多重集合组合数
 <多重集合组合数>
 设从每种物品中取 $b_i$ 个，$0 lt.eq b_i lt.eq a_i$， $m = sum_(i = 1)^n b_i$，对于一组选定的 $b_i$ 进行组合的方案数为 #strong[1];。 例如，取 3 个 A，1 个 B 的方案就是 {AAAB}；取 2 个 A、2 个 B 的方案就是 {AABB}。 那么，所有满足 #emph[#strong[b₁ + b₂ + ⋯ + bₙ = m];] 的方案之和，即答案。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 构造普通生成函数
 <构造普通生成函数>
 第 1 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_1) )$， 第 $n$ 种物品的生成函数为 $( 1 + x^1 + x^2 + dots.h.c + x^(a_n) )$。
@@ -2579,7 +2678,7 @@ $ ( 1 + x^1 + x^2 + dots.h.c + x^(a_1) ) ( 1 + x^1 + x^2 + dots.h.c + x^(a_2) ) 
 #strong[注意：] 指数即物品个数，系数即组合数。
 ]
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 例如：
 <例如>
 有三种物品，分别有 3、2、1 个，问取 4 个物品的组合数？ 枚举的话，有 {AAAB, AAAC, AABB, AABC, ABBC}，5 个方案。
@@ -2601,7 +2700,7 @@ $x^4$ 的系数为 5，即答案。
 <hdu---1085-holding-bin-laden-captive>
 面值为 1, 2, 5 的硬币分别有 $a_1 \, a_2 \, a_3$ 枚， 问用这些硬币#strong[不能];组成的最小面值是多少？
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 思路
 <思路>
 构造生成函数：
@@ -2610,7 +2709,7 @@ $ ( 1 + x^1 + x^2 + dots.h.c + x^(a_1) ) times ( 1 + x^2 + x^4 + dots.h.c + x^(2
 
 从小到大遍历系数，#strong[为 0 的那一项];就是答案。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 例如：
 <例如-1>
 1 分有 1 枚，2 分有 1 枚，5 分有 1 枚：
@@ -2732,7 +2831,7 @@ HDU - 1521 排列组合 题意：有 $n$ 种物品，每种物品有 $a_i$ 个�
 + 序列 $a$ 的指数生成函数：$F ( x ) = sum a_n frac(x^n, n !)$
 ]
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #strong[泰勒展开式]
 
 普通生成函数：
@@ -2755,14 +2854,14 @@ $ frac(e^x + e^(- x), 2) = 1 + frac(x^2, 2 !) + frac(x^4, 4 !) + dots.h.c $
 
 $ frac(e^x - e^(- x), 2) = x + frac(x^3, 3 !) + frac(x^5, 5 !) + dots.h.c $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #strong[有穷序列的生成函数]
 
 $ 1 + x + x^2 = frac(1 - x^3, 1 - x) $
 
 $ 1 + x + x^2 + x^3 = frac(1 - x^4, 1 - x) $
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 #strong[广义二项式定理]
 
 $ frac(1, ( 1 - x )^n) = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
@@ -2807,54 +2906,24 @@ $ = sum_(i = 0)^oo C_(n + i - 1)^i x^i $
 
 = 变换与多项式
 
-== 数论/数论笔记部分/FFT笔记
+== FFT笔记
 
-=== FFT
-<fft>
-#figure(image("../../数论/数论笔记部分/md.img/FFT1.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT1.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT2.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT2.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT3.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT3.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT4.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT4.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT5.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT5.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT6.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT6.png", width: 100%)]]]]
 
-#figure(image("../../数论/数论笔记部分/md.img/FFT7.png"),
-  caption: [
-    本地图片
-  ]
-)
+#place(auto, scope: "parent", float: true)[#block(width: 100%, fill: white, inset: (y: 2pt))[#align(center)[#block(width: 84%, fill: white, stroke: 0.45pt + c-code-border, radius: 2pt, clip: true)[#image("../../数论/数论笔记部分/md.img/FFT7.png", width: 100%)]]]]
 
 
-== 数论/数论笔记部分/数论笔记(sosdp&fmt&fwt)
+== 数论笔记(sosdp&fmt&fwt)
 
 === sosdp(高维前缀和)
 <sosdp高维前缀和>
@@ -2943,7 +3012,7 @@ for (int j = 0; j < n; ++j) {
 
 我们首先统计`a[i]`是`st`的超集的个数 这里用下sosdp求
 
-答案即为$2^(c n t \[ s t \]) - 1$
+答案即为$2^("cnt" \[ s t \]) - 1$
 
 现在我们有至少 考虑恰好的关系
 
@@ -3157,17 +3226,17 @@ A'_0 = A'_(l e f t) - A'_(r i g h t) $
 答案就是这个数组自卷v次的cnt\[0\]
 
 #quote(block: true)[
-为啥？ 假设只有两轮游戏，或者只选了两个数。 第一个数选出的 SG 值为 $i$ 的方案数是 $c n t \[ i \]$。 第二个数选出的 SG 值为 $j$ 的方案数是 $c n t \[ j \]$。 现在我想知道：这两个数的异或和 $i xor j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $c n t \[ i \] times c n t \[ j \]$。我们要找所有满足 $i xor j = k$ 的情况，把它们加起来：
+为啥？ 假设只有两轮游戏，或者只选了两个数。 第一个数选出的 SG 值为 $i$ 的方案数是 $"cnt" \[ i \]$。 第二个数选出的 SG 值为 $j$ 的方案数是 $"cnt" \[ j \]$。 现在我想知道：这两个数的异或和 $i xor j = k$ 的方案数是多少？根据乘法原理，对于固定的 $i$ 和 $j$，方案数是 $"cnt" \[ i \] times "cnt" \[ j \]$。我们要找所有满足 $i xor j = k$ 的情况，把它们加起来：
 ]
 
-$ upright("Total") \[ k \] = sum_(i xor j = k) c n t \[ i \] times c n t \[ j \] $
+$ upright("Total") \[ k \] = sum_(i xor j = k) "cnt" \[ i \] times "cnt" \[ j \] $
 
 这就是xor卷积
 
 先fwt一下 然后对点值求v次方 最后ifwt回去即可
 
 
-== 数论/数论笔记部分/数论笔记(阶,原根与ntt)
+== 数论笔记(阶,原根与ntt)
 
 === 1.1 欧拉定理
 <欧拉定理>
@@ -3333,40 +3402,131 @@ $ a_i equiv c_i dot.op n^(- 1) med (mod p) $
 
 = Trick 与杂项
 
-== 数论/Trick/数学相关trick
+== 数学相关trick
 
-我们在处理某些计数问题时 总是有一下思路 1.定1移1 考虑某个前缀对r的贡献 2.考虑某个点对区间的贡献 3.移项，解耦变量后考虑区间内相同性质点的贡献
+#[
+#set par(leading: 0.50em, spacing: 0.78em)
+#set enum(spacing: 0.85em)
+我们在处理某些计数问题时 总是有一下思路
+
+
+1.定1移1 考虑某个前缀对r的贡献
+
+
+2.考虑某个点对区间的贡献
+
+
+3.移项，解耦变量后考虑区间内相同性质点的贡献
+
+#v(0.5em)
 
 数数题 最重要的思想是按什么东西进行分类，是好做的，而且能做到不重不漏
 
+#v(0.5em)
+
 考虑排序是否对答案无影响
+
+#v(0.5em)
 
 考虑算\[l,r\]中被p整除的数，一个好的实现是先算\[1,r\]中被p整除的数，再减去\[1,l-1\]中被p整除的数。
 
-常系数线性递推式可以用矩阵快速幂优化。 注意$d p \[ i \] = W \[ 1 \] d p \[ i - 1 \] + W \[ 2 \] d p \[ i - 2 \] + dots.h + W \[ d \] d p \[ i - d \]$。 构造的矩阵为第一行为系数矩阵，然后是从(2,1)开始的类似于单位矩阵的矩阵(d行d列)。 可以把$ ( d p \[ i - 1 \] \, d p \[ i - 2 \] \, dots.h \, d p \[ i - d \] ) $看作一个列向量，然后乘上构造的矩阵，就可以得到$ ( d p \[ i \] \, d p \[ i - 1 \] \, dots.h \, d p \[ i - d + 1 \] ) $。 有些时候能把状态压缩成一个等价类，缩减矩阵的大小
+#v(0.5em)
+
+常系数线性递推式可以用矩阵快速幂优化。
+
+
+注意$d p \[ i \] = W \[ 1 \] d p \[ i - 1 \] + W \[ 2 \] d p \[ i - 2 \] + dots.h + W \[ d \] d p \[ i - d \]$。
+
+
+构造的矩阵为第一行为系数矩阵，然后是从(2,1)开始的类似于单位矩阵的矩阵(d行d列)。
+
+
+可以把$ ( d p \[ i - 1 \] \, d p \[ i - 2 \] \, dots.h \, d p \[ i - d \] ) $看作一个列向量，然后乘上构造的矩阵，就可以得到$ ( d p \[ i \] \, d p \[ i - 1 \] \, dots.h \, d p \[ i - d + 1 \] ) $。
+
+
+有些时候能把状态压缩成一个等价类，缩减矩阵的大小
+
+#v(0.5em)
 
 ntt如果有多次intt，有可能可以不用先intt然后答案相加，而是直接在ntt后把点值加起来，最后做一次intt就行
 
+#v(0.5em)
+
 质数间距是小的，根据x附近的质数密度是1/lnx，那么x附近的质数间距是lnx
+
+#v(0.5em)
 
 筛积性函数的时候 这个积性函数在质数和质数幂时候的值是好算的话 这样他的值是好求的。
 
-维护多项式，我们如果想要动态加点/点集不变，多次查询，这样的式子，我们可以把拉插式子中无关x的项提出来，这样可以快速维护 $ P ( x ) = sum_(i = 1)^n y_i product_(j eq.not i) frac(x - x_j, x_i - x_j) $ 令： $ell ( x ) = product_(i = 1)^n ( x - x_i )$ $w_i = frac(1, product_(j eq.not i) ( x_i - x_j ))$ 那么 $ P ( x ) = ell ( x ) sum_(i = 1)^n frac(y_i, ( x - x_i ) product_(j eq.not i) ( x_i - x_j )) $ $ P ( x ) = ell ( x ) sum_(i = 1)^n frac(w_i y_i, x - x_i) $
+#v(0.5em)
 
-多项式的前缀和(对x而言)是更高一次的多项式-\>积分 多项式的一阶差分(对x而言)是低一次的多项式-\>微分
+维护多项式，我们如果想要动态加点/点集不变，多次查询，这样的式子，我们可以把拉插式子中无关x的项提出来，这样可以快速维护
 
-处理逆元不存在的方法总列： 考虑前后缀积处理 考虑处理乘0的个数 阶乘考虑列让德公式 考虑卢卡斯定理 考虑特殊性质，如k是9的倍数，要求k/9 mod mod 那么可以先求k%9mod然后/9然后%mod
+
+$ P ( x ) = sum_(i = 1)^n y_i product_(j eq.not i) frac(x - x_j, x_i - x_j) $
+
+
+令：
+
+
+$ell ( x ) = product_(i = 1)^n ( x - x_i )$
+
+
+$w_i = frac(1, product_(j eq.not i) ( x_i - x_j ))$
+
+
+那么
+
+
+$ P ( x ) = ell ( x ) sum_(i = 1)^n frac(y_i, ( x - x_i ) product_(j eq.not i) ( x_i - x_j )) $
+
+
+$ P ( x ) = ell ( x ) sum_(i = 1)^n frac(w_i y_i, x - x_i) $
+
+#v(0.5em)
+
+多项式的前缀和(对x而言)是更高一次的多项式-\>积分
+
+
+多项式的一阶差分(对x而言)是低一次的多项式-\>微分
+
+#v(0.5em)
+
+处理逆元不存在的方法总列：
+
+
+考虑前后缀积处理
+
+
+考虑处理乘0的个数
+
+
+阶乘考虑列让德公式
+
+
+考虑卢卡斯定理
+
+
+考虑特殊性质，如k是9的倍数，要求k/9 mod mod 那么可以先求k%9mod然后/9然后%mod
+
+#v(0.5em)
 
 快速算(a+bx)^n这样的事情可以考虑多项式启发式卷积,就是用过线段树向上合并的过程来描述，不过实现上队列就能做到。
 
-有个事情就是 对%n来说 如果+dx gcd(dx,n)=1 那其实是遍历所有余数的 那gcd=2的话 那其实就变成两个不交同余类了
+#v(0.5em)
+
+有个事情就是 对%n来说 如果+dx gcd(dx,n)=1 那其实是遍历所有余数的
 
 
-== 数论/数论笔记部分/数论笔记(杂项)
+那gcd=2的话 那其实就变成两个不交同余类了
+
+]
+
+== 数论笔记(杂项)
 
 === 勒让德公式
 <勒让德公式>
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 勒让德公式是什么
 <勒让德公式是什么>
 勒让德公式用来算#strong[质数 $p$ 在阶乘 $n !$ 的质因子分解中的指数];。 公式是：
@@ -3375,7 +3535,7 @@ $ v_p ( n ! ) = sum_(k = 1)^oo ⌊n / p^k⌋ \, $
 
 其中 $v_p ( n ! )$ 表示 $p$ 在 $n !$ 里出现的次数（指数）。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 为什么成立
 <为什么成立>
 考虑 $n ! = 1 dot.op 2 dot.op 3 dots.h.c n$。
@@ -3386,7 +3546,7 @@ $ v_p ( n ! ) = sum_(k = 1)^oo ⌊n / p^k⌋ \, $
 
 所以总和就是上面的式子。
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 一个例子
 <一个例子>
 算 $v_2 ( 10 ! )$：
@@ -3395,7 +3555,7 @@ $ floor.l 10 \/ 2 floor.r + floor.l 10 \/ 4 floor.r + floor.l 10 \/ 8 floor.r = 
 
 验证： $10 ! = 3628800 = 2^8 dot.op 3^4 dot.op 5^2 dot.op 7$.
 
-#line(length: 100%, stroke: 0.5pt + luma(180))
+#horizontalrule
 ==== 在这题里的作用
 <在这题里的作用>
 我们要计算：
@@ -3409,7 +3569,7 @@ $ C_n = frac(1, n + 1) binom(2 n, n) . $
 再减去 $n + 1$ 的质因子指数，就是卡特兰数的质因子分解。最后用快速幂拼起来，就得到答案 $#h(0em) mod med p$。
 
 
-== 数论/数论笔记部分/数学笔记(矩阵半环)
+== 数学笔记(矩阵半环)
 
 === 半环
 <半环>

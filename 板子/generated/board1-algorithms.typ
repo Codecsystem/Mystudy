@@ -1,3 +1,5 @@
+#import "../typst/common.typ": *
+
 = 通用模板
 
 == cpp模板
@@ -155,7 +157,7 @@ class O1Tire{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -332,7 +334,7 @@ inline void write(int x)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     cin.tie(0);
@@ -461,7 +463,7 @@ class BIT{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     //test
@@ -525,7 +527,7 @@ class DSU{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     srand(time(NULL));
@@ -957,7 +959,7 @@ class FHQTreap{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -1413,7 +1415,7 @@ inline void write(int x)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -1548,7 +1550,7 @@ class HJTree{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,r;cin>>n>>r;
@@ -1659,7 +1661,7 @@ class HJTree{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -1678,7 +1680,7 @@ class HJTree{
 //可并堆：pairing_heap_tag,配对堆 插入,合并均摊O(1),删除堆顶(logn)
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,q;cin>>n>>q;
@@ -1760,7 +1762,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -1972,7 +1974,7 @@ unordered_map<int,int> dis(vector<int> a)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t=read();
@@ -2440,7 +2442,7 @@ Info operator+(const Info &a,const Info &b){
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -2570,7 +2572,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,k;cin>>n>>m>>k;
@@ -2656,7 +2658,7 @@ pair<vector<int>,int> tarjan(vector<vector<int>> &mp,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -2766,7 +2768,7 @@ int bfs(int x)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -2813,7 +2815,7 @@ int bfs(int x)
 //所以时间复杂度是O(nlogn),Q.E.D
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n;
@@ -2934,7 +2936,7 @@ vector<vector<int>> tarjan(vector<vector<pair<int,int>>> &mp,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -3090,7 +3092,7 @@ vector<vector<int>> johnson(vector<vector<pair<int,int>>>& mp,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;
@@ -3207,7 +3209,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -3282,7 +3284,7 @@ pair<vector<int>,int> tarjan(vector<vector<int>> &mp,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -3414,7 +3416,7 @@ pair<vector<int>,int> tarjan(vector<vector<int>> &mp,int n)
 //时间复杂度：O(n+m)
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -3566,7 +3568,7 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -3654,7 +3656,7 @@ vector<int> dijkstra(int n,vector<vector<pair<int,int>>>mp,int s)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read(),s=read();
@@ -3684,7 +3686,7 @@ int Graph[MAXN][MAXN];
 int dp[MAXN][MAXN];
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int T=10;
@@ -3806,7 +3808,7 @@ vector<vector<int>> tarjan(vector<vector<int>> &mp,int n)
 //2.对于搜索的起始点，如果它的儿子数大于等于 2，那么它就是割点。
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -3867,7 +3869,7 @@ vector<vector<int>> tarjan(const vector<vector<array<int,2>>>&g,int n){
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -3983,7 +3985,7 @@ class maxflow{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,e;cin>>n>>m>>e;
@@ -4084,7 +4086,7 @@ bool isBinGraph(int n,int mid)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     // freopen("in.txt","r",stdin);
@@ -4180,7 +4182,7 @@ int dij(vector<vector<pair<int,int>>>& mp,int s,int n,int t,int kk)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     //分层图：解决k次免费（有代价）最短路问题
@@ -4298,7 +4300,7 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -4336,7 +4338,7 @@ vector<int> SPFA(vector<vector<pair<int,int>>>& mp,int s,int n)
 //同理topsort可以用来判环
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -4399,7 +4401,7 @@ inline void write(int x)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -4451,7 +4453,7 @@ inline void write(int x)
 //至于不重不漏的原因，某个三元环定向后一定是算法所示的形态，按度数最小的分类就是对的
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -4566,7 +4568,7 @@ class maxflow{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,s,t;
@@ -4663,7 +4665,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,k;cin>>n>>m>>k;
@@ -4724,7 +4726,7 @@ const int INF=1e18;
 using namespace std;
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,k;cin>>n>>m>>k;
@@ -4823,7 +4825,7 @@ class DSU{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     const int INF=2e9+5;
@@ -4955,7 +4957,7 @@ class DSU{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -5083,7 +5085,7 @@ int kruskal(vector<array<int,3>> &edge,int m,int n)
 //时间复杂度O(mlogm)，证明同prim
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     srand(time(NULL));
@@ -5161,7 +5163,7 @@ vector<int> prim(vector<vector<pair<int,int>>> &mp,int s,int n)
 // 5).故假设不成立，命题得证.
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read();
@@ -5277,7 +5279,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,s,t;
@@ -5395,7 +5397,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -5542,7 +5544,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m,s,t;
@@ -5639,7 +5641,7 @@ void dfs(int node)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read(),s=read();
@@ -5763,7 +5765,7 @@ int lca(int u,int v)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n=read(),m=read(),s=read();//n个点，n-1条边,m个询问，s为根
@@ -6149,7 +6151,7 @@ class tree{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,q;cin>>n>>q;
@@ -6542,7 +6544,7 @@ class cutTree
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     cin.tie(0);
@@ -6739,7 +6741,7 @@ public:
 //根据实现方式的不同，时间复杂度可以做到O(nlogn)或O(nlog^2n)
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -6914,7 +6916,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -7038,7 +7040,7 @@ class vtree{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -7180,7 +7182,7 @@ class vtree{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -7307,7 +7309,7 @@ class AC{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;
@@ -7397,7 +7399,7 @@ class AC{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -7462,7 +7464,7 @@ class exkmp{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     exkmp exk(2e7+5);
@@ -7555,7 +7557,7 @@ class Manacher{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     Manacher ma(1.1e7+5);
@@ -7607,7 +7609,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -7811,7 +7813,7 @@ class SAM{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     string s;cin>>s;
@@ -8031,7 +8033,7 @@ class SAM{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     string s;cin>>s;
@@ -8235,7 +8237,7 @@ struct Xhash32{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     unordered_map<ull,int,Xhash64> mp; //拉链法
@@ -8415,7 +8417,7 @@ struct SMC {
 using Z=SMC<mod>;
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -8515,7 +8517,7 @@ namespace _EX_CRT{
 //cout<<_EX_CRT::merge(1,3,2,5)[0]<<endl;
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -8677,7 +8679,7 @@ class exCRT{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -8798,7 +8800,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     Pre p(1e6+5);
@@ -8867,7 +8869,7 @@ class FFT{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -8954,7 +8956,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -9127,7 +9129,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -9370,7 +9372,7 @@ Z clac2(vector<array<Z,2>> fun,int n,int k){
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,k;cin>>n>>k;
@@ -9649,7 +9651,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,k;cin>>n>>k;
@@ -9775,7 +9777,7 @@ struct Mat
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -9871,7 +9873,7 @@ class MatQpow{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;ll k;cin>>n>>k;
@@ -10044,7 +10046,7 @@ class basic{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -10098,7 +10100,7 @@ class basic{
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -11226,7 +11228,7 @@ bool dcmp(const dpit& a,const dpit& b){return fabsl(a.x-b.x)>eps?a.x<b.x:a.y<b.y
 //时间复杂度：O(n log n)；n 为输入点数，主要耗时为 Andrew 求凸包。
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;
@@ -11402,7 +11404,7 @@ bool inPoly(pit p,const vector<pit>& poly){
 //时间复杂度：O(sum(n+m+q*n*m))；对各测试用例求和，n、m 为两多边形顶点数，q 为查询数。
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -11584,7 +11586,7 @@ pit getNode(pit a,vec u,pit c,vec v){
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -12487,7 +12489,7 @@ void zero(pit& a)
 }
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n;cin>>n;
@@ -12552,7 +12554,7 @@ void psort(vector<pit>& a)
 
 == bitset操作手册
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     // 竞赛标配 IO 优化
@@ -12678,7 +12680,7 @@ struct SWAG{
 // 注意矩阵乘法的顺序QAQ
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int t;cin>>t;
@@ -12996,7 +12998,7 @@ public:
 };
 ```
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     int n,m;cin>>n>>m;
@@ -13050,7 +13052,7 @@ public:
 
 == 离散化
 
-#text(size: 8pt, fill: gray)[用法示例:]
+#code-badge("用法示例 (main)")
 
 ```cpp
     vector<int> a;
